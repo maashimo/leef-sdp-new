@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Requests - 🍃 Leef</title>
+  <style>
+    :root {
+      --green: #16a34a;
+      --orange: #f97316;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --bg: #ffffff;
+      --card: #fff;
+      --muted: #555;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    aside {
+      width: 240px;
+      background: var(--card);
+      padding: 1.5em 1em;
+      box-shadow: 2px 0 6px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2em;
+    }
+
+    aside .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 1.5rem;
+      margin-bottom: 2em;
+      text-decoration: none;
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    aside nav a {
+      display: block;
+      padding: 0.7em 1em;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 0.5em;
+      transition: background 0.2s, color 0.2s;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    aside nav a.active,
+    aside nav a:hover {
+      background: var(--green);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    aside button.redeem-btn {
+      margin-top: auto;
+      width: 100%;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      padding: 0.6em;
+      border-radius: 0.5em;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Main content */
+    main {
+      flex: 1;
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      gap: 2em;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.2em;
+      color: #222;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5em;
+      color: #222;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 1em;
+      margin-bottom: 1em;
+    }
+
+    .tab {
+      padding: 0.6em 1em;
+      background: #eee;
+      border-radius: 0.5em;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .tab.active {
+      background: var(--green);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      padding: 1.2em;
+      border-radius: 1em;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 0.6em;
+      border-bottom: 1px solid #eee;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+
+    th {
+      background: #f5f5f5;
+      font-weight: bold;
+    }
+
+    td button {
+      padding: 0.3em 0.6em;
+      border: none;
+      border-radius: 0.4em;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .approve-btn {
+      background: var(--green);
+    }
+
+    .reject-btn {
+      background: var(--red);
+    }
+
+    .view-btn {
+      background: var(--blue);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: var(--card);
+      padding: 1.5em;
+      border-radius: 1em;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 0.5em;
+      right: 0.8em;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    /* Graphs Container (HIDDEN per user request) */
+    .graphs-grid {
+      display: none;
+    }
+
+    @media(max-width:900px) {
+      aside {
+        display: none;
+      }
+
+      main {
+        padding: 1em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <aside>
+    <a href="admin-dashboard.html" class="logo">leef 🍃</a>
+    <nav>
+      <a href="admin-dashboard.html">Overview</a>
+      <a href="ledger-view.html">Ledger</a>
+      <a href="new-registration.html" class="active">Registration Requests</a>
+      <a href="location-requests.html">Location Requests</a>
+      <a href="product-admin.html">Products</a>
+      <a href="feedback-admin.html">Feedback</a>
+      <a href="questions-admin.html">Questions</a>
+      <a href="refund-approval.html">Refunds</a>
+      <a href="admin-profile.html">Profile</a>
+    </nav>
+  </aside>
+
+  <script src="admin-sidebar.js"></script>
+
+  <!-- Main -->
+  <main>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h1>Registration Management</h1>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #eee; margin-bottom: 1rem;">
+
+    <!-- Main Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="pending">Pending & Actions</div>
+      <div class="tab" data-tab="customers-list">View Customers</div>
+      <div class="tab" data-tab="sellers-list">View Sellers</div>
+    </div>
+
+    <!-- PENDING & ACTIONS -->
+    <div id="pending" class="tab-content">
+      <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="margin-bottom:1rem; border-bottom: 2px solid #eee; padding-bottom: 0.5rem;">🔥 Pending Approvals</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Town</th>
+              <th>Joined On</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pending-customers-tbody">
+            <tr>
+              <td colspan="4" style="text-align:center; padding:1.5rem; color:#888;">Checking for pending
+                registrations...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" id="invite-card">
+        <h2 style="margin-bottom:0.5rem; color:var(--blue);">✉️ Invite New Seller</h2>
+        <p style="margin-bottom:1.5rem; color:#666; font-size:0.9rem;">Sellers must be manually invited. Enter an email
+          below to send a registration link.</p>
+        <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+          <input type="email" id="seller-email" placeholder="seller@example.com"
+            style="padding:0.8rem 1rem; border:1px solid #ddd; border-radius:10px; width:100%; max-width:400px; font-size:0.95rem; outline:none; border-color:var(--blue);">
+          <button class="approve-btn" onclick="sendSellerInvite()"
+            style="background:var(--blue); padding:0.8rem 1.5rem; font-weight:600;">Send Invitation</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW CUSTOMERS -->
+    <div id="customers-list" class="tab-content" style="display:none;">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <h2>Detailed Customer Directory</h2>
+          <input type="text" placeholder="Search customers..." id="searchCustomers"
+            style="padding:0.5rem 1rem; border-radius:8px; border:1px solid #ddd; font-size:0.9rem;">
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead style="background:#f8fafc;">
+              <tr>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Phone 1</th>
+                <th>Phone 2</th>
+                <th>Address</th>
+                <th>Joined</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="customers-table-body">
+              <!-- Load dynamic data here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW SELLERS -->
+    <div id="sellers-list" class="tab-content" style="display:none;">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <h2>Detailed Seller Directory</h2>
+          <input type="text" placeholder="Search sellers..." id="searchSellers"
+            style="padding:0.5rem 1rem; border-radius:8px; border:1px solid #ddd; font-size:0.9rem;">
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead style="background:#f8fafc;">
+              <tr>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Shop Name</th>
+                <th>Phone 1</th>
+                <th>Phone 2</th>
+                <th>Shop Town</th>
+                <th>Shop Address</th>
+                <th>Joined</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="sellers-table-body">
+              <!-- Load dynamic data here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+      <div class="modal-content">
+        <button class="close-btn" onclick="closeModal()">×</button>
+        <h2 id="modalName" style="color:var(--green); margin-bottom:1rem;"></h2>
+        <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.95rem;">
+          <p><strong>Username:</strong> <span id="modalUsername"></span></p>
+          <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+          <p><strong>Primary Phone:</strong> <span id="modalPhone"></span></p>
+          <p><strong>Secondary Phone:</strong> <span id="modalPhone2"></span></p>
+          <p><strong>Town / Shop Town:</strong> <span id="modalTown"></span></p>
+          <p><strong>Address:</strong> <span id="modalAddress"></span></p>
+          <p><strong>Role:</strong> <span id="modalRole"></span></p>
+          <p><strong>Joined On:</strong> <span id="modalJoined"></span></p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API = 'http://localhost:5000';
+
+    // Tabs functionality
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.dataset.tab;
+        tabContents.forEach(tc => tc.style.display = tc.id === target ? 'block' : 'none');
+      });
+    });
+
+    // Initialization
+    async function init() {
+      fetchCustomerRequests();
+      fetchAllUsers();
+    }
+    document.addEventListener("DOMContentLoaded", init);
+
+    // --- Actions/Pending Section ---
+    async function sendSellerInvite() {
+      const emailInput = document.getElementById('seller-email');
+      const email = emailInput.value.trim();
+      const sendBtn = document.querySelector('#invite-card button');
+
+      if (!email) return alert('Please enter an email.');
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Sending...";
+
+      try {
+        const res = await fetch(`${API}/api/admin/invite-seller`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        if (res.ok) {
+          alert(`Invitation sent to ${email}`);
+          emailInput.value = '';
+        } else {
+          const txt = await res.text();
+          alert("Failed: " + txt);
+        }
+      } catch (err) { alert("Error sending invitation."); }
+      finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Send Invitation";
+      }
+    }
+
+    async function fetchCustomerRequests() {
+      try {
+        const res = await fetch(`${API}/api/admin/requests/customers`);
+        const requests = await res.json();
+        const tbody = document.getElementById('pending-customers-tbody');
+        tbody.innerHTML = '';
+
+        if (requests.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:1.5rem; color:#888;">No pending requests</td></tr>';
+          return;
+        }
+
+        requests.forEach(req => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+                <td style="font-weight:600;">${req.name}</td>
+                <td>${req.town || 'N/A'}</td>
+                <td>${new Date(req.created_at).toLocaleDateString()}</td>
+                <td>
+                    <button class="view-btn" onclick='viewFullDetails(${JSON.stringify(req)})'>View Info</button>
+                    <button class="approve-btn" onclick="approveCustomer(${req.customer_id})">Approve</button>
+                </td>
+            `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) { console.error(err); }
+    }
+
+    async function approveCustomer(customerId) {
+      if (!confirm("Approve this customer?")) return;
+      try {
+        const res = await fetch(`${API}/api/admin/approve-customer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customerId })
+        });
+        if (res.ok) {
+          alert("Customer approved!");
+          fetchCustomerRequests();
+          fetchAllUsers();
+        } else alert("Approval failed.");
+      } catch (err) { console.error(err); }
+    }
+
+    // --- Users Data Sections ---
+    let allUsersCache = [];
+
+    async function fetchAllUsers() {
+      try {
+        const res = await fetch(`${API}/api/admin/users`);
+        allUsersCache = await res.json();
+
+        // Split and count
+        const customers = allUsersCache.filter(u => u.role === 'Customer');
+        const sellers = allUsersCache.filter(u => u.role === 'Seller');
+
+        renderUserTables();
+      } catch (err) { console.error(err); }
+    }
+
+    function renderUserTables(filterQuery = { customers: '', sellers: '' }) {
+      const custTbody = document.getElementById('customers-table-body');
+      const sellTbody = document.getElementById('sellers-table-body');
+
+      const customers = allUsersCache.filter(u =>
+        u.role === 'Customer' &&
+        (u.name.toLowerCase().includes(filterQuery.customers.toLowerCase()) || u.username.toLowerCase().includes(filterQuery.customers.toLowerCase()))
+      );
+
+      const sellers = allUsersCache.filter(u =>
+        u.role === 'Seller' &&
+        (u.name.toLowerCase().includes(filterQuery.sellers.toLowerCase()) || u.username.toLowerCase().includes(filterQuery.sellers.toLowerCase()) || (u.shop_name || "").toLowerCase().includes(filterQuery.sellers.toLowerCase()))
+      );
+
+      custTbody.innerHTML = customers.map(u => `
+        <tr>
+          <td style="font-weight:bold; color:#64748b;">@${u.username}</td>
+          <td>${u.name}</td>
+          <td style="font-weight:600;">${u.phone || '-'}</td>
+          <td style="font-weight:600;">${u.phone2 || '-'}</td>
+          <td title="${u.address || ''}">${u.town || '-'}</td>
+          <td>${new Date(u.created_at).toLocaleDateString()}</td>
+          <td><button class="view-btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick='viewFullDetails(${JSON.stringify(u)})'>Details</button></td>
+        </tr>
+      `).join('') || '<tr><td colspan="6" style="text-align:center;">No customers found.</td></tr>';
+
+      sellTbody.innerHTML = sellers.map(u => `
+        <tr>
+          <td style="font-weight:bold; color:#64748b;">@${u.username}</td>
+          <td>${u.name}</td>
+          <td style="color:var(--blue); font-weight:700;">${u.shop_name || '-'}</td>
+          <td style="font-weight:600;">${u.phone || '-'}</td>
+          <td style="font-weight:600;">${u.phone2 || '-'}</td>
+          <td>${u.town || '-'}</td>
+          <td title="${u.shop_address || ''}">${u.shop_address || '-'}</td>
+          <td>${new Date(u.created_at).toLocaleDateString()}</td>
+          <td><button class="view-btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick='viewFullDetails(${JSON.stringify(u)})'>Details</button></td>
+        </tr>
+      `).join('') || '<tr><td colspan="7" style="text-align:center;">No sellers found.</td></tr>';
+    }
+
+    // Modal view full details
+    function viewFullDetails(user) {
+      document.getElementById('modalName').textContent = user.name;
+      document.getElementById('modalUsername').textContent = '@' + user.username;
+      document.getElementById('modalEmail').textContent = user.email || 'N/A';
+      document.getElementById('modalPhone').textContent = user.phone || 'N/A';
+      document.getElementById('modalPhone2').textContent = user.phone2 || 'N/A';
+      document.getElementById('modalTown').textContent = user.town || 'N/A';
+      document.getElementById('modalAddress').textContent = (user.role === 'Seller' ? (user.shop_address || 'N/A') : (user.address || 'N/A'));
+      document.getElementById('modalRole').textContent = user.role;
+      document.getElementById('modalJoined').textContent = new Date(user.created_at).toLocaleDateString();
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    // Search events
+    document.getElementById('searchCustomers').addEventListener('input', e => {
+      renderUserTables({ customers: e.target.value, sellers: document.getElementById('searchSellers').value });
+    });
+    document.getElementById('searchSellers').addEventListener('input', e => {
+      renderUserTables({ customers: document.getElementById('searchCustomers').value, sellers: e.target.value });
+    });
+  </script>
+</body>
+
+</html>
+
+</html>

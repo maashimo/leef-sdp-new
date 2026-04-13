@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Questions - 🍃 Leef</title>
+  <style>
+    :root {
+      --green: #16a34a;
+      --orange: #f97316;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --bg: #ffffff;
+      --card: #fff;
+      --muted: #555;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    aside {
+      width: 240px;
+      background: var(--card);
+      padding: 1.5em 1em;
+      box-shadow: 2px 0 6px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2em;
+    }
+
+    aside .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 1.5rem;
+      margin-bottom: 2em;
+      text-decoration: none;
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    aside nav a {
+      display: block;
+      padding: 0.7em 1em;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 0.5em;
+      transition: background 0.2s, color 0.2s;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    aside nav a.active,
+    aside nav a:hover {
+      background: var(--green);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    aside button.redeem-btn {
+      margin-top: auto;
+      width: 100%;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      padding: 0.7em;
+      border-radius: 0.5em;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    main {
+      flex: 1;
+      padding: 2.5em 3em;
+      display: flex;
+      flex-direction: column;
+      gap: 2em;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5em;
+      color: #1a2e05;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 1.5em;
+      border-radius: 1em;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+      margin-bottom: 2em;
+    }
+
+    .question-list {
+      margin-top: 1em;
+    }
+
+    .question-item {
+      border-bottom: 1px solid #eee;
+      padding: 1em 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+    }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+    }
+
+    .question-product {
+      font-weight: 600;
+      color: #256029;
+    }
+
+    .question-user {
+      color: #555;
+      font-size: 0.98em;
+    }
+
+    .question-date {
+      color: #888;
+      font-size: 0.93em;
+      margin-left: auto;
+    }
+
+    .badge-new {
+      background: var(--red);
+      color: #fff;
+      font-size: 0.85em;
+      border-radius: 0.7em;
+      padding: 0.2em 0.8em;
+      margin-left: 0.7em;
+    }
+
+    .no-questions {
+      color: #888;
+      font-size: 1.1em;
+      text-align: center;
+      margin: 2em 0;
+    }
+
+    .answer-box {
+      display: flex;
+      gap: 0.5em;
+      margin-top: 0.3em;
+    }
+
+    .answer-box input {
+      flex: 1;
+      padding: 0.5em;
+      border: 1px solid #ccc;
+      border-radius: 0.4em;
+    }
+
+    .answer-box button {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 0.4em;
+      padding: 0.5em 1em;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .admin-answer {
+      margin-top: 0.4em;
+      color: #256029;
+    }
+
+    @media(max-width:900px) {
+      main {
+        padding: 1em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <aside>
+    <a href="admin-dashboard.html" class="logo">leef 🍃</a>
+    <nav>
+      <a href="admin-dashboard.html">Overview</a>
+      <a href="ledger-view.html">Ledger</a>
+      <a href="new-registration.html">Registration Requests</a>
+      <a href="location-requests.html">Location Requests</a>
+      <a href="product-admin.html">Products</a>
+      <a href="feedback-admin.html">Feedback</a>
+      <a href="questions-admin.html" class="active">Questions</a>
+      <a href="refund-approval.html">Refunds</a>
+      <a href="admin-profile.html">Profile</a>
+    </nav>
+  </aside>
+
+  <script src="admin-sidebar.js"></script>
+
+  <!-- Main -->
+  <main>
+    <h1>Customer Questions</h1>
+    <div class="card">
+      <div id="questionCount" style="font-weight:600; color:#256029; margin-bottom:1em;"></div>
+      <div class="question-list" id="questionList">
+        <!-- Questions will be rendered here -->
+      </div>
+    </div>
+  </main>
+  <script>
+    let questions = [];
+
+    async function fetchQuestions() {
+      try {
+        const res = await fetch('http://localhost:5000/api/products/admin/questions/all');
+        questions = await res.json();
+        renderQuestions();
+      } catch (err) {
+        console.error("Error fetching questions:", err);
+        document.getElementById('questionList').innerHTML = '<div class="no-questions" style="color:red;">Failed to connect to server.</div>';
+      }
+    }
+
+    function renderQuestions() {
+      const list = document.getElementById('questionList');
+      const count = document.getElementById('questionCount');
+      list.innerHTML = '';
+
+      // We consider "New" as unanswered in this context
+      const newCount = questions.filter(q => !q.answer).length;
+
+      if (questions.length === 0) {
+        count.textContent = "No questions";
+        list.innerHTML = `<div class="no-questions">No questions available.</div>`;
+        return;
+      }
+
+      count.textContent = newCount > 0 ? `${newCount} pending reply` : "All questions answered";
+
+      questions.forEach((q, idx) => {
+        const item = document.createElement('div');
+        item.className = 'question-item';
+        const isNew = !q.answer;
+        item.innerHTML = `
+          <div class="question-header">
+            <a href="product-details.html?id=${q.product_id}" class="question-product" style="text-decoration: underline; color: #16a34a; cursor: pointer;">${q.product_name}</a>
+            <span class="question-user">Customer: ${q.user_name || 'ID ' + q.user_id}</span>
+            <span class="question-date">${new Date(q.created_at).toLocaleDateString()}</span>
+            ${isNew ? '<span class="badge-new">New</span>' : ''}
+          </div>
+          <div class="question-text" style="font-style:italic; padding: 0.5em 0;">"${q.question}"</div>
+          <div class="admin-answer" id="answer-${q.id}">
+            ${q.answer ? `<b>Admin answer:</b> <span style="color:#16a34a;">${q.answer}</span>` : `
+              <div class="answer-box">
+                <input type="text" placeholder="Write an answer..." id="input-answer-${q.id}" style="padding: 0.6em; border: 1px solid #ddd; border-radius: 4px; flex: 1;">
+                <button onclick="answerQuestion(${q.id})" style="background:#16a34a; color:white; border:none; padding: 0.6em 1.2em; border-radius: 4px; cursor:pointer; font-weight:bold;">Reply</button>
+              </div>
+            `}
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    async function answerQuestion(id) {
+      const input = document.getElementById('input-answer-' + id);
+      const answer = input.value.trim();
+      if (!answer) return alert("Please type an answer.");
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/products/admin/questions/${id}/reply`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answer })
+        });
+
+        if (res.ok) {
+          alert("Reply sent!");
+          fetchQuestions();
+        } else {
+          alert("Failed to send reply");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Network error");
+      }
+    }
+
+    // Initial fetch
+    fetchQuestions();
+  </script>
+</body>
+
+</html>

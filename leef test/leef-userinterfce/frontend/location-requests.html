@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Location Requests - 🍃 Leef</title>
+  <style>
+    :root {
+      --green: #16a34a;
+      --orange: #f97316;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --bg: #ffffff;
+      --card: #fff;
+      --muted: #555;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    aside {
+      width: 240px;
+      background: var(--card);
+      padding: 1.5em 1em;
+      box-shadow: 2px 0 6px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2em;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    aside .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 1.5rem;
+      margin-bottom: 2em;
+      text-decoration: none;
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    aside nav a {
+      display: block;
+      padding: 0.7em 1em;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 0.5em;
+      transition: background 0.2s, color 0.2s;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    aside nav a.active,
+    aside nav a:hover {
+      background: var(--green);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    aside button.redeem-btn {
+      margin-top: auto;
+      width: 100%;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      padding: 0.6em;
+      border-radius: 0.5em;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Main content */
+    main {
+      flex: 1;
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      gap: 2em;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .page-title {
+      color: #222;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+
+    .page-subtitle {
+      color: #555;
+      margin-top: 0.3em;
+      font-size: 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+      padding: 1.5rem;
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      color: #1a1a1a;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    /* Filter tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 0.5rem 1.2rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-tab:hover {
+      background: #f0fdf4;
+      border-color: #16a34a;
+      color: #16a34a;
+    }
+
+    .filter-tab.active {
+      background: #16a34a;
+      color: #fff;
+      border-color: #16a34a;
+    }
+
+    .filter-tab .count {
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.1);
+      padding: 0.1rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      margin-left: 0.4rem;
+    }
+
+    .filter-tab.active .count {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Location request card */
+    .loc-card {
+      background: #f9fafb;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-bottom: 0.8rem;
+    }
+
+    .loc-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .loc-card .info {
+      flex: 1;
+    }
+
+    .loc-card .loc-name {
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .loc-card .loc-user {
+      font-weight: normal;
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    .loc-card .loc-detail {
+      font-size: 0.85rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .district-badge {
+      color: #16a34a;
+      font-weight: 600;
+      background: #f0fdf4;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      border: 1px solid #dcfce7;
+    }
+
+    .status-badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .status-badge.pending {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .status-badge.approved {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .status-badge.rejected {
+      background: #fde2e2;
+      color: #dc2626;
+    }
+
+    .loc-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-approve {
+      background: #16a34a;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-approve:hover {
+      background: #15803d;
+      transform: translateY(-1px);
+    }
+
+    .btn-reject {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-reject:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+    }
+
+    .btn-delete {
+      background: none;
+      border: 1px solid #e2e8f0;
+      color: #94a3b8;
+      padding: 0.4rem 0.7rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .btn-delete:hover {
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+
+    .empty-state .icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 140px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      text-align: center;
+    }
+
+    .stat-card .stat-val {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 0.2rem;
+    }
+
+    .loc-date {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    @media(max-width:900px) {
+      body {
+        flex-direction: column;
+      }
+
+      aside {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 0.8em;
+      }
+
+      aside nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3em;
+      }
+
+      main {
+        padding: 1em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <aside>
+    <a href="admin-dashboard.html" class="logo">leef 🍃</a>
+    <nav>
+      <a href="admin-dashboard.html">Overview</a>
+      <a href="ledger-view.html">Ledger</a>
+      <a href="new-registration.html">Registration Requests</a>
+      <a href="location-requests.html" class="active">Location Requests</a>
+      <a href="product-admin.html">Products</a>
+      <a href="feedback-admin.html">Feedback</a>
+      <a href="questions-admin.html">Questions</a>
+      <a href="refund-approval.html">Refunds</a>
+      <a href="admin-profile.html">Profile</a>
+    </nav>
+  </aside>
+
+  <script src="admin-sidebar.js"></script>
+
+  <main>
+    <div>
+      <h1 class="page-title">📍 Location Requests</h1>
+      <p class="page-subtitle">Manage customer and seller delivery location registrations</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-val" id="statTotal" style="color:#1e293b;">0</div>
+        <div class="stat-label">Total Locations</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statPending" style="color:#d97706;">0</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statApproved" style="color:#16a34a;">0</div>
+        <div class="stat-label">Approved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statRejected" style="color:#dc2626;">0</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+    </div>
+
+    <!-- Filter + List -->
+    <div class="card">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all" onclick="setFilter('all', this)">All</button>
+        <button class="filter-tab" data-filter="pending" onclick="setFilter('pending', this)">⏳ Pending</button>
+        <button class="filter-tab" data-filter="approved" onclick="setFilter('approved', this)">✅ Approved</button>
+        <button class="filter-tab" data-filter="rejected" onclick="setFilter('rejected', this)">❌ Rejected</button>
+      </div>
+
+      <div id="locationList">
+        <div class="empty-state">
+          <div class="icon">📍</div>
+          Loading location requests...
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let allLocations = [];
+    let currentFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', loadLocationRequests);
+
+    async function loadLocationRequests() {
+      const container = document.getElementById('locationList');
+      container.innerHTML = '<div class="empty-state"><div class="icon">⏳</div>Fetching...</div>';
+
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/admin/locations');
+        if (!res.ok) throw new Error('Fetch failed');
+        allLocations = await res.json();
+
+        updateStats();
+        renderLocations();
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state" style="color:#dc2626;"><div class="icon">⚠️</div>Error: ${err.message}</div>`;
+      }
+    }
+
+    function updateStats() {
+      const pending = allLocations.filter(l => l.status === 'pending').length;
+      const approved = allLocations.filter(l => l.status === 'approved').length;
+      const rejected = allLocations.filter(l => l.status === 'rejected').length;
+
+      document.getElementById('statTotal').textContent = allLocations.length;
+      document.getElementById('statPending').textContent = pending;
+      document.getElementById('statApproved').textContent = approved;
+      document.getElementById('statRejected').textContent = rejected;
+
+      // Update tab counts
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        const filter = tab.dataset.filter;
+        let count = allLocations.length;
+        if (filter === 'pending') count = pending;
+        else if (filter === 'approved') count = approved;
+        else if (filter === 'rejected') count = rejected;
+
+        let countSpan = tab.querySelector('.count');
+        if (!countSpan) {
+          countSpan = document.createElement('span');
+          countSpan.className = 'count';
+          tab.appendChild(countSpan);
+        }
+        countSpan.textContent = count;
+      });
+    }
+
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      renderLocations();
+    }
+
+    function renderLocations() {
+      const container = document.getElementById('locationList');
+      const filtered = currentFilter === 'all'
+        ? allLocations
+        : allLocations.filter(l => l.status === currentFilter);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-state"><div class="icon">📭</div>No ${currentFilter === 'all' ? '' : currentFilter} location requests found.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(l => {
+        const dateStr = l.created_at ? new Date(l.created_at).toLocaleString() : '';
+
+        return `
+          <div class="loc-card">
+            <div class="info">
+              <div class="loc-name">
+                ${l.short_name}
+                <span class="loc-user">by ${l.user_name || 'Unknown'} (${l.user_role})</span>
+              </div>
+              <div class="loc-detail">
+                ${l.district ? `<span class="district-badge">${l.district}</span>` : ''}
+                <span>${l.location_details}</span>
+              </div>
+              <div class="loc-date">Registered: ${dateStr}</div>
+            </div>
+            <div class="loc-actions">
+              <span class="status-badge ${l.status}">${l.status}</span>
+              ${l.status === 'pending' ? `
+                <button class="btn-approve" onclick="updateStatus(${l.id}, 'approved')">Approve</button>
+                <button class="btn-reject" onclick="updateStatus(${l.id}, 'rejected')">Reject</button>
+              ` : ''}
+              ${l.status !== 'pending' ? `
+                <button class="btn-delete" onclick="deleteLocation(${l.id})" title="Remove location">🗑️</button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function updateStatus(id, newStatus) {
+      if (!confirm(`Are you sure you want to ${newStatus === 'approved' ? 'approve' : 'reject'} this location?`)) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/auth/admin/locations/${id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (res.ok) {
+          showToast(`Location ${newStatus} successfully!`);
+          loadLocationRequests();
+        } else {
+          alert("Failed to update status");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error: " + err.message);
+      }
+    }
+
+    async function deleteLocation(id) {
+      if (!confirm("Are you sure you want to permanently remove this location?")) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/auth/locations/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast("Location removed.");
+          loadLocationRequests();
+        } else {
+          alert("Failed to delete");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.textContent = message;
+      const bg = type === 'success' ? '#16a34a' : '#dc2626';
+      Object.assign(toast.style, {
+        position: 'fixed', right: '20px', bottom: '20px',
+        background: bg, color: '#fff', padding: '12px 18px',
+        borderRadius: '10px', zIndex: 9999, fontWeight: '600',
+        boxShadow: '0 6px 20px rgba(0,0,0,0.18)', fontSize: '0.95rem',
+        animation: 'slideUp 0.3s ease-out'
+      });
+      document.body.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; }, 2700);
+      setTimeout(() => toast.remove(), 3000);
+    }
+  </script>
+</body>
+
+</html>

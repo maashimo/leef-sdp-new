@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refund Approvals - Admin | leef 🍃</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <style>
+    :root {
+      --green: #16a34a;
+      --orange: #f97316;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --bg: #ffffff;
+      --card: #fff;
+      --muted: #555;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    aside {
+      width: 240px;
+      background: var(--card);
+      padding: 1.5em 1em;
+      box-shadow: 2px 0 6px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2em;
+      flex-shrink: 0;
+    }
+
+    aside .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 1.5rem;
+      margin-bottom: 2em;
+      text-decoration: none;
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    aside nav a {
+      display: block;
+      padding: 0.7em 1em;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 0.5em;
+      transition: background 0.2s, color 0.2s;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    aside nav a.active,
+    aside nav a:hover {
+      background: var(--green);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    aside button.redeem-btn {
+      margin-top: auto;
+      width: 100%;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      padding: 0.6em;
+      border-radius: 0.5em;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Main content */
+    main {
+      flex: 1;
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      gap: 2em;
+      overflow-y: auto;
+    }
+
+    .page-title {
+      color: #222 !important;
+    }
+
+    .page-subtitle {
+      color: #555 !important;
+    }
+
+    .refund-card {
+      background: #ffffff;
+      border: 1px solid #eeeeee;
+      border-radius: 12px;
+      padding: 1.3rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .refund-badge {
+      display: inline-block;
+      padding: 0.3em 0.9em;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-pending {
+      background: rgba(251, 191, 36, 0.1);
+      color: #fbbf24;
+      border: 1px solid #fbbf24;
+    }
+
+    .badge-waiting_seller {
+      background: rgba(168, 85, 247, 0.1);
+      color: #a855f7;
+      border: 1px solid #a855f7;
+    }
+
+    .badge-seller_approved {
+      background: rgba(22, 163, 74, 0.1);
+      color: #16a34a;
+      border: 1px solid #16a34a;
+    }
+
+    .badge-seller_rejected {
+      background: rgba(220, 38, 38, 0.1);
+      color: #dc2626;
+      border: 1px solid #dc2626;
+    }
+
+    .badge-approved {
+      background: rgba(22, 163, 74, 0.2);
+      color: #16a34a;
+      border: 1px solid #16a34a;
+      font-weight: 800;
+    }
+
+    .badge-rejected {
+      background: rgba(220, 38, 38, 0.2);
+      color: #dc2626;
+      border: 1px solid #dc2626;
+    }
+
+    .action-btn {
+      padding: 0.45em 1.1em;
+      border-radius: 6px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: opacity 0.2s;
+    }
+
+    .action-btn:hover {
+      opacity: 0.85;
+    }
+
+    .action-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-select {
+      padding: 0.5rem 1rem;
+      background: #ffffff;
+      border: 1px solid #dddddd;
+      border-radius: 8px;
+      color: #333;
+    }
+
+    .note-input {
+      padding: 0.5rem;
+      background: #ffffff;
+      border: 1px solid #dddddd;
+      border-radius: 6px;
+      color: #222;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 0.3rem;
+    }
+
+    .note-input:focus {
+      border-color: #16a34a;
+      outline: none;
+    }
+  </style>
+</head>
+
+<body>
+  <aside>
+    <a href="admin-dashboard.html" class="logo">leef 🍃</a>
+    <nav>
+      <a href="admin-dashboard.html">Overview</a>
+      <a href="ledger-view.html">Ledger</a>
+      <a href="new-registration.html">Registration Requests</a>
+      <a href="location-requests.html">Location Requests</a>
+      <a href="product-admin.html">Products</a>
+      <a href="feedback-admin.html">Feedback</a>
+      <a href="questions-admin.html">Questions</a>
+      <a href="refund-approval.html" class="active">Refunds</a>
+      <a href="admin-profile.html">Profile</a>
+    </nav>
+  </aside>
+
+  <script src="admin-sidebar.js"></script>
+
+  <main>
+    <div
+      style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <h1 class="page-title" style="margin-bottom:0.2rem;">Refund Requests</h1>
+        <p class="page-subtitle">Review and process customer refund requests</p>
+      </div>
+      <div id="stats" style="display:flex; gap:1rem; flex-wrap:wrap;"></div>
+    </div>
+
+    <div class="filter-bar">
+      <select id="filterStatus" class="filter-select" onchange="applyFilter()">
+        <option value="">All Requests</option>
+        <option value="pending">⏳ New Requests</option>
+        <option value="waiting_seller">🏠 With Seller</option>
+        <option value="seller_approved">✅ Seller Approved</option>
+        <option value="seller_rejected">❌ Seller Rejected</option>
+        <option value="approved">🏁 Admin Approved</option>
+        <option value="rejected">🚫 Admin Rejected</option>
+      </select>
+      <input type="text" id="searchInput" class="filter-select" placeholder="Search customer or product..."
+        oninput="applyFilter()" style="flex:1; min-width:200px;">
+    </div>
+
+    <div id="refunds-list">
+      <div style="text-align:center; color:#888; padding:3em;">Loading refund requests...</div>
+    </div>
+  </main>
+
+  <!-- Action Modal -->
+  <div id="actionModal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:9999; backdrop-filter:blur(4px);">
+    <div
+      style="background:#fff; border:1px solid #eee; box-shadow:0 10px 40px rgba(0,0,0,0.1); border-radius:12px; padding:2rem; width:100%; max-width:480px; color:#222;">
+      <h3 id="modalTitle" style="margin:0 0 1.2rem 0;"></h3>
+      <div style="margin-bottom:1.5rem;">
+        <label style="font-size:0.9rem; color:#555; display:block; margin-bottom:0.4rem;">Responsible Party</label>
+        <div
+          style="display:flex; gap:1.2rem; align-items:center; background:#f9f9f9; padding:0.8rem; border-radius:8px; border:1px solid #eee;">
+          <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+            <input type="radio" name="respParty" value="seller" checked> Seller
+          </label>
+          <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+            <input type="radio" name="respParty" value="delivery"> Delivery Service
+          </label>
+        </div>
+        <div id="sellerAttributionDiv" style="margin-top:0.8rem;">
+          <label style="font-size:0.85rem; color:#888; display:block; margin-bottom:0.2rem;">Seller Attribution (Seller
+            ID)</label>
+          <input type="number" id="manualSellerId" class="note-input" style="width:100px; margin-top:0;"
+            placeholder="ID">
+          <p style="font-size:0.75rem; color:#666; margin-top:0.2rem;">Verify or change the Seller ID that will be
+            charged.</p>
+        </div>
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <label style="font-size:0.9rem; color:#555; display:block; margin-bottom:0.4rem;">Refund Amount (LKR)</label>
+        <input type="number" id="refundAmountInput" class="note-input" placeholder="Enter amount to refund..."
+          style="background:#ffffff; color:#222; border:1px solid #dddddd; border-radius:8px; padding:0.8rem; width:100%; box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="font-size:0.9rem; color:#555; display:block; margin-bottom:0.4rem;">Admin Note (shown to
+          customer)</label>
+        <input type="text" id="adminNoteInput" class="note-input" placeholder="Optional note...">
+      </div>
+      <div style="display:flex; gap:0.8rem; justify-content:flex-end;">
+        <button onclick="closeModal()"
+          style="padding:0.6rem 1.3rem; background:#333; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:600;">Cancel</button>
+        <button id="modalConfirmBtn" onclick="confirmAction()"
+          style="padding:0.6rem 1.3rem; border:none; border-radius:6px; cursor:pointer; font-weight:600;">Confirm
+          Approval</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000';
+    let allRefunds = [];
+    let pendingAction = null; // { id, action }
+    let currentSellerId = null;
+
+    async function loadRefunds() {
+      const container = document.getElementById('refunds-list');
+      try {
+        const res = await fetch(`${API}/api/refunds/admin`);
+        allRefunds = await res.json();
+        renderStats();
+        applyFilter();
+      } catch (e) {
+        container.innerHTML = `<div style="color:#f87171;text-align:center;padding:2em;">Failed to load refunds: ${e.message}</div>`;
+      }
+    }
+
+    function renderStats() {
+      const pending = allRefunds.filter(r => r.status === 'pending').length;
+      const waiting = allRefunds.filter(r => r.status === 'waiting_seller').length;
+      const sApp = allRefunds.filter(r => r.status === 'seller_approved').length;
+      const sRej = allRefunds.filter(r => r.status === 'seller_rejected').length;
+      const approved = allRefunds.filter(r => r.status === 'approved').length;
+      document.getElementById('stats').innerHTML = `
+        <div class="refund-badge badge-pending">⏳ ${pending} New</div>
+        <div class="refund-badge badge-waiting_seller">🏠 ${waiting} Seller</div>
+        <div class="refund-badge badge-seller_approved">✅ ${sApp} S.App</div>
+        <div class="refund-badge badge-seller_rejected">❌ ${sRej} S.Rej</div>
+        <div class="refund-badge badge-approved" style="background:#16a34a; color:#fff;">🏁 ${approved} Done</div>
+      `;
+    }
+
+    async function applyFilter() {
+      const statusFilter = document.getElementById('filterStatus').value;
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      let filtered = allRefunds;
+      if (statusFilter) filtered = filtered.filter(r => r.status === statusFilter);
+      if (search) filtered = filtered.filter(r =>
+        (r.product_name || '').toLowerCase().includes(search) ||
+        (r.customer_name || '').toLowerCase().includes(search) ||
+        (r.reason || '').toLowerCase().includes(search)
+      );
+      await renderList(filtered);
+    }
+
+    async function renderList(list) {
+      const container = document.getElementById('refunds-list');
+      if (list.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#888;padding:3em;">No refund requests found.</div>';
+        return;
+      }
+      container.innerHTML = '';
+
+      // Fetch messages for each refund in parallel
+      const listWithMessages = await Promise.all(list.map(async r => {
+        try {
+          const mRes = await fetch(`${API}/api/refunds/${r.id}/messages`);
+          const messages = await mRes.json();
+          return { ...r, messages };
+        } catch (e) {
+          return { ...r, messages: [] };
+        }
+      }));
+
+      listWithMessages.forEach(r => {
+        const badgeClass = `badge-${r.status}`;
+        let statusLabel = r.status.replace('_', ' ').toUpperCase();
+        if (r.status === 'pending') statusLabel = 'PENDING REVIEW';
+        if (r.status === 'waiting_seller') statusLabel = 'WAITING FOR SELLER';
+
+        const isPending = r.status === 'pending';
+        const isWithSeller = r.status === 'waiting_seller';
+        const isSellerResponded = r.status === 'seller_approved' || r.status === 'seller_rejected';
+        const isApproved = r.status === 'approved';
+
+        const adminPrice = parseFloat(r.admin_final_price || 0);
+        const sellerPrice = parseFloat(r.seller_original_price || 0);
+        const qty = parseFloat(r.total_qty || 1);
+        const adminProfitTotal = (adminPrice - sellerPrice) * qty;
+        const sellerPriceTotal = sellerPrice * qty;
+        const customerPaidTotal = adminPrice * qty;
+
+        // "New Message" logic
+        const hasNewMessageFromSeller = r.messages.length > 0 && r.messages[r.messages.length - 1].sender_role === 'seller';
+
+        const imgUrl = r.image_url ? (r.image_url.startsWith('/') ? `${API}${r.image_url}` : `${API}/${r.image_url}`) : 'https://via.placeholder.com/48x48?text=🍃';
+
+        const card = document.createElement('div');
+        card.className = 'refund-card';
+        card.id = `ref-${r.id}`;
+        card.style.padding = '0.8rem 1.2rem'; // Compact by default
+
+        card.innerHTML = `
+          <!-- Preview Mode -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; width:100%;">
+            <div style="display:flex; align-items:center; gap:1rem; flex:1; min-width:350px;">
+              <img src="${imgUrl}" onerror="this.src='https://via.placeholder.com/48x48?text=🍃'" style="width:40px; height:40px; object-fit:cover; border-radius:6px; flex-shrink:0; border:1px solid #eee;">
+              <div style="min-width:180px;">
+                <div style="font-weight:700;color:#222;font-size:0.9rem;">${r.product_name || 'Product'} <span style="color:#888; font-weight:400; font-size:0.8rem; margin-left:4px;">[${r.shop_name || 'Unknown'}]</span></div>
+                <div style="color:#777; font-size:0.8rem;">👤 ${r.customer_name}</div>
+              </div>
+              <div style="display:flex; gap:0.5rem; align-items:center;">
+                 <span class="refund-badge ${badgeClass}" style="font-size:0.65rem; padding:0.2rem 0.6rem;">${statusLabel}</span>
+                 ${r.payment_status === 'paid' ? `<span style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; background:#16a34a; color:#fff; border-radius:50%; font-size:0.75rem; font-weight:bold; box-shadow: 0 2px 5px rgba(22, 163, 74, 0.3); margin-left:4px;" title="PAID BY ADMIN">✓</span>` : ''}
+                 ${hasNewMessageFromSeller ? `<span class="refund-badge" style="background:#fefce8; color:#a16207; border:1px solid #eab308; font-size:0.65rem; padding:0.2rem 0.6rem; animation: pulse 2s infinite;">📩 SELLER REPLIED</span>` : ''}
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:2rem;">
+              <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem; text-align:right;">
+                <div>
+                  <div style="font-size:0.6rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">Seller Total</div>
+                  <div style="color:#64748b; font-weight:700; font-size:0.85rem;">LKR ${sellerPriceTotal.toLocaleString()}</div>
+                </div>
+                <div>
+                  <div style="font-size:0.6rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">Cust. Paid</div>
+                  <div style="color:#16a34a; font-weight:700; font-size:0.85rem;">LKR ${customerPaidTotal.toLocaleString()}</div>
+                </div>
+                <div>
+                  <div style="font-size:0.6rem; color:#3b82f6; font-weight:800; text-transform:uppercase;">Admin Profit</div>
+                  <div style="color:#2563eb; font-weight:700; font-size:0.85rem;">LKR ${adminProfitTotal.toLocaleString()}</div>
+                </div>
+              </div>
+              <button class="action-btn" id="btn-${r.id}" style="background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; font-size:0.75rem;" onclick="toggleRefundDetails(${r.id})">👁️ View Details</button>
+            </div>
+          </div>
+
+          <!-- Extended Details Section (Hidden by default) -->
+          <div id="details-${r.id}" style="display:none; border-top:1px solid #f1f5f9; margin-top:0.8rem; padding-top:1.2rem;">
+            <div style="display:flex; align-items:flex-start; gap:1.2rem; flex-wrap:wrap;">
+              <div style="flex:1; min-width:300px;">
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:0.8rem; margin-bottom:1rem; display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:1rem;">
+                  <div>
+                      <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; font-weight:700;">Seller Unit Price</div>
+                      <div style="color:#334155; font-weight:700;">LKR ${sellerPrice.toLocaleString()}</div>
+                  </div>
+                  <div>
+                      <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; font-weight:700;">Admin Unit Price</div>
+                      <div style="color:#16a34a; font-weight:700;">LKR ${adminPrice.toLocaleString()}</div>
+                  </div>
+                  <div>
+                      <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; font-weight:700;">Order ID | Quantity</div>
+                      <div style="color:#64748b; font-weight:700;">#${r.order_id} | ${qty} units</div>
+                  </div>
+                </div>
+
+                <!-- Customer Details Box -->
+                <div style="background:#fff7ed; border:1px solid #fed7aa; border-radius:10px; padding:1.2rem; margin-bottom:1rem;">
+                    <div style="font-size:0.75rem; color:#9a3412; text-transform:uppercase; font-weight:700; margin-bottom:0.8rem; border-bottom:1px solid #ffedd5; padding-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                       <span>👤 Customer Profile</span>
+                       <span style="font-weight:400; font-size:0.65rem;">User ID: #${r.user_id}</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.2rem;">
+                       <div>
+                          <div style="font-size:0.7rem; color:#666; font-weight:600;">FULL NAME</div>
+                          <div style="font-size:0.95rem; color:#111; font-weight:700;">${r.customer_name}</div>
+                          <div style="margin-top:0.8rem; font-size:0.7rem; color:#666; font-weight:600;">CONTACT INFO</div>
+                          <div style="font-size:0.85rem; color:#222;">📞 ${r.customer_phone || 'N/A'}</div>
+                          ${r.customer_phone2 ? `<div style="font-size:0.85rem; color:#222;">📞 ${r.customer_phone2} (Secondary)</div>` : ''}
+                          <div style="font-size:0.85rem; color:#222;">📧 ${r.customer_email || 'N/A'}</div>
+                       </div>
+                       <div>
+                          <div style="font-size:0.7rem; color:#666; font-weight:600;">LOCATION</div>
+                          <div style="font-size:0.9rem; color:#111; font-weight:600;">${r.customer_town || 'N/A'}</div>
+                          <div style="font-size:0.85rem; color:#444; line-height:1.4;">${r.customer_address || ''}</div>
+                       </div>
+                    </div>
+                </div>
+
+                <div style="color:#444;font-size:0.93rem;margin-bottom:0.4rem;">
+                  <span style="color:#888;">Reason:</span> <strong>${r.reason}</strong> 
+                </div>
+                ${r.description ? `<div style="color:#888;font-size:0.85rem;margin-bottom:0.4rem;">Details: ${r.description}</div>` : ''}
+                
+                <!-- Message History (Thread) -->
+                <div style="margin-top:1rem; padding:1.2rem; background:#f9f9f9; border-radius:10px; border:1px solid #eee;">
+                  <div style="font-size:0.7rem; color:#888; text-transform:uppercase; font-weight:700; margin-bottom:1rem; letter-spacing:0.5px; display:flex; justify-content:space-between;">
+                     <span>🗨️ Conversation with Seller</span>
+                     <span style="font-weight:400;">Seller ID: #${r.seller_id}</span>
+                  </div>
+                  <div id="messages-list-${r.id}" style="display:flex; flex-direction:column; gap:0.8rem; max-height:200px; overflow-y:auto; padding-right:4px;">
+                    ${r.messages.length === 0 ? '<div style="font-size:0.8rem; color:#888; font-style:italic; text-align:center; padding:1rem;">No messages yet.</div>' : r.messages.map(m => `
+                      <div style="display:flex; flex-direction:column; align-items:${m.sender_role === 'admin' ? 'flex-end' : 'flex-start'}">
+                          <div style="font-size:0.65rem; color:${m.sender_role === 'admin' ? '#3b82f6' : '#a855f7'}; font-weight:700; margin-bottom:1px;">${m.sender_role.toUpperCase()}</div>
+                          <div style="background:${m.sender_role === 'admin' ? '#eff6ff' : '#f3e8ff'}; padding:0.6rem 0.8rem; border-radius:8px; border:1px solid ${m.sender_role === 'admin' ? '#bfdbfe' : '#e9d5ff'}; max-width:90%; font-size:0.9rem; color:#111; line-height:1.4;">
+                              ${m.message}
+                          </div>
+                          <div style="font-size:0.6rem; color:#999; margin-top:2px;">${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                      </div>
+                    `).join('')}
+                  </div>
+                  <!-- Reply Input -->
+                  ${r.status !== 'approved' && r.status !== 'rejected' ? `
+                  <div style="display:flex; gap:0.5rem; margin-top:15px; border-top:1px solid #eee; padding-top:15px;">
+                    <input type="text" id="reply-input-${r.id}" placeholder="Type a message to seller..." style="flex:1; padding:0.7rem; border:1px solid #ddd; border-radius:8px; font-size:0.9rem; outline:none;" onfocus="this.style.borderColor='#3b82f6'">
+                    <button onclick="replyToSeller(${r.id})" style="padding:0.7rem 1.4rem; background:#3b82f6; color:#fff; border:none; border-radius:8px; font-size:0.9rem; font-weight:600; cursor:pointer;">Send Reply</button>
+                  </div>
+                  ` : ''}
+                </div>
+
+                ${r.image_urls ? `<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:1.2rem;">${r.image_urls.split(',').map(u => `<a href="${API}${u}" target="_blank"><img src="${API}${u}" style="height:80px;width:80px;object-fit:cover;border-radius:8px;border:1px solid #ddd;"></a>`).join('')}</div>` : ''}
+              </div>
+
+              <!-- Action Column -->
+              <div style="display:flex; flex-direction:column; gap:0.8rem; align-items:flex-end; flex-shrink:0; min-width:200px;">
+                ${isPending ? `
+                  <div style="display:flex; flex-direction:column; gap:0.6rem; background:#f1f5f9; padding:1.2rem; border-radius:12px; border:1px solid #e2e8f0; width:100%;">
+                      <div style="font-size:0.7rem; font-weight:700; color:#64748b; margin-bottom:5px; text-transform:uppercase;">New Request Actions</div>
+                      <button class="action-btn" style="background:var(--blue); color:#fff;" onclick="openModal(${r.id}, 'send-to-seller', ${r.seller_id})">📤 Send to Seller</button>
+                      <button class="action-btn" style="background:var(--green); color:#fff;" onclick="openModal(${r.id}, 'approve', ${r.seller_id})">✅ Delivery Issue (Direct Approve)</button>
+                      <button class="action-btn" style="background:var(--red); color:#fff;" onclick="openModal(${r.id}, 'reject')">❌ Full Reject</button>
+                  </div>
+                ` : ''}
+                ${isWithSeller ? `
+                  <div style="text-align:right; background:#f5f3ff; border:1px solid #ddd6fe; padding:1rem; border-radius:12px; width:100%;">
+                      <div style="font-size:0.7rem; font-weight:700; color:#7c3aed; margin-bottom:10px; text-transform:uppercase;">Waiting for Seller</div>
+                      <button class="action-btn" style="background:#8b5cf6; color:#fff; width:100%; opacity:0.8;" disabled>⏳ Processed to Seller</button>
+                      <p style="font-size:0.7rem; color:#7c3aed; margin-top:8px;">Admin can still reply above.</p>
+                  </div>
+                ` : ''}
+                ${isSellerResponded ? `
+                  <div style="display:flex; flex-direction:column; gap:0.6rem; background:#fff7ed; padding:1.2rem; border-radius:12px; border:1px solid #ffedd5; width:100%;">
+                      <div style="font-size:0.7rem; font-weight:700; color:#c2410c; margin-bottom:5px; text-transform:uppercase;">Seller Decision Processed</div>
+                      <button class="action-btn" style="background:var(--green); color:#fff;" onclick="openModal(${r.id}, 'final-decision', ${r.seller_id}, 'approved')">🏁 Final Approve</button>
+                      ${r.status === 'seller_approved' ?
+              `<button class="action-btn" style="background:#9ca3af; color:#fff; cursor:not-allowed;" title="Cannot reject a refund approved by the seller" disabled>🚫 Final Reject (Disabled)</button>` :
+              `<button class="action-btn" style="background:var(--red); color:#fff;" onclick="openModal(${r.id}, 'final-decision', ${r.seller_id}, 'rejected')">🚫 Final Reject</button>`
+            }
+                  </div>
+                ` : ''}
+                ${isApproved ? `
+                   <div style="display:flex; flex-direction:column; gap:0.6rem; background:#f0fdf4; padding:1.2rem; border-radius:12px; border:1px solid #bbf7d0; width:100%;">
+                       <div style="font-size:0.75rem; font-weight:800; color:#166534; margin-bottom:5px; text-transform:uppercase; display:flex; align-items:center; gap:0.4rem;">
+                          ✅ Refund Approved
+                       </div>
+                       
+                       ${r.payment_status === 'paid' ? `
+                          <div style="background:#16a34a; color:white; padding:0.8rem; border-radius:8px; text-align:center; font-weight:800; display:flex; align-items:center; justify-content:center; gap:0.5rem; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);">
+                             <span>✔️</span> PAID BY ADMIN
+                          </div>
+                          <div style="font-size:0.65rem; color:#15803d; text-align:center;">Processed via Bank Transfer</div>
+                       ` : `
+                          <button class="action-btn" style="background:#16a34a; color:#fff; padding:0.8rem; display:flex; align-items:center; justify-content:center; gap:0.5rem;" onclick="payRefund(${r.id})">
+                             <span>💵</span> Mark as Paid
+                          </button>
+                          <p style="font-size:0.65rem; color:#15803d; text-align:center; margin-top:4px;">Click after bank transfer is complete</p>
+                       `}
+                   </div>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function toggleRefundDetails(id) {
+      const details = document.getElementById(`details-${id}`);
+      const btn = document.getElementById(`btn-${id}`);
+      const card = document.getElementById(`ref-${id}`);
+      const isHidden = details.style.display === 'none';
+
+      details.style.display = isHidden ? 'block' : 'none';
+      btn.innerHTML = isHidden ? '⬆️ Close Details' : '👁️ View Details';
+      btn.style.background = isHidden ? '#fff' : '#f1f5f9';
+      btn.style.borderColor = isHidden ? '#3b82f6' : '#e2e8f0';
+      btn.style.color = isHidden ? '#3b82f6' : '#475569';
+      card.style.padding = isHidden ? '1.5rem' : '0.8rem 1.2rem';
+    }
+
+    let currentDecision = null;
+
+    function openModal(id, action, sellerId = null, decision = null) {
+      pendingAction = { id, action };
+      currentSellerId = sellerId;
+      currentDecision = decision;
+      const modal = document.getElementById('actionModal');
+
+      const titleMap = {
+        'approve': 'Direct Approve (Delivery Issue)',
+        'reject': 'Full Reject Refund',
+        'send-to-seller': 'Send Request to Seller',
+        'final-decision': `Final Admin Decision: ${decision === 'approved' ? 'Approve' : 'Reject'}`
+      };
+      document.getElementById('modalTitle').textContent = titleMap[action] || 'Refund Action';
+
+      const respPartyDiv = document.querySelector('input[name="respParty"]').closest('div').parentElement;
+      const amountDiv = document.getElementById('refundAmountInput').parentElement;
+      const confirmBtn = document.getElementById('modalConfirmBtn');
+
+      // Reset readOnly before setting it based on action
+      document.getElementById('refundAmountInput').readOnly = false;
+
+      // Robust find (handle string vs number IDs)
+      const refundData = allRefunds.find(r => Number(r.id) === Number(id));
+      if (!refundData) {
+        alert("Error: Could not find data for refund ID " + id);
+        return;
+      }
+
+      const sellerPriceTotal = (parseFloat(refundData.seller_original_price) || 0) * (parseFloat(refundData.total_qty) || 1);
+      const finalPriceTotal = (parseFloat(refundData.admin_final_price) || 0) * (parseFloat(refundData.total_qty) || 1);
+
+      // Reset visibility
+      respPartyDiv.style.display = 'none';
+      amountDiv.style.display = 'none';
+      document.getElementById('sellerAttributionDiv').style.display = 'none';
+
+      if (action === 'approve') {
+        amountDiv.style.display = 'block';
+        document.getElementById('refundAmountInput').value = finalPriceTotal.toFixed(2);
+        confirmBtn.style.background = 'var(--green)';
+        confirmBtn.textContent = 'Confirm Direct Approval';
+      } else if (action === 'send-to-seller') {
+        amountDiv.style.display = 'block';
+        document.getElementById('refundAmountInput').value = sellerPriceTotal.toFixed(2);
+        document.getElementById('refundAmountInput').readOnly = true; // Seller only gets their share
+        confirmBtn.style.background = 'var(--blue)';
+        confirmBtn.textContent = 'Send to Seller';
+      } else if (action === 'final-decision') {
+        amountDiv.style.display = 'block';
+        document.getElementById('refundAmountInput').value = (parseFloat(refundData.refund_amount) || finalPriceTotal).toFixed(2);
+        document.getElementById('refundAmountInput').readOnly = true;
+        confirmBtn.style.background = decision === 'approved' ? 'var(--green)' : 'var(--red)';
+        confirmBtn.textContent = `Confirm Final ${decision.charAt(0).toUpperCase() + decision.slice(1)}`;
+      } else {
+        confirmBtn.style.background = 'var(--red)';
+        confirmBtn.textContent = 'Confirm Reject';
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('actionModal').style.display = 'none';
+      document.getElementById('adminNoteInput').value = '';
+    }
+
+    async function confirmAction() {
+      if (!pendingAction) return;
+
+      const adminNote = document.getElementById('adminNoteInput').value;
+      const amount = parseFloat(document.getElementById('refundAmountInput').value) || 0;
+      const confirmBtn = document.getElementById('modalConfirmBtn');
+      const { id: refundId, action: refundAction } = pendingAction;
+
+      let url = `${API}/api/refunds/${refundId}/${refundAction}`;
+      let body = { adminNote, refundAmount: amount };
+
+      if (refundAction === 'send-to-seller') {
+        body.sellerId = currentSellerId;
+      } else if (refundAction === 'final-decision') {
+        body.decision = currentDecision;
+      } else if (refundAction === 'approve') {
+        body.responsibleParty = 'delivery';
+      }
+
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Processing...';
+
+      try {
+        const res = await fetch(url, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || 'Action failed');
+        }
+
+        closeModal();
+        showToast(`Action performed successfully`);
+        await loadRefunds();
+      } catch (e) {
+        console.error("Action error:", e);
+        alert("Refund Action Failed: " + e.message);
+        showToast('Error: ' + e.message, '#dc2626');
+      } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Confirm';
+      }
+    }
+
+    async function replyToSeller(id) {
+      const input = document.getElementById(`reply-input-${id}`);
+      const adminNote = input.value.trim();
+      if (!adminNote) return;
+
+      try {
+        const res = await fetch(`${API}/api/refunds/${id}/admin-note`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminNote })
+        });
+        if (!res.ok) throw new Error('Reply failed');
+        input.value = '';
+        showToast('Message sent to seller');
+        await loadRefunds();
+      } catch (e) {
+        showToast('Error: ' + e.message, '#dc2626');
+      }
+    }
+
+    async function payRefund(id) {
+      if (!confirm('Mark this refund as paid? (Confirming bank transfer is complete)')) return;
+      try {
+        const res = await fetch(`${API}/api/refunds/${id}/pay`, { method: 'PUT' });
+        if (!res.ok) throw new Error('Failed to update payment status');
+        showToast('Refund marked as paid');
+        await loadRefunds();
+      } catch (e) {
+        showToast(e.message, '#dc2626');
+      }
+    }
+
+    function showToast(msg, color = '#16a34a') {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      Object.assign(t.style, { position: 'fixed', right: '20px', bottom: '20px', background: color, color: '#fff', padding: '12px 18px', borderRadius: '8px', zIndex: 99999, fontWeight: '600' });
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+    loadRefunds();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Dashboard - leef 🍃</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Top Navbar Styles (Standardized) */
+    .top-navbar {
+      background-color: rgba(10, 10, 10, 0.95);
+      border-bottom: 1px solid #333;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .navbar-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .navbar-logo {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: bold;
+      color: #4ade80;
+    }
+
+    .navbar-nav {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 2rem;
+    }
+
+    .navbar-link {
+      text-decoration: none;
+      color: #eee;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s;
+    }
+
+    .navbar-link.active {
+      background-color: #10b981;
+      color: white;
+    }
+
+    .navbar-link:hover {
+      background-color: #333;
+    }
+
+    @media (max-width: 768px) {
+      .top-navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .navbar-nav {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    /* Dashboard Specifics */
+    .dashboard-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .muted-text {
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+
+    .order-line {
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .status-select {
+      background: #111;
+      color: #fff;
+      border: 1px solid #333;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    .status-select:focus {
+      border-color: #4ade80;
+    }
+
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      border-radius: 6px;
+    }
+
+    /* Notification Panel Styles */
+    .notif-bell-container {
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      margin-right: 1rem;
+    }
+
+    .notif-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ef4444;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: bold;
+      padding: 2px 5px;
+      border-radius: 10px;
+      min-width: 15px;
+      text-align: center;
+      border: 2px solid #000;
+    }
+
+    .notif-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: 350px;
+      max-height: 500px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 1000;
+      flex-direction: column;
+      margin-top: 1rem;
+    }
+
+    .notif-header {
+      padding: 1rem;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notif-list {
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .notif-item {
+      padding: 1rem;
+      border-bottom: 1px solid #222;
+      transition: background 0.2s;
+      cursor: default;
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .notif-item:hover {
+      background: #252525;
+    }
+
+    .notif-item.unread {
+      background: rgba(16, 185, 129, 0.05);
+      border-left: 3px solid #10b981;
+    }
+
+    .notif-icon {
+      font-size: 1.2rem;
+      padding-top: 0.2rem;
+    }
+
+    .notif-content {
+      flex-grow: 1;
+    }
+
+    .notif-title {
+      font-weight: 600;
+      color: #fff;
+      font-size: 0.9rem;
+      margin-bottom: 2px;
+    }
+
+    .notif-message {
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.4;
+    }
+
+    .notif-time {
+      font-size: 0.7rem;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    .notif-footer {
+      padding: 0.8rem;
+      text-align: center;
+      border-top: 1px solid #333;
+    }
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: #10b981;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .btn-link:hover {
+      color: #34d399;
+    }
+
+    .btn-premium {
+      background: #ffffff;
+      color: #000;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.8px;
+    }
+
+    .btn-premium:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.25);
+      background: #f8fafc;
+      color: #000;
+    }
+
+    .btn-premium:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .btn-premium span {
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+
+<body class="">
+
+  <!-- Navbar -->
+  <nav class="top-navbar">
+    <div class="navbar-header">
+      <a href="index.html" class="navbar-logo">
+        leef 🍃
+      </a>
+    </div>
+    <ul class="navbar-nav" style="align-items:center;">
+      <div class="notif-bell-container" id="notifBell">
+        <span style="font-size: 1.4rem;">🔔</span>
+        <span class="notif-badge" id="notifCount" style="display:none;">0</span>
+        
+        <div class="notif-dropdown" id="notifDropdown">
+          <div class="notif-header">
+            <h4 style="margin:0; font-size:1rem;">Notifications</h4>
+            <button class="btn-link" onclick="markAllNotifsRead(); event.stopPropagation();">Mark all as read</button>
+          </div>
+          <div class="notif-list" id="notifList">
+            <div style="padding:2rem; text-align:center; color:#555;">No new alerts</div>
+          </div>
+          <div class="notif-footer">
+            <span style="font-size:0.75rem; color:#555;">Stay updated with your shop activity</span>
+          </div>
+        </div>
+      </div>
+      <li><a href="inventory.html" class="navbar-link">Inventory</a></li>
+      <li><a href="seller-refunds.html" class="navbar-link">Refunds</a></li>
+      <li><a href="profile-seller.html" class="navbar-link">Profile</a></li>
+      <li><a href="#" class="navbar-link" id="logoutBtn" style="color:#ef4444;"
+          onclick="sessionStorage.removeItem('user'); window.location.href='index.html'; return false;">Logout</a></li>
+    </ul>
+  </nav>
+  <script src="seller-sidebar.js"></script>
+
+  <!-- Dashboard Main -->
+  <main class="main-content container" style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
+    <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem;">
+      <img id="sellerDashboardPic" src="images/placeholder-user.png" 
+           style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #333; background: #1a1a1a;">
+      <div>
+        <h1 class="page-title" style="margin-bottom: 0.2rem;">Seller Dashboard</h1>
+        <p class="page-subtitle" style="margin: 0;">Manage your orders, products, and reports efficiently.</p>
+      </div>
+    </div>
+
+    <!-- Revenue & Reports Section -->
+    <section class="dashboard-card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1.5rem;">
+      <div>
+        <h2 class="section-title" style="margin:0; font-size:1.2rem; color:#888; text-transform:uppercase; letter-spacing:1px;">💰 Total Revenue</h2>
+        <h3 id="totalRevenueAmount" style="color: #4ade80; font-size: 2.2rem; margin-top:0.3rem;">Loading...</h3>
+      </div>
+      <div style="text-align:right;">
+        <h2 class="section-title" style="margin:0; margin-bottom:0.8rem; font-size:1.1rem;">📊 Download Reports</h2>
+          <select id="reportTimeframe" style="background:#111; color:#fff; border:1px solid #333; padding:0.4rem 0.8rem; border-radius:6px; outline:none; font-size:0.9rem;">
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="monthly">This Month</option>
+            <option value="all">All Time</option>
+          </select>
+          <button class="btn btn-primary btn-small" id="downloadReport">Download Order Report</button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Top Performing Products -->
+    <section class="dashboard-card" style="margin-top:2rem;">
+      <h2 class="section-title" style="margin-bottom:1.5rem;">📱 Top Performance</h2>
+      
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; margin-bottom: 2rem;">
+        <!-- MY STATS -->
+        <div style="grid-column: 1/-1; border-bottom: 1px solid #333; padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 1rem; color: #4ade80; text-transform: uppercase;">Your Shop</h3>
+        </div>
+
+        <!-- Most Sold Card -->
+        <div id="statMostSold" style="background:rgba(22, 163, 74, 0.05); border:1px solid rgba(22, 163, 74, 0.15); border-radius:12px; padding:1.25rem; display:flex; align-items:center; gap:1.2rem;">
+          <div id="soldImg" style="width:60px; height:60px; border-radius:10px; background:#222; overflow:hidden;">
+            <img style="width:100%; height:100%; object-fit:cover;">
+          </div>
+          <div style="flex: 1;">
+            <h4 style="color:#888; font-size:0.8rem; text-transform:uppercase; margin-bottom:0.25rem;">📈 Most Sold</h4>
+            <h3 id="soldName" style="color:#fff; margin:0; font-size:1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;">Loading...</h3>
+            <p id="soldQty" style="color:#4ade80; margin-top:0.2rem; font-weight:600; font-size: 0.9rem;"></p>
+          </div>
+        </div>
+
+        <!-- Top Rated Card -->
+        <div id="statTopRated" style="background:rgba(251, 191, 36, 0.05); border:1px solid rgba(251, 191, 36, 0.15); border-radius:12px; padding:1.25rem; display:flex; align-items:center; gap:1.2rem;">
+          <div id="ratedImg" style="width:60px; height:60px; border-radius:10px; background:#222; overflow:hidden;">
+             <img style="width:100%; height:100%; object-fit:cover;">
+          </div>
+          <div style="flex: 1;">
+            <h4 style="color:#888; font-size:0.8rem; text-transform:uppercase; margin-bottom:0.25rem;">⭐ Top Rated</h4>
+            <h3 id="ratedName" style="color:#fff; margin:0; font-size:1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;">Loading...</h3>
+            <div id="ratedStars" style="color:#fbbf24; margin-top:0.2rem; font-weight:600; font-size: 0.85rem;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem;">
+        <!-- GLOBAL STATS -->
+        <div style="grid-column: 1/-1; border-bottom: 1px solid #333; padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 1rem; color: #60a5fa; text-transform: uppercase;">Global Leaders (All Website)</h3>
+        </div>
+
+        <!-- Global Most Sold Card -->
+        <div id="statGlobalMostSold" style="background:rgba(37, 99, 235, 0.05); border:1px solid rgba(37, 99, 235, 0.15); border-radius:12px; padding:1.25rem; display:flex; align-items:center; gap:1.2rem;">
+          <div id="globalSoldImg" style="width:60px; height:60px; border-radius:10px; background:#222; overflow:hidden;">
+            <img style="width:100%; height:100%; object-fit:cover;">
+          </div>
+          <div style="flex: 1;">
+            <h4 style="color:#888; font-size:0.8rem; text-transform:uppercase; margin-bottom:0.25rem;">🏆 Top seller in website</h4>
+            <h3 id="globalSoldName" style="color:#fff; margin:0; font-size:1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;">Loading...</h3>
+            <div id="globalSoldInfo" style="color:#60a5fa; font-size: 0.8rem; margin-top: 2px;"></div>
+            <p id="globalSoldQty" style="color:#4ade80; margin-top:0.2rem; font-weight:600; font-size: 0.9rem;"></p>
+          </div>
+        </div>
+
+        <!-- Global Top Rated Card -->
+        <div id="statGlobalTopRated" style="background:rgba(139, 92, 246, 0.05); border:1px solid rgba(139, 92, 246, 0.15); border-radius:12px; padding:1.25rem; display:flex; align-items:center; gap:1.2rem;">
+          <div id="globalRatedImg" style="width:60px; height:60px; border-radius:10px; background:#222; overflow:hidden;">
+             <img style="width:100%; height:100%; object-fit:cover;">
+          </div>
+          <div style="flex: 1;">
+            <h4 style="color:#888; font-size:0.8rem; text-transform:uppercase; margin-bottom:0.25rem;">💎 Best rated in website</h4>
+            <h3 id="globalRatedName" style="color:#fff; margin:0; font-size:1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;">Loading...</h3>
+            <div id="globalRatedInfo" style="color:#60a5fa; font-size: 0.8rem; margin-top: 2px;"></div>
+            <div id="globalRatedStars" style="color:#fbbf24; margin-top:0.2rem; font-weight:600; font-size: 0.85rem;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Prep Summary — Aggregate quantities for stocking up -->
+    <section class="dashboard-card">
+      <div class="section-header"
+        style="border-bottom: 1px solid #333; padding-bottom: 1rem; margin-bottom: 1.5rem; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h2 class="section-title" style="margin:0;">📦 Product Prep Summary</h2>
+          <p class="muted-text" style="margin-top:2px;" id="prepSubtitle">Total quantities to prepare for today.</p>
+        </div>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <button class="btn btn-primary btn-small" onclick="setPrepDate('today')" id="prepBtn-today">Today</button>
+          <button class="btn btn-primary btn-small" style="background:#333;" onclick="setPrepDate('yesterday')"
+            id="prepBtn-yesterday">Yesterday</button>
+          <input type="date" id="prepDateSelector" onchange="setPrepDate('custom')"
+            style="background:#111; color:#fff; border:1px solid #333; padding:0.4rem; border-radius:6px; font-size:0.85rem; outline:none; border-color:#4ade80;">
+          <button class="btn-premium" onclick="downloadPrepPDF()">
+             <span>📊</span> Export Prep Summary
+          </button>
+        </div>
+      </div>
+      <div id="prepSummaryList"
+        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+        <div style="color:#888; text-align:center; padding:1.5rem; grid-column: 1/-1;">Synchronizing prep list...</div>
+      </div>
+    </section>
+
+    <!-- Feedbacks Section -->
+    <section class="dashboard-card">
+      <div class="section-header"
+        style="border-bottom: 1px solid #333; padding-bottom: 1rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <h2 class="section-title" style="margin:0;">📝 Product Feedbacks</h2>
+        <a href="seller-feedback.html" class="btn btn-primary btn-small" style="text-decoration: none;">View All</a>
+      </div>
+
+      <div id="feedbackPreview">
+        <div style="color:#888;text-align:center;padding:1rem;">Loading feedback...</div>
+      </div>
+    </section>
+
+    <!-- Revenue Analytics Graph -->
+    <section class="dashboard-card" style="margin-top: 2rem;">
+      <div class="section-header" style="border-bottom: 1px solid #333; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <h2 class="section-title" style="margin:0;">📈 Revenue Analytics</h2>
+        <p class="muted-text">Monthly revenue growth and trends</p>
+      </div>
+      <div style="height: 350px; position: relative;">
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API = 'http://localhost:5000';
+    const user = JSON.parse(sessionStorage.getItem('user'));
+
+    if (!user || user.role !== 'seller') {
+      window.location.href = 'login.html';
+    } else {
+      // Initial set from session
+      if (user.profile_pic) {
+        document.getElementById('sellerDashboardPic').src = `${API}/${user.profile_pic}`;
+      }
+      
+      // Fetch latest profile to ensure sync (esp. for photo)
+      fetch(`${API}/api/auth/profile/seller/${user.id}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.profile_pic) {
+            document.getElementById('sellerDashboardPic').src = `${API}/${data.profile_pic}`;
+            // Update session storage so it's fresh for other pages too
+            const updatedUser = { ...user, ...data };
+            sessionStorage.setItem('user', JSON.stringify(updatedUser));
+          }
+        })
+        .catch(err => console.error("Error syncing profile:", err));
+    }
+
+    loadSellerOrders();
+    loadFeedbackPreview();
+
+    async function loadFeedbackPreview() {
+      try {
+        const res = await fetch(`${API}/api/feedback/seller/${user.id}`);
+        const feedback = await res.json();
+        const container = document.getElementById('feedbackPreview');
+
+        if (!feedback.length) {
+          container.innerHTML = '<div style="color:#888;text-align:center;padding:1.5rem;">No feedback received yet.</div>';
+          return;
+        }
+
+        // Show last 3
+        container.innerHTML = feedback.slice(0, 3).map(f => {
+          const hasImage = f.image_url;
+          return `
+            <div class="order-line" style="display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 0.8rem;">
+              ${hasImage ? `
+                <img src="${API}${f.image_url}" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid #333; flex-shrink: 0;" onerror="this.style.display='none'">
+              ` : ''}
+              <div style="flex-grow: 1;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                  <span style="font-weight: 600; color: #fff;">${f.product_name || 'Product Not Found'}</span>
+                  <span style="color: #fbbf24; font-size: 0.8rem;">${'★'.repeat(f.rating)}${'☆'.repeat(5 - f.rating)}</span>
+                </div>
+                <div class="muted-text" style="font-style: italic; font-size: 0.85rem;">"${f.comment || 'No comment provided.'}" — ${f.customer_name || 'Anonymous Customer'}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        document.getElementById('feedbackPreview').innerHTML = '<div style="color:#ef4444;text-align:center;">Failed to load feedback preview.</div>';
+      }
+    }
+
+    async function loadSellerOrders() {
+      try {
+        const res = await fetch(`${API}/api/orders/seller/${user.id}`);
+        const data = await res.json();
+
+        const orders = Array.isArray(data) ? data : [];
+        window.sellerAllOrders = orders; // Store globally for report generation
+        window.sellerDisplayOrders = orders; // Store for filtering
+
+        let totalRevenue = 0;
+        orders.forEach(o => {
+          if(o.status !== 'cancelled') {
+             totalRevenue += calculateSellerSub(o.seller_unit_price, o.quantity);
+          }
+        });
+        document.getElementById('totalRevenueAmount').textContent = 'LKR ' + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2});
+        
+        // Fetch Product Stats (Most Sold, Top Rated)
+        fetchProductStats();
+
+        renderOrders(orders);
+      } catch (e) {
+        document.getElementById('todayOrdersList').innerHTML =
+          `<div style="color:#f87171;text-align:center;padding:1rem;">Failed to load orders: ${e.message}</div>`;
+      }
+    }
+
+    function renderOrders(ordersToRender) {
+      const todayStr = new Date().toDateString();
+      const today = ordersToRender.filter(p => new Date(p.created_at).toDateString() === todayStr);
+      const earlierFull = ordersToRender.filter(p => new Date(p.created_at).toDateString() !== todayStr);
+      
+      // Limit earlier orders to 10
+      const earlier = earlierFull.slice(0, 10);
+
+      document.getElementById('orderCount').textContent =
+        `${today.length} today · ${ordersToRender.length} total`;
+
+      document.getElementById('todayOrdersList').innerHTML = today.length
+        ? today.map(p => orderCard(p)).join('')
+        : '<div style="color:#888;text-align:center;padding:1rem;font-size:0.9rem;">No orders found for today.</div>';
+
+      document.getElementById('earlierOrdersList').innerHTML = earlier.length
+        ? earlier.map(p => orderCard(p)).join('')
+        : '<div style="color:#555;text-align:center;padding:0.5rem;font-size:0.85rem;">No earlier orders found.</div>';
+
+      // Show "View All" button if there are more earlier orders
+      const viewAllBtn = document.getElementById('viewAllOrdersBtn');
+      if (earlierFull.length > 10) {
+        viewAllBtn.style.display = 'block';
+      } else {
+        viewAllBtn.style.display = 'none';
+      }
+    }
+
+    function filterOrders() {
+      const searchTerm = document.getElementById('orderSearch').value.toLowerCase();
+      if (!window.sellerDisplayOrders) return;
+
+      const filtered = window.sellerDisplayOrders.filter(o => 
+        (o.product_name && o.product_name.toLowerCase().includes(searchTerm)) || 
+        (o.customer_name && o.customer_name.toLowerCase().includes(searchTerm))
+      );
+
+      renderOrders(filtered);
+    }
+
+    // Pricing calculation helper for seller (handles "20 per 500 g" etc)
+    function calculateSellerSub(priceVal, qtyKg) {
+      const str = String(priceVal || "0");
+      let basePrice = 0, baseAmount = 1, baseUnit = 'kg';
+      const match = str.match(/(\d+(?:\.\d+)?)\s*(?:per|\/|Rs\.?)\s*(\d+)?\s*([a-zA-Z]+)/i);
+      if (match) {
+        basePrice = parseFloat(match[1]);
+        baseAmount = parseFloat(match[2]) || 1;
+        baseUnit = match[3].toLowerCase();
+      } else {
+        const numMatch = str.match(/[\d.]+/);
+        basePrice = numMatch ? parseFloat(numMatch[0]) : 0;
+      }
+      let unitInKg = 1;
+      if (baseUnit === 'g' || baseUnit === 'grams') unitInKg = baseAmount / 1000;
+      else if (baseUnit === 'kg' || baseUnit === 'kilogram') unitInKg = baseAmount;
+      else unitInKg = baseAmount;
+      return (basePrice * (qtyKg / unitInKg));
+    }
+
+    function orderCard(o) {
+      // Map orders table fields to the UI card format
+      const method = o.payment_method || 'cod';
+      // Use seller_unit_price instead of total_price (which is the final price for customer)
+      const amount = calculateSellerSub(o.seller_unit_price, o.quantity);
+
+      const methodBadge = method.toLowerCase() === 'cod'
+        ? '<span style="background:rgba(245,158,11,0.15);color:#fbbf24;padding:2px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;">COD</span>'
+        : '<span style="background:rgba(37,99,235,0.15);color:#60a5fa;padding:2px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;">CARD</span>';
+
+      const statusColor = o.status === 'completed' || o.status === 'delivered_to_driver' ? '#4ade80' : o.status === 'cancelled' ? '#f87171' : '#fbbf24';
+      const time = new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      let actionHtml = '';
+      if (o.status === 'pending' || o.status === 'completed') {
+        actionHtml = `<div style="margin-top:0.5rem;"><button onclick="markStatus(${o.id}, 'ready')" style="padding:0.4rem 0.8rem; border-radius:4px; background:#fbbf24; color:#000; font-weight:bold; font-size:0.8rem; border:none; cursor:pointer;">Mark Ready</button></div>`;
+      } else if (o.status === 'ready') {
+        actionHtml = `<div style="margin-top:0.5rem;"><button onclick="markStatus(${o.id}, 'delivered_to_driver')" style="padding:0.4rem 0.8rem; border-radius:4px; background:#4ade80; color:#000; font-weight:bold; font-size:0.8rem; border:none; cursor:pointer;">Hand to Driver</button></div>`;
+      }
+
+      return `
+        <div class="order-line" style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div style="font-weight:600;font-size:1rem;color:#fff;">${o.product_name || 'Order'}</div>
+            <div class="muted-text">
+              <span style="color: #38bdf8; cursor: pointer; text-decoration: underline;" onclick="openCustomerModal(${o.user_id}, ${user.id})">${o.customer_name}</span> · ${time}
+            </div>
+            <div style="margin-top:4px;">${methodBadge}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:bold;color:#4ade80;font-size:1.1rem;margin-bottom:0.3rem;">LKR ${parseFloat(amount).toFixed(2)}</div>
+            <div style="font-size:0.8rem;color:${statusColor};font-weight:600;text-transform:uppercase;">${o.status.replace(/_/g, ' ')}</div>
+            ${actionHtml}
+          </div>
+        </div>`;
+    }
+
+    async function markStatus(orderId, newStatus) {
+      if (!confirm(`Are you sure you want to change this order's status to '${newStatus.replace(/_/g, ' ')}'?`)) return;
+      try {
+        const res = await fetch(`${API}/api/orders/${orderId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (!res.ok) throw new Error('Failed to update status');
+        showToast('Successfully updated order status!', 'success');
+        await loadSellerOrders();
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    document.getElementById('downloadReport').addEventListener('click', () => {
+      const timeframe = document.getElementById('reportTimeframe').value;
+      const reportType = 'standard';
+      const orders = window.sellerAllOrders || [];
+      const today = new Date();
+      
+      let filtered = [];
+      if (timeframe === 'today') {
+         filtered = orders.filter(o => new Date(o.created_at).toDateString() === today.toDateString());
+      } else if (timeframe === 'yesterday') {
+         const yesterday = new Date(today);
+         yesterday.setDate(today.getDate() - 1);
+         filtered = orders.filter(o => new Date(o.created_at).toDateString() === yesterday.toDateString());
+      } else if (timeframe === 'monthly') {
+         filtered = orders.filter(o => {
+           const d = new Date(o.created_at);
+           return d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+         });
+      } else {
+         filtered = orders; // 'all'
+      }
+
+      if (filtered.length === 0) {
+        showToast('No orders found for ' + timeframe, 3000, '#fbbf24');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Header Section
+      doc.setFontSize(22);
+      doc.setTextColor(22, 163, 74); // leef green
+      doc.text("leef - Sales Report", 14, 20);
+      
+      doc.setFontSize(11);
+      doc.setTextColor(100);
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
+      doc.text(`Timeframe: ${timeframe.toUpperCase()}`, 14, 34);
+      doc.text(`Report Type: ${reportType.toUpperCase()}`, 14, 40);
+      doc.text(`Seller Name: ${user.name || 'Leef Seller'}`, 14, 46);
+
+      // Report Summary
+      const totalOrders = filtered.length;
+      const successfulOrders = filtered.filter(o => o.status !== 'cancelled').length;
+      const totalRev = filtered.reduce((acc, o) => o.status !== 'cancelled' ? acc + calculateSellerSub(o.seller_unit_price, o.quantity) : acc, 0);
+
+      doc.setFontSize(12);
+      doc.setTextColor(0);
+      doc.text("Summary:", 14, 58);
+      doc.setFontSize(10);
+      doc.text(`Total Orders: ${totalOrders}`, 14, 64);
+      doc.text(`Successful Orders: ${successfulOrders}`, 14, 69);
+      doc.text(`Total Revenue: LKR ${totalRev.toLocaleString(undefined, {minimumFractionDigits: 2})}`, 14, 74);
+
+      let headers = [];
+      let rows = [];
+
+      if (reportType === 'standard' || reportType === 'quantity' || reportType === 'revenue') {
+        headers = [['ID', 'Date', 'Time', 'Customer', 'Product', 'Qty', 'Status', 'Revenue']];
+        
+        // Sorting logic based on reportType
+        let sorted = [...filtered];
+        if (reportType === 'quantity') {
+          sorted.sort((a, b) => b.quantity - a.quantity);
+        } else if (reportType === 'revenue') {
+          sorted.sort((a, b) => {
+            const revA = calculateSellerSub(a.seller_unit_price, a.quantity);
+            const revB = calculateSellerSub(b.seller_unit_price, b.quantity);
+            return revB - revA;
+          });
+        }
+        // Standard is already mostly chronological from backend, but could sort by date
+        // No explicit sort for standard or can do: else sorted.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+        rows = sorted.map(o => {
+           const rev = calculateSellerSub(o.seller_unit_price, o.quantity);
+           const d = new Date(o.created_at);
+           return [
+             o.id,
+             d.toLocaleDateString(),
+             d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+             o.customer_name,
+             o.product_name,
+             o.quantity,
+             o.status.toUpperCase(),
+             o.status === 'cancelled' ? 'DEDUCTED' : rev.toFixed(2)
+           ];
+        });
+        
+        if (reportType !== 'standard') {
+          doc.text(`Note: This report is sorted by ${reportType} and excludes cancelled orders if necessary.`, 14, 82);
+        }
+      }
+
+      doc.autoTable({
+        startY: (reportType === 'standard' ? 80 : 90),
+        head: headers,
+        body: rows,
+        theme: 'grid',
+        headStyles: { fillColor: [22, 163, 74] },
+        alternateRowStyles: { fillColor: [240, 253, 244] },
+        styles: { fontSize: 8 }
+      });
+
+      doc.save(`leef_report_${reportType}_${timeframe}.pdf`);
+    });
+
+    // small toast helper
+    function showToast(msg, timeout = 3000, color = '#16a34a') {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      Object.assign(t.style, {
+        position: 'fixed', right: '20px', bottom: '20px',
+        background: color, color: '#fff', padding: '10px 14px',
+        borderRadius: '8px', zIndex: 9999, fontSize: '0.9rem', boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+      });
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), timeout);
+    }
+
+    // handle status change events
+    document.querySelectorAll('.status-select').forEach(sel => {
+      // initial visual mapping
+      const applyStyle = (s) => {
+        const val = s.value;
+        if (val === 'pending') {
+          s.style.color = '#fbbf24'; // Warning yellow
+          s.style.borderColor = '#fbbf24';
+        } else if (val === 'ready') {
+          s.style.color = '#38bdf8'; // Info blue
+          s.style.borderColor = '#38bdf8';
+        } else if (val === 'picked') {
+          s.style.color = '#4ade80'; // Success green
+          s.style.borderColor = '#4ade80';
+        }
+      };
+
+      applyStyle(sel);
+
+      sel.addEventListener('change', (e) => {
+        const orderId = sel.dataset.order || 'order';
+        const val = sel.value;
+        applyStyle(sel);
+
+        let msg = '';
+        if (val === 'pending') msg = `${orderId} set to Pending`;
+        else if (val === 'ready') msg = `${orderId} marked Ready for pickup`;
+        else if (val === 'picked') msg = `${orderId} marked Picked by driver`;
+
+        showToast(msg);
+      });
+    });
+
+    async function openCustomerModal(customerId, sellerId) {
+      const modal = document.getElementById('customerModal');
+      const title = document.getElementById('cm-name');
+      const body = document.getElementById('cm-body');
+
+      modal.style.display = 'flex';
+      title.textContent = 'Loading...';
+      body.innerHTML = '<div style="text-align:center; padding:2rem;"><span style="color:#888;">Fetching data...</span></div>';
+
+      try {
+        const res = await fetch(`${API}/api/auth/customer-stats/${customerId}/${sellerId}`);
+        if (!res.ok) throw new Error('Failed to fetch details');
+        const data = await res.json();
+
+        title.textContent = data.name || 'Unknown Customer';
+        body.innerHTML = `
+          <div style="margin-bottom:1rem;">
+            <strong>Phone:</strong> ${data.phone || '<span style="color:#888;">Not provided</span>'}<br>
+            <strong>Email:</strong> ${data.email || '<span style="color:#888;">Not provided</span>'}<br>
+            <strong>Location:</strong> ${data.address || ''} ${data.town ? ', ' + data.town : ''}
+          </div>
+          <div style="background:rgba(255,255,255,0.05); padding:1rem; border-radius:8px; border:1px solid #333;">
+            <div style="font-weight:600; color:#38bdf8; margin-bottom:0.5rem; font-size:0.85rem; text-transform:uppercase;">Store Interaction History</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+              <span>Total Orders with you:</span>
+              <strong style="color:#fff;">${data.total_orders}</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span>Total Refunds requested:</span>
+              <strong style="color:#ef4444;">${data.total_refunds}</strong>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05); padding:1rem; border-radius:8px; border:1px solid #333; margin-top:1rem; max-height:150px; overflow-y:auto;">
+            <div style="font-weight:600; color:#4ade80; margin-bottom:0.8rem; font-size:0.85rem; text-transform:uppercase;">Past Approved Refunds</div>
+            ${data.approved_refunds && data.approved_refunds.length > 0 ?
+            data.approved_refunds.map(r =>
+              '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #222; padding-bottom:0.4rem; margin-bottom:0.4rem;">' +
+              '<div>' +
+              '<div style="color:#eee; font-size:0.85rem; font-weight:600;">' + (r.product_name || 'Item Refunded') + '</div>' +
+              '<div style="color:#888; font-size:0.75rem;">' + new Date(r.updated_at).toLocaleDateString() + '</div>' +
+              '</div>' +
+              '<strong style="color:#f87171; font-size:0.85rem;">- LKR ' + r.refund_amount + '</strong>' +
+              '</div>'
+            ).join('')
+            : '<div style="color:#888; font-style:italic; font-size:0.85rem;">No past approved refunds found.</div>'}
+          </div>
+        `;
+      } catch (err) {
+        title.textContent = 'Error';
+        body.innerHTML = `<div style="color:#ef4444;">${err.message}</div>`;
+      }
+    }
+
+    // --- Prep Summary Subsystem ---
+    let currentPrepDate = new Date().toISOString().split('T')[0];
+
+    async function fetchProductStats() {
+      try {
+        const res = await fetch(`${API}/api/orders/seller/stats/${user.id}`);
+        if (!res.ok) throw new Error('Failed to fetch stats');
+        const data = await res.json();
+        
+        const { mostSold, topRated, globalMostSold, globalTopRated } = data;
+        const placeholderImg = 'images/default.png';
+
+        // 1. SELLER STATS
+        if (mostSold && mostSold.id) {
+          document.getElementById('soldName').textContent = mostSold.product_name;
+          document.getElementById('soldQty').textContent = `${mostSold.total_sold} units sold`;
+          const img = document.querySelector('#soldImg img');
+          img.src = mostSold.image_url ? (mostSold.image_url.startsWith('http') ? mostSold.image_url : `${API}/${mostSold.image_url}`) : placeholderImg;
+        } else {
+          document.getElementById('statMostSold').style.opacity = '0.5';
+          document.getElementById('soldName').textContent = 'No sales yet';
+        }
+
+        if (topRated && topRated.id) {
+          document.getElementById('ratedName').textContent = topRated.product_name;
+          document.getElementById('ratedStars').textContent = `★ ${parseFloat(topRated.avg_rating).toFixed(1)} / 5.0 (${topRated.review_count} reviews)`;
+          const img = document.querySelector('#ratedImg img');
+          img.src = topRated.image_url ? (topRated.image_url.startsWith('http') ? topRated.image_url : `${API}/${topRated.image_url}`) : placeholderImg;
+        } else {
+          document.getElementById('statTopRated').style.opacity = '0.5';
+          document.getElementById('ratedName').textContent = 'No reviews yet';
+        }
+
+        // 2. GLOBAL STATS
+        if (globalMostSold && globalMostSold.id) {
+          document.getElementById('globalSoldName').textContent = globalMostSold.product_name;
+          document.getElementById('globalSoldQty').textContent = `${globalMostSold.total_sold} units sold`;
+          document.getElementById('globalSoldInfo').textContent = `${globalMostSold.seller_name} · ${globalMostSold.shop_name}`;
+          const img = document.querySelector('#globalSoldImg img');
+          img.src = globalMostSold.image_url ? (globalMostSold.image_url.startsWith('http') ? globalMostSold.image_url : `${API}/${globalMostSold.image_url}`) : placeholderImg;
+        } else {
+          document.getElementById('statGlobalMostSold').style.opacity = '0.5';
+          document.getElementById('globalSoldName').textContent = 'N/A';
+        }
+
+        if (globalTopRated && globalTopRated.id) {
+          document.getElementById('globalRatedName').textContent = globalTopRated.product_name;
+          document.getElementById('globalRatedStars').textContent = `★ ${parseFloat(globalTopRated.avg_rating).toFixed(1)} / 5.0 (${globalTopRated.review_count} reviews)`;
+          document.getElementById('globalRatedInfo').textContent = `${globalTopRated.seller_name} · ${globalTopRated.shop_name}`;
+          const img = document.querySelector('#globalRatedImg img');
+          img.src = globalTopRated.image_url ? (globalTopRated.image_url.startsWith('http') ? globalTopRated.image_url : `${API}/${globalTopRated.image_url}`) : placeholderImg;
+        } else {
+          document.getElementById('statGlobalTopRated').style.opacity = '0.5';
+          document.getElementById('globalRatedName').textContent = 'N/A';
+        }
+
+      } catch (err) {
+        console.error('Error fetching product stats:', err);
+      }
+    }
+
+    async function setPrepDate(mode) {
+      const today = new Date();
+      const selector = document.getElementById('prepDateSelector');
+
+      // Update UI Buttons
+      document.getElementById('prepBtn-today').style.background = mode === 'today' ? '' : '#333';
+      document.getElementById('prepBtn-yesterday').style.background = mode === 'yesterday' ? '' : '#333';
+
+      if (mode === 'today') {
+        currentPrepDate = today.toISOString().split('T')[0];
+        selector.value = '';
+        document.getElementById('prepSubtitle').textContent = "Total quantities to prepare for today.";
+      } else if (mode === 'yesterday') {
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        currentPrepDate = yesterday.toISOString().split('T')[0];
+        selector.value = '';
+        document.getElementById('prepSubtitle').textContent = "Total quantities to prepare for yesterday.";
+      } else {
+        currentPrepDate = selector.value;
+        if (!currentPrepDate) return;
+        document.getElementById('prepSubtitle').textContent = `Total quantities to prepare for ${currentPrepDate}.`;
+      }
+
+      loadPrepSummary();
+    }
+
+    async function loadPrepSummary() {
+      const container = document.getElementById('prepSummaryList');
+      container.innerHTML = '<div style="color:#888; text-align:center; padding:1.5rem; grid-column: 1/-1;">Updating list...</div>';
+
+      try {
+        const res = await fetch(`${API}/api/orders/seller/prep-summary/${user.id}?date=${currentPrepDate}`);
+        const summary = await res.json();
+        window.currentPrepData = summary; // Save for PDF
+
+        if (!summary.length) {
+          container.innerHTML = '<div style="color:#888; text-align:center; padding:1.5rem; grid-column: 1/-1;">No orders found for this date.</div>';
+          return;
+        }
+
+        container.innerHTML = summary.map(item => {
+          const qty = parseFloat(item.total_qty);
+          const kg = Math.floor(qty);
+          const grams = Math.round((qty * 1000) % 1000);
+
+          let displayQty = '';
+          if (kg > 0) displayQty += `${kg} kg `;
+          if (grams > 0) displayQty += `${grams} g`;
+          if (kg === 0 && grams === 0) displayQty = '0 g';
+
+          return `
+          <div style="background:#222; border:1px solid #333; border-radius:10px; padding:1rem; display:flex; gap:1rem; align-items:center;">
+             <img src="${item.image_url}" style="width:50px; height:50px; border-radius:8px; object-fit:cover; border:1px solid #444;">
+             <div style="flex:1;">
+                <div style="font-weight:700; color:#fff; font-size:0.95rem; margin-bottom:2px;">${item.product_name}</div>
+                <div style="font-size:0.8rem; color:#888;">${item.price_string || ''}</div>
+             </div>
+             <div style="text-align:right;">
+                <div style="font-size:0.7rem; color:#4ade80; text-transform:uppercase; font-weight:700; letter-spacing:0.5px; margin-bottom:2px;">Total Needed</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#4ade80; white-space:nowrap;">${displayQty}</div>
+                <div style="font-size:0.6rem; color:#555;">(${qty.toFixed(2)} total)</div>
+             </div>
+          </div>
+        `}).join('');
+      } catch (e) {
+        container.innerHTML = `<div style="color:#ef4444; text-align:center; padding:1.5rem; grid-column: 1/-1;">Error: ${e.message}</div>`;
+      }
+    }
+
+    async function downloadPrepPDF() {
+      const data = window.currentPrepData;
+      if (!data || data.length === 0) return alert("Nothing to download for this date.");
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'mm', 'a4');
+      
+      // Header
+      doc.setFontSize(22);
+      doc.setTextColor(22, 163, 74);
+      doc.text("leef - Product Prep Summary", 14, 20);
+      
+      doc.setFontSize(11);
+      doc.setTextColor(100);
+      doc.text(`Shop: ${user.shop_name || user.name}`, 14, 28);
+      doc.text(`Target Date: ${currentPrepDate}`, 14, 34);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 40);
+
+      // Table
+      const headers = [["#", "Product Name", "SKU / ID", "Total Prep Quantity", "Est. Revenue"]];
+      const tableRows = data.map((item, idx) => {
+          const qty = parseFloat(item.total_qty);
+          const kg = Math.floor(qty);
+          const grams = Math.round((qty * 1000) % 1000);
+          let displayQty = '';
+          if (kg > 0) displayQty += `${kg}kg `;
+          if (grams > 0) displayQty += `${grams}g`;
+          if (kg === 0 && grams === 0) displayQty = '0g';
+
+          return [
+              idx + 1,
+              item.product_name,
+              `#P-${item.id}`,
+              displayQty,
+              `LKR ${parseFloat(item.total_amount).toFixed(2)}`
+          ];
+      });
+
+      doc.autoTable({
+        head: headers,
+        body: tableRows,
+        startY: 48,
+        theme: 'grid',
+        headStyles: { fillColor: [22, 163, 74] },
+        alternateRowStyles: { fillColor: [240, 253, 244] },
+        styles: { fontSize: 10, cellPadding: 3 }
+      });
+
+      // Footer Note
+      const finalY = doc.lastAutoTable.finalY + 15;
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'italic');
+      doc.setTextColor(150);
+      doc.text("Note: This summary aggregates all approved orders for the selected date. Please ensure items are packed and ready for delivery pick-up.", 14, finalY);
+
+      doc.save(`Leef_Prep_Summary_${user.shop_name.replace(/ /g, '_')}_${currentPrepDate}.pdf`);
+    }
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPrepSummary();
+      loadRevenueAnalytics();
+      loadNotifications();
+      
+      // Auto-refresh notifications every 60s
+      setInterval(loadNotifications, 60000);
+      
+      // Toggle dropdown
+      document.getElementById('notifBell').addEventListener('click', function(e) {
+        const dropdown = document.getElementById('notifDropdown');
+        const isVisible = dropdown.style.display === 'flex';
+        dropdown.style.display = isVisible ? 'none' : 'flex';
+        e.stopPropagation();
+      });
+
+      document.addEventListener('click', function() {
+        document.getElementById('notifDropdown').style.display = 'none';
+      });
+    });
+
+    async function loadNotifications() {
+      try {
+        const res = await fetch(`${API}/api/notifications/${user.id}`);
+        const data = await res.json();
+        const unread = data.filter(n => !n.is_read);
+        
+        const badge = document.getElementById('notifCount');
+        if (unread.length > 0) {
+          badge.textContent = unread.length > 99 ? '99+' : unread.length;
+          badge.style.display = 'block';
+        } else {
+          badge.style.display = 'none';
+        }
+
+        const list = document.getElementById('notifList');
+        if (data.length === 0) {
+          list.innerHTML = '<div style="padding:2rem; text-align:center; color:#555;">No notifications yet</div>';
+          return;
+        }
+
+        list.innerHTML = data.map(n => {
+          let icon = '🔔';
+          if (n.type === 'order') icon = '📦';
+          else if (n.type === 'inventory') icon = '📈';
+          else if (n.type === 'refund') icon = '💸';
+          else if (n.type === 'feedback') icon = '⭐';
+          
+          const time = new Date(n.created_at).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+
+          return `
+            <div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="markNotifRead(${n.id}); event.stopPropagation();">
+              <div class="notif-icon">${icon}</div>
+              <div class="notif-content">
+                <div class="notif-title">${n.title || 'System Alert'}</div>
+                <div class="notif-message">${n.message}</div>
+                <div class="notif-time">${time}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error("Error loading notifications:", err);
+      }
+    }
+
+    async function markNotifRead(id) {
+      try {
+        await fetch(`${API}/api/notifications/${id}/read`, { method: 'PATCH' });
+        loadNotifications();
+      } catch (err) { console.error(err); }
+    }
+
+    async function markAllNotifsRead() {
+      try {
+        await fetch(`${API}/api/notifications/read-all/${user.id}`, { method: 'PATCH' });
+        loadNotifications();
+      } catch (err) { console.error(err); }
+    }
+
+    async function loadRevenueAnalytics() {
+      try {
+        const res = await fetch(`${API}/api/orders/seller/revenue-stats/${user.id}`);
+        const data = await res.json();
+        
+        if (!data || data.length === 0) {
+          document.getElementById('revenueChart').parentElement.innerHTML = '<div style="color:#888; text-align:center; padding:5rem;">No revenue data available yet to build a graph.</div>';
+          return;
+        }
+
+        const labels = data.map(row => {
+          const [year, month] = row.month.split('-');
+          const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          return `${monthNames[parseInt(month)-1]} ${year}`;
+        });
+        const revenues = data.map(row => parseFloat(row.revenue));
+
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Monthly Revenue (LKR)',
+              data: revenues,
+              backgroundColor: 'rgba(74, 222, 128, 0.2)',
+              borderColor: '#4ade80',
+              borderWidth: 2,
+              borderRadius: 8,
+              barThickness: 40,
+              hoverBackgroundColor: '#4ade80'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: '#1a1a1a',
+                titleColor: '#888',
+                bodyColor: '#fff',
+                borderColor: '#333',
+                borderWidth: 1,
+                displayColors: false,
+                callbacks: {
+                  label: function(context) {
+                    return ' LKR ' + context.parsed.y.toLocaleString();
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: '#222' },
+                ticks: { 
+                  color: '#888',
+                  callback: function(value) { return 'LKR ' + value.toLocaleString(); }
+                }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: '#888' }
+              }
+            }
+          }
+        });
+      } catch (err) {
+        console.error("Error loading revenue analytics:", err);
+      }
+    }
+  </script>
+
+  <!-- Customer Details Modal -->
+  <div id="customerModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; align-items:center; justify-content:center;">
+    <div
+      style="background:#1a1a1a; width:400px; max-width:90%; border-radius:12px; border:1px solid #333; overflow:hidden;">
+      <div
+        style="padding:1.5rem; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0; color:#fff;" id="cm-name">Loading...</h3>
+        <button onclick="document.getElementById('customerModal').style.display='none'"
+          style="background:none; border:none; color:#888; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+      <div style="padding:1.5rem; color:#ccc; font-size:0.95rem; line-height:1.6;" id="cm-body">
+        <!-- Content injected here -->
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

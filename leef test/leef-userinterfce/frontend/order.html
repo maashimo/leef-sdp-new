@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Management - 🍃 Leef</title>
+  <style>
+    :root {
+      --green: #16a34a;
+      --orange: #f97316;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --bg: #ffffff;
+      --card: #fff;
+      --muted: #555;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    aside {
+      width: 240px;
+      background: var(--card);
+      padding: 1.5em 1em;
+      box-shadow: 2px 0 6px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2em;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    aside .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 1.5rem;
+      margin-bottom: 2em;
+      text-decoration: none;
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    aside nav a {
+      display: block;
+      padding: 0.7em 1em;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 0.5em;
+      transition: background 0.2s, color 0.2s;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    aside nav a.active,
+    aside nav a:hover {
+      background: var(--green);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    aside button.redeem-btn {
+      margin-top: auto;
+      width: 100%;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      padding: 0.7em;
+      border-radius: 0.5em;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    /* Main content */
+    main {
+      flex: 1;
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      gap: 2em;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .page-title {
+      color: #222 !important;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+
+    .page-subtitle {
+      color: #555 !important;
+      margin-top: 0.3em;
+      font-size: 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+      padding: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .card h2 {
+      font-size: 1.4rem;
+      color: #1a1a1a;
+      margin-bottom: 1.2em;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #334155;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      padding: 1em;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    td {
+      padding: 1.2em 1em;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+      font-size: 0.95rem;
+    }
+
+    td button {
+      padding: 0.3em 0.6em;
+      border: none;
+      border-radius: 0.4em;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .btn {
+      padding: 0.6em 1.2em;
+      border: none;
+      border-radius: 0.5em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .accept-btn {
+      background: #22c55e;
+      color: #fff;
+    }
+
+    .reject-btn {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .view-btn {
+      background: #3b82f6;
+      color: #fff;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    /* Availability Section */
+    .info-container {
+      margin-top: 2em;
+      padding: 2.5em;
+      background: #f0fdf4;
+      border-radius: 1.5em;
+      border: 1px solid #dcfce7;
+      display: none;
+      animation: slideDown 0.4s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .info-container h3 {
+      font-size: 1.3rem;
+      color: #166534;
+      margin-bottom: 2em;
+      font-weight: 700;
+    }
+
+    .projection-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4em;
+    }
+
+    .proj-item {
+      text-align: center;
+    }
+
+    .proj-val {
+      font-size: 8rem;
+      font-weight: 800;
+      color: #166534;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .proj-val .unit {
+      font-size: 3rem;
+      margin-left: 0.1em;
+      font-weight: 700;
+      color: #166534;
+      opacity: 0.7;
+    }
+
+    .proj-label {
+      margin-top: 1em;
+      font-size: 1.4rem;
+      color: #64748b;
+      font-style: italic;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+
+    .proj-arrow {
+      font-size: 7rem;
+      color: #166534;
+      font-weight: 300;
+    }
+
+    .info-value.negative {
+      color: #dc2626 !important;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--card);
+      padding: 1.5em;
+      border-radius: 1em;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 0.5em;
+      right: 0.8em;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .loc-table {
+      margin-top: 1em;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .loc-table th,
+    .loc-table td {
+      border-bottom: 1px solid #eee;
+      padding: 0.4em;
+      font-size: 0.92em;
+    }
+
+    .loc-table th {
+      background: #f0fdf4;
+    }
+
+    @media(max-width:900px) {
+      main {
+        padding: 1em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <aside>
+    <a href="admin-dashboard.html" class="logo">leef 🍃</a>
+    <nav>
+      <a href="admin-dashboard.html">Overview</a>
+      <a href="ledger-view.html">Ledger</a>
+      <a href="new-registration.html">Registration Requests</a>
+      <a href="location-requests.html">Location Requests</a>
+      <a href="product-admin.html">Products</a>
+      <a href="feedback-admin.html">Feedback</a>
+      <a href="questions-admin.html">Questions</a>
+      <a href="refund-approval.html">Refunds</a>
+      <a href="admin-profile.html">Profile</a>
+    </nav>
+  </aside>
+
+  <script src="admin-sidebar.js"></script>
+
+  <!-- Main -->
+  <main class="main-content container">
+    <div
+      style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <h1 class="page-title">Order Management</h1>
+        <p class="page-subtitle">Review and manage customer orders</p>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:2em;">
+      <!-- Pending Orders -->
+      <div class="card">
+        <h2>Pending Orders</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Customer ID</th>
+              <th>Product Name</th>
+              <th>Seller Price</th>
+              <th>Final Price</th>
+              <th>Stock</th>
+              <th>Locations & Qty</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pending-orders">
+          </tbody>
+        </table>
+        <div id="availability-section" class="info-container">
+          <h3 id="availability-title">Availability Projection</h3>
+          <div class="projection-display">
+            <div class="proj-item">
+              <div id="current-qty-box" class="proj-val">0<span class="unit">kg</span></div>
+              <div class="proj-label">Current Available</div>
+            </div>
+            <div class="proj-arrow">→</div>
+            <div class="proj-item">
+              <div id="after-qty-box" class="proj-val">0<span class="unit">kg</span></div>
+              <div class="proj-label">After Approval</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accepted Orders -->
+      <div class="card">
+        <h2>Accepted Orders</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Customer ID</th>
+              <th>Product Name</th>
+              <th>Seller Price</th>
+              <th>Final Price</th>
+              <th>Stock</th>
+              <th>Locations & Qty</th>
+              <th>Accepted By</th>
+              <th>Accepted At</th>
+            </tr>
+          </thead>
+          <tbody id="accepted-orders">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Rejected Orders -->
+      <div class="card">
+        <h2>Rejected Orders</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Customer ID</th>
+              <th>Product Name</th>
+              <th>Seller Price</th>
+              <th>Final Price</th>
+              <th>Stock</th>
+              <th>Locations & Qty</th>
+              <th>Rejected By</th>
+              <th>Rejected At</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody id="rejected-orders">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Today's Orders (updated to show Cart ID and two orders in one cart) -->
+      <div class="card" style="margin-bottom:2em;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1em;">
+          <h2>All Marketplace Transactions</h2>
+          <div style="display:flex; gap:1em;">
+            <select id="order-day-select"
+              style="padding:0.5em 1em; border-radius:0.5em; border:1px solid #ccc; font-size:1em;">
+              <option value="today">Today</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="2025-10-15">2025-10-15</option>
+              <option value="2025-10-14">2025-10-14</option>
+            </select>
+            <select id="order-sort-select"
+              style="padding:0.5em 1em; border-radius:0.5em; border:1px solid #ccc; font-size:1em;">
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="paid-desc">Paid: High to Low</option>
+              <option value="profit-desc">Profit: High to Low</option>
+            </select>
+          </div>
+        </div>
+
+        <table id="todays-orders-table" style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f5f5f5;">
+              <th style="width: 10%;">Cart ID</th>
+              <th style="width: 10%;">Order ID</th>
+              <th style="width: 15%;">Customer Username</th>
+              <th style="width: 20%;">Product Name</th>
+              <th style="width: 10%;">Quantity</th>
+              <th style="width: 20%;">Price & Profit</th>
+              <th style="width: 15%;">Date & Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamic Data -->
+          </tbody>
+        </table>
+
+        <div style="text-align:right; margin-top:1em;">
+          <button class="download-btn"
+            style="background:#2563eb; color:#fff; padding:0.7em 1.4em; border:none; border-radius:0.6em; font-weight:600; cursor:pointer; box-shadow:0 2px 8px rgba(37,99,235,0.10);">
+            ⬇️ Download Order Details
+          </button>
+        </div>
+      </div>
+  </main>
+
+  <script>
+    // Pricing calculation helper
+    function calculateSub(priceVal, qtyKg) {
+      const str = String(priceVal || "0");
+      let basePrice = 0, baseAmount = 1, baseUnit = 'kg';
+      const match = str.match(/(\d+(?:\.\d+)?)\s*(?:per|\/|Rs\.?)\s*(\d+)?\s*([a-zA-Z]+)/i);
+      if (match) {
+        basePrice = parseFloat(match[1]);
+        baseAmount = parseFloat(match[2]) || 1;
+        baseUnit = match[3].toLowerCase();
+      } else {
+        const numMatch = str.match(/[\d.]+/);
+        basePrice = numMatch ? parseFloat(numMatch[0]) : 0;
+      }
+      let unitInKg = 1;
+      if (baseUnit === 'g' || baseUnit === 'grams') unitInKg = baseAmount / 1000;
+      else if (baseUnit === 'kg' || baseUnit === 'kilogram') unitInKg = baseAmount;
+      else unitInKg = baseAmount;
+      return (basePrice * (qtyKg / unitInKg));
+    }
+
+    // Fetch and render orders on page load
+    document.addEventListener("DOMContentLoaded", fetchAllOrders);
+
+    async function fetchAllOrders() {
+      try {
+        const res = await fetch("http://localhost:5000/api/orders/admin/all");
+        if (!res.ok) throw new Error("Failed to fetch orders");
+        const orders = await res.json();
+        renderOrders(orders);
+
+        // Initial fetch for today's orders table
+        fetchTodaysOrders();
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+        showToast("Error loading orders from server", "error");
+      }
+    }
+
+    function getLocalDateStr(dateObj) {
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    let todaysOrdersData = [];
+
+    async function fetchTodaysOrders() {
+      // Ensure "All" option exists in select if not already
+      const selectEl = document.getElementById('order-day-select');
+      let hasAll = false;
+      for (let i = 0; i < selectEl.options.length; i++) {
+        if (selectEl.options[i].value === 'all') hasAll = true;
+      }
+      if (!hasAll) {
+        const allOpt = document.createElement('option');
+        allOpt.value = 'all';
+        allOpt.text = 'All Time';
+        selectEl.add(allOpt);
+      }
+
+      const day = selectEl.value;
+      const tbody = document.querySelector("#todays-orders-table tbody");
+      tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;color:#888;'>Loading transactions...</td></tr>";
+
+      let url = `http://localhost:5000/api/orders/admin/ledger`;
+      let targetDate = new Date();
+
+      if (day === 'yesterday') {
+        targetDate.setDate(targetDate.getDate() - 1);
+        url += `?date=${getLocalDateStr(targetDate)}`;
+      } else if (day === 'all') {
+        // No date filter needed
+      } else if (day !== 'today') {
+        url += `?date=${day}`;
+      } else {
+        // Today
+        url += `?date=${getLocalDateStr(targetDate)}`;
+      }
+
+      try {
+        const res = await fetch(url);
+        todaysOrdersData = await res.json();
+        applyOrderSort();
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;color:red;'>Failed to load details</td></tr>";
+      }
+    }
+
+    // Attach change listener to dropdowns
+    document.getElementById('order-day-select').addEventListener('change', fetchTodaysOrders);
+    document.getElementById('order-sort-select').addEventListener('change', applyOrderSort);
+
+    // Auto-refresh every 30 seconds
+    setInterval(fetchTodaysOrders, 30000);
+
+    function applyOrderSort() {
+      const criteria = document.getElementById('order-sort-select').value || 'date-desc';
+
+      todaysOrdersData.forEach(o => {
+        const actualQty = parseFloat(o.quantity || o.total_qty || 0);
+        o._sellerTotal = parseFloat(calculateSub(o.seller_price, actualQty));
+        o._customerTotal = parseFloat(o.total_price || 0);
+        o._profit = o._customerTotal - o._sellerTotal;
+      });
+
+      if (criteria === 'date-desc') {
+        todaysOrdersData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      } else if (criteria === 'date-asc') {
+        todaysOrdersData.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      } else if (criteria === 'paid-desc') {
+        todaysOrdersData.sort((a, b) => b._customerTotal - a._customerTotal);
+      } else if (criteria === 'profit-desc') {
+        todaysOrdersData.sort((a, b) => b._profit - a._profit);
+      }
+
+      renderTodaysOrders(todaysOrdersData);
+    }
+
+    function renderTodaysOrders(orders) {
+      const tbody = document.querySelector("#todays-orders-table tbody");
+      tbody.innerHTML = "";
+
+      if (orders.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;color:#888;padding:2rem;'>No orders found for this day.</td></tr>";
+        return;
+      }
+
+      orders.forEach(o => {
+        const tr = document.createElement("tr");
+
+        // Format Date and Time
+        let dateObj = new Date(o.created_at || new Date());
+        let dateFormatted = dateObj.toLocaleDateString();
+        let timeFormatted = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        // Verify calculation matches overview page ledger exactly
+        const actualQty = parseFloat(o.quantity || o.total_qty || 0);
+        const finalTotal = o._customerTotal || 0;
+        const profitVal = o._profit || 0;
+
+        tr.innerHTML = `
+                <td style="font-weight:600; color:#666;">#CART-${o.id}</td>
+                <td>#${o.type === 'request' ? 'REQ' : 'ORD'}-${5000 + (o.id % 999)}</td>
+                <td style="font-size:0.85rem;">${o.customer_username || o.customer_name || 'CUST-' + o.user_id}</td>
+                <td style="font-weight:500;">
+                    ${o.product_name} <br>
+                    <small style="color:#888;">#PROD-${o.product_id}</small>
+                </td>
+                <td>${formatQuantity(actualQty)}</td>
+                <td>
+                    <span style="color:var(--blue); font-weight:bold;">Total: Rs. ${finalTotal.toFixed(2)}</span><br>
+                    <span style="color:#166534; font-weight:bold; font-size:0.9rem;">Profit: Rs. ${profitVal.toFixed(2)}</span>
+                </td>
+                <td style="font-size:0.85rem;">
+                    ${dateFormatted} <br>
+                    <small style="color:#888;">${timeFormatted}</small>
+                </td>
+            `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderOrders(orders) {
+      const pendingTbody = document.getElementById("pending-orders");
+      const acceptedTbody = document.getElementById("accepted-orders");
+      const rejectedTbody = document.getElementById("rejected-orders");
+
+      pendingTbody.innerHTML = "";
+      acceptedTbody.innerHTML = "";
+      rejectedTbody.innerHTML = "";
+
+      let pendingData = [];
+
+      orders.forEach(order => {
+        // Parse locations if it's a string, else use as-is
+        let locs = order.locations;
+        if (typeof locs === "string") {
+          try { locs = JSON.parse(locs); } catch (e) { locs = []; }
+        }
+
+        const locationsHtml = Array.isArray(locs)
+          ? `${locs.map((l, index) => `
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; border-bottom:1px solid #eee; padding-bottom:2px;">
+                <span>${l.district ? `[${l.district}] ` : ''}${l.location}: ${formatQuantity(l.qty)}</span>
+                ${order.status === 'pending' ? `<span style="color:red; cursor:pointer; font-weight:bold; padding:0 5px;" onclick="removeLocation(${order.id}, ${index})" title="Remove location">&times;</span>` : ''}
+              </div>
+            `).join('')}`
+          : "N/A";
+
+        // Sum locations for more "correct" total quantity if it has precision
+        let preciseTotalQty = 0;
+        if (Array.isArray(locs)) {
+          preciseTotalQty = locs.reduce((sum, l) => sum + (parseFloat(l.qty) || 0), 0);
+        } else {
+          preciseTotalQty = parseFloat(order.total_qty) || 0;
+        }
+
+        // Pricing calculation helper
+        function calculateSub(priceVal, qtyKg) {
+          const str = String(priceVal || "0");
+          let basePrice = 0, baseAmount = 1, baseUnit = 'kg';
+          const match = str.match(/(\d+(?:\.\d+)?)\s*(?:per|\/|Rs\.?)\s*(\d+)?\s*([a-zA-Z]+)/i);
+          if (match) {
+            basePrice = parseFloat(match[1]);
+            baseAmount = parseFloat(match[2]) || 1;
+            baseUnit = match[3].toLowerCase();
+          } else {
+            const numMatch = str.match(/[\d.]+/);
+            basePrice = numMatch ? parseFloat(numMatch[0]) : 0;
+          }
+          let unitInKg = 1;
+          if (baseUnit === 'g' || baseUnit === 'grams') unitInKg = baseAmount / 1000;
+          else if (baseUnit === 'kg' || baseUnit === 'kilogram') unitInKg = baseAmount;
+          else unitInKg = baseAmount;
+          return (basePrice * (qtyKg / unitInKg));
+        }
+
+        const sellerTotal = calculateSub(order.seller_price, preciseTotalQty).toFixed(2);
+        const finalTotal = calculateSub(order.unit_price, preciseTotalQty).toFixed(2);
+
+        if (order.status === "pending") {
+          pendingData.push(order);
+          pendingTbody.innerHTML += `
+            <tr id="row-${order.id}">
+              <td style="font-size:0.85rem; max-width:200px;">${order.customer_name || order.user_id}</td>
+              <td style="font-weight:500;">${order.product_name}</td>
+              <td style="color:#666; font-size:0.85rem;">Rs. ${sellerTotal} <br><small>${order.seller_price}</small></td>
+              <td style="font-weight:600; color:var(--blue);">Rs. ${finalTotal} <br><small>${order.unit_price}</small></td>
+              <td>${formatQuantity(order.available_qty)}</td>
+              <td style="font-family:'Courier New', monospace; font-size:0.85rem;">${locationsHtml}</td>
+              <td>
+                <div style="display:flex; gap:0.5em;">
+                  <button class="btn view-btn" style="font-size:0.85rem;" onclick="showAvailabilityInfo(${order.id}, '${order.available_qty}', ${preciseTotalQty}, '${order.product_name}')">Check Availability</button>
+                  <button class="btn accept-btn" style="font-size:0.85rem;" onclick="acceptOrder(${order.id})">Accept</button>
+                  <button class="btn reject-btn" style="font-size:0.85rem;" onclick="rejectOrder(${order.id})">Reject</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        } else if (order.status === "approved") {
+          acceptedTbody.innerHTML += `
+            <tr>
+              <td>${order.customer_name || order.user_id}</td>
+              <td>${order.product_name}</td>
+              <td style="color:#666; font-size:0.85rem;">Rs. ${sellerTotal} <br><small>${order.seller_price}</small></td>
+              <td style="font-weight:600; color:var(--blue);">Rs. ${finalTotal} <br><small>${order.unit_price}</small></td>
+              <td>${formatQuantity(order.available_qty)}</td>
+              <td>${locationsHtml}</td>
+              <td>Admin</td>
+              <td>${new Date(order.created_at).toLocaleString()}</td>
+            </tr>
+          `;
+        } else if (order.status === "rejected") {
+          rejectedTbody.innerHTML += `
+            <tr>
+              <td>${order.customer_name || order.user_id}</td>
+              <td>${order.product_name}</td>
+              <td style="color:#666; font-size:0.85rem;">Rs. ${sellerTotal} <br><small>${order.seller_price}</small></td>
+              <td style="font-weight:600; color:var(--blue);">Rs. ${finalTotal} <br><small>${order.unit_price}</small></td>
+              <td>${formatQuantity(order.available_qty)}</td>
+              <td>${locationsHtml}</td>
+              <td>Admin</td>
+              <td>${new Date(order.updated_at || order.created_at).toLocaleString()}</td>
+              <td>${order.rejection_reason || 'N/A'}</td>
+            </tr>
+          `;
+        }
+      });
+
+      if (pendingTbody.innerHTML === "") pendingTbody.innerHTML = "<tr><td colspan='7' style='text-align:center'>No pending requests</td></tr>";
+      if (acceptedTbody.innerHTML === "") acceptedTbody.innerHTML = "<tr><td colspan='7' style='text-align:center'>No accepted requests</td></tr>";
+      if (rejectedTbody.innerHTML === "") rejectedTbody.innerHTML = "<tr><td colspan='8' style='text-align:center'>No rejected requests</td></tr>";
+    }
+
+    function formatQuantity(val, styled = false) {
+      if (!val && val !== 0) return styled ? "0<span class='unit'>kg</span>" : "0kg";
+      const num = parseFloat(val) || 0;
+      const kg = Math.floor(Math.abs(num));
+      const g = Math.round((Math.abs(num) - kg) * 1000);
+      const isNegative = num < 0;
+
+      let kgStr = styled ? `${kg}<span class='unit'>kg</span>` : `${kg}kg`;
+      let gStr = styled ? `${g}<span class='unit'>g</span>` : `${g}g`;
+
+      let parts = [];
+      if (kg > 0 || (kg === 0 && g === 0)) parts.push(kgStr);
+      if (g > 0) parts.push(gStr);
+
+      let result = parts.join(styled ? '&nbsp;' : ' ');
+      return isNegative ? `-${result}` : result;
+    }
+
+    async function removeLocation(orderId, index) {
+      if (!confirm("Are you sure you want to remove this location? This will notify the customer and update the total price.")) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/orders/admin/${orderId}/locations`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locationIndex: index })
+        });
+
+        if (!res.ok) throw new Error("Failed to remove location");
+
+        alert("Location removed and customer notified.");
+        fetchAllOrders(); // Refresh table
+      } catch (err) {
+        console.error(err);
+        alert("Error removing location: " + err.message);
+      }
+    }
+
+    async function acceptOrder(id) {
+      if (!confirm("Are you sure you want to accept this order request?")) return;
+      const adminNote = prompt("Enter an optional note for the customer (e.g. managing from another seller):");
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/orders/admin/${id}/accept`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ adminNote: adminNote || '' })
+        });
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(errText || "Failed to accept");
+        }
+        showToast("Order accepted successfully!");
+        fetchAllOrders(); // Refresh tables
+      } catch (err) {
+        console.error(err);
+        showToast("Backend Error: " + err.message, "error", 6000);
+      }
+    }
+
+    async function rejectOrder(id) {
+      const reason = prompt("Enter a reason for rejection (optional):");
+      if (reason === null) return; // User cancelled prompt
+      try {
+        const res = await fetch(`http://localhost:5000/api/orders/admin/${id}/reject`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reason: reason })
+        });
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(errText || "Failed to reject");
+        }
+        showToast("Order rejected.");
+        fetchAllOrders(); // Refresh tables
+      } catch (err) {
+        console.error(err);
+        showToast("Backend Error: " + err.message, "error", 6000);
+      }
+    }
+
+
+
+    function showAvailabilityInfo(id, availableRaw, orderQty, productName) {
+      const available = parseFloat(availableRaw) || 0;
+      const afterApproval = available - orderQty;
+
+      const container = document.getElementById("availability-section");
+      container.style.display = "block";
+
+      document.getElementById("availability-title").textContent = `Availability Projection for ${productName}`;
+
+      const currentBox = document.getElementById("current-qty-box");
+      currentBox.innerHTML = formatQuantity(available, true);
+
+      const afterBox = document.getElementById("after-qty-box");
+      afterBox.innerHTML = formatQuantity(afterApproval, true);
+
+      if (afterApproval < 0) {
+        afterBox.classList.add("negative");
+      } else {
+        afterBox.classList.remove("negative");
+      }
+
+      // Scroll to section
+      container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Show a small toast notification
+    function showToast(message, type = 'success', timeout = 4000) {
+      let toast = document.createElement('div');
+      toast.className = 'leef-toast';
+      toast.textContent = message;
+      const bgColor = type === 'success' ? '#16a34a' : '#dc2626';
+      Object.assign(toast.style, {
+        position: 'fixed',
+        right: '20px',
+        bottom: '20px',
+        background: bgColor,
+        color: '#fff',
+        padding: '10px 14px',
+        borderRadius: '8px',
+        zIndex: 9999,
+        boxShadow: '0 6px 18px rgba(0,0,0,0.2)',
+        fontSize: '14px'
+      });
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.transition = 'opacity 300ms';
+        toast.style.opacity = '0';
+      }, timeout - 300);
+      setTimeout(() => toast.remove(), timeout);
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart - leef 🍃</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <style>
+    /* Top Navbar Styles (Matching Dashboard) */
+    .top-navbar {
+      background-color: rgba(10, 10, 10, 0.95);
+      border-bottom: 1px solid #333;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .navbar-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .navbar-logo {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: bold;
+      color: #4ade80;
+    }
+
+    .navbar-location {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-left: 2rem;
+    }
+
+    .navbar-nav {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 2rem;
+    }
+
+    .navbar-link {
+      text-decoration: none;
+      color: #eee;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s;
+    }
+
+    .navbar-link.active {
+      background-color: #10b981;
+      color: white;
+    }
+
+    .navbar-link:hover {
+      background-color: #333;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .top-navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .navbar-nav {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    /* Cart Specific Styles */
+    .cart-container {
+      display: flex;
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .cart-left {
+      flex: 2;
+    }
+
+    .cart-right {
+      flex: 1;
+    }
+
+    .qty-box {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 2px;
+      width: fit-content;
+    }
+
+    .qty-btn {
+      background: #333;
+      color: #fff;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qty-box input {
+      width: 30px;
+      text-align: center;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    .remove-btn {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .remove-btn:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    .totals p {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      color: #ccc;
+    }
+
+    .totals b {
+      font-size: 1.1rem;
+      color: #fff;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      background: linear-gradient(to right, #16a34a, #15803d);
+      color: white;
+      padding: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    .checkout-btn:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 900px) {
+      .cart-container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body class="">
+
+  <!-- Top Navbar -->
+  <nav class="top-navbar">
+    <div class="navbar-header">
+      <a href="index.html" class="navbar-logo">
+        leef 🍃
+      </a>
+      <div class="navbar-location">Colombo, Sri Lanka</div>
+    </div>
+    <ul class="navbar-nav">
+      <li><a href="customer-dashboard.html" class="navbar-link">Dashboard</a></li>
+      <li><a href="products.html" class="navbar-link">Products</a></li>
+      <li><a href="cart.html" class="navbar-link active">Cart</a></li>
+
+      <li><a href="feedback.html" class="navbar-link">Feedback</a></li>
+      <li><a href="returns.html" class="navbar-link">Refund</a></li>
+      <li><a href="profile.html" class="navbar-link ">Profile</a></li>
+      <li><a href="#" class="navbar-link"
+          onclick="sessionStorage.removeItem('user'); window.location.href='index.html'; return false;">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="cart-container">
+    <section class="cart-left">
+      <h1 class="page-title" style="margin-bottom: 1rem;">Shopping Cart</h1>
+
+      <div class="table-container"
+        style="background: #1a1a1a; padding: 1rem; border-radius: 1rem; border: 1px solid #333;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width: 40px; text-align: center;">
+                <input type="checkbox" id="selectAll" checked onchange="toggleSelectAll(this.checked)" style="accent-color: #10b981; transform: scale(1.2);">
+              </th>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Subtotal</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="cart-body">
+            <!-- Items inserted dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 1rem; text-align: right;">
+        <button class="btn btn-primary" style="background: #333; border: 1px solid #444;" onclick="renderCart()">Update cart</button>
+        <button class="btn btn-primary" style="background: rgba(239,68,68,0.2); color:#ef4444; border: 1px solid rgba(239,68,68,0.4); margin-left:10px;" onclick="resetCart()">Reset Cart</button>
+      </div>
+
+      <!-- Selected Items Cart (New) -->
+      <section id="selected-items-section" style="margin-top: 3rem; display: none;">
+        <h2 class="section-title" style="color: #4ade80;">Ready for Checkout</h2>
+        <div class="table-container"
+          style="background: #111; padding: 1rem; border-radius: 1rem; border: 1px solid #16a34a;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="selected-body">
+              <!-- Selected items only -->
+            </tbody>
+          </table>
+          <div id="surcharge-notice" style="margin-top: 1rem; display: none; background: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; padding: 0.8rem; border-radius: 8px; color: #f59e0b; font-size: 0.9rem;">
+            ⚠️ <strong>Small Order Surcharge:</strong> Orders under 800 Rupees incur an additional 500 LKR fee for efficient logistics.
+          </div>
+        </div>
+      </section>
+
+    </section>
+
+    <aside class="cart-right">
+      <div class="product-card" style="text-align: left;">
+        <h2 class="section-title" style="margin-bottom: 1rem;">Cart Totals</h2>
+        <div class="totals">
+          <p>Subtotal <span id="subtotal">Rs 0.00</span></p>
+          <p id="surcharge-row" style="display: none;">Small Order Fee <span id="surcharge-val" style="color: #f59e0b;">+ Rs 500.00</span></p>
+          <div style="display:flex; align-items:center; gap:0.5em; color: #f59e0b; font-size: 0.95em; margin: 0.8em 0;">
+            🪙 Your Coins: <span id="coinBalanceDisplay" style="font-weight:bold;">0.00</span>
+          </div>
+          <p>Coin Savings <span id="coins-discount" style="color: #4ade80;">- Rs 0.00</span></p>
+          <div style="border-top: 1px solid #333; margin: 0.5rem 0;"></div>
+          <p><b>Total</b> <span id="total" style="color: #4ade80; font-size: 1.2rem;">Rs 0.00</span></p>
+          <p style="font-size:0.8rem; color:#888; margin-top:0.5rem;">Earn 10 loyalty coins on every purchase!</p>
+        </div>
+        <button id="proceedBtn" class="checkout-btn">PROCEED TO CHECKOUT</button>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    function showToast(message, type = 'success') {
+      let container = document.getElementById('toast-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+      }
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+          <span>${message}</span>
+          <button onclick="this.parentElement.remove()" style="background:transparent; border:none; color:white; font-size:1.2rem; cursor:pointer; padding:0; margin-left:10px;">&times;</button>
+      `;
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => toast.classList.add('show'));
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    (function checkAuth() {
+      const userStr = sessionStorage.getItem('user');
+      if (!userStr) {
+        window.location.href = 'login.html';
+        return;
+      }
+      const user = JSON.parse(userStr);
+      if (user.role === 'admin') {
+        window.location.href = 'admin-dashboard.html';
+      } else if (user.role === 'seller') {
+        window.location.href = 'seller-dashboard.html';
+      }
+    })();
+
+    let items = JSON.parse(sessionStorage.getItem('cart')) || [];
+    let customerCoinBalance = 0;
+    let coinsUsedMap = {};
+    let selectedMap = {}; // index -> boolean
+
+    function toggleSelectAll(checked) {
+      items.forEach((_, i) => selectedMap[i] = checked);
+      renderCart();
+    }
+
+    function toggleSelectItem(index, checked) {
+      selectedMap[index] = checked;
+      renderCart();
+    }
+
+    function renderCart() {
+      const body = document.getElementById("cart-body");
+      const selectedBody = document.getElementById("selected-body");
+      const selectedSection = document.getElementById("selected-items-section");
+      
+      let subtotal = 0;
+      let totalCoinSavings = 0;
+      let remainingCoins = customerCoinBalance;
+      let selectedItemsList = [];
+
+      if (items.length === 0) {
+          body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#888;">Your cart is empty.</td></tr>';
+          if (selectedSection) selectedSection.style.display = 'none';
+          updateTotals(0, 0, remainingCoins);
+          return;
+      }
+
+      body.innerHTML = items.map((item, i) => {
+        if (selectedMap[i] === undefined) selectedMap[i] = true;
+        const isSelected = selectedMap[i];
+        
+        const priceStr = String(item.price);
+        let basePrice = 0, baseAmount = 1, baseUnit = 'kg';
+
+        const priceMatch = priceStr.match(/(\d+(?:\.\d+)?)\s*(?:per|\/|Rs\.?)\s*(\d+)?\s*([a-zA-Z]+)/i);
+        if (priceMatch) {
+          basePrice = parseFloat(priceMatch[1]);
+          baseAmount = parseFloat(priceMatch[2]) || 1;
+          baseUnit = priceMatch[3].toLowerCase();
+        } else {
+          const numMatch = priceStr.match(/[\d.]+/);
+          basePrice = numMatch ? parseFloat(numMatch[0]) : 0;
+        }
+
+        let unitInKg = 1;
+        if (baseUnit === 'g' || baseUnit === 'grams') unitInKg = baseAmount / 1000;
+        else if (baseUnit === 'kg' || baseUnit === 'kilograms') unitInKg = baseAmount;
+        else unitInKg = baseAmount;
+
+        const costMultiplier = item.qty / unitInKg;
+        const sub = basePrice * costMultiplier;
+        const price = basePrice;
+
+        const cp = parseFloat(item.coins_percent) || 0;
+        const userWantsCoins = coinsUsedMap[i] || false;
+        let coinSaving = 0;
+
+        if (isSelected) {
+          subtotal += sub;
+          if (cp > 0 && userWantsCoins && remainingCoins > 0) {
+            const potentialLimit = sub * (cp / 100);
+            coinSaving = Math.min(potentialLimit, remainingCoins);
+            remainingCoins -= coinSaving;
+            totalCoinSavings += coinSaving;
+          }
+          selectedItemsList.push({ ...item, subtotal: sub, coinSaving: coinSaving });
+        }
+        const finalSub = sub - coinSaving;
+
+        // Show "Use Coins" checkbox only if product has coins offer AND customer has coins
+        let coinUI = '';
+        if (cp > 0 && customerCoinBalance > 0) {
+          coinUI = `<div style="margin-top:4px;">
+            <label style="display:flex; align-items:center; gap:0.4em; cursor:pointer; color:#f59e0b; font-size:0.8rem;">
+              <input type="checkbox" ${userWantsCoins ? 'checked' : ''} onchange="toggleCoinUse(${i})" style="accent-color:#f59e0b;">
+              🪙 Use coins for ${cp}% off
+            </label>
+            ${coinSaving > 0 ? `<div style="color:#4ade80; font-size:0.7rem; margin-top:2px;">Saving Rs ${coinSaving.toFixed(2)}</div>` : ''}
+          </div>`;
+        } else if (cp > 0 && customerCoinBalance <= 0) {
+          coinUI = `<div style="color:#888; font-size:0.75rem; margin-top:4px;">🪙 ${cp}% coin offer (no coins yet)</div>`;
+        }
+
+        return `
+          <tr style="${!isSelected ? 'opacity: 0.5;' : ''}">
+            <td style="text-align: center; vertical-align: middle;">
+              <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelectItem(${i}, this.checked)" style="accent-color: #10b981; transform: scale(1.1); cursor: pointer;">
+            </td>
+            <td class="product-cell">
+              <div>
+                <div style="font-weight:600; color: #fff;">${item.name}</div>
+                <div style="font-size:0.85em;color:#9ca3af;">
+                  ${item.location_name ? `<span style="color:#4ade80;">📍 ${item.location_name}</span>` : ''} 
+                  ${item.district ? `(${item.district})` : ''}
+                </div>
+                <div style="font-size:0.75em;color:#888;">${item.orderId || ''}</div>
+                ${coinUI}
+              </div>
+            </td>
+            <td style="color: #ccc;">Rs ${price.toFixed(2)}</td>
+            <td>
+              <div style="display: flex; gap: 0.5em; align-items: center;">
+                <div class="qty-box" style="padding: 0.2rem 0.5rem; background: #222;">
+                  <button class="qty-btn" onclick="changeQty(${i}, 'kg', -1)">−</button>
+                  <input type="text" value="${Math.floor(item.qty)}" readonly />
+                  <span style="color:#888; font-size:0.8rem; margin-right: 0.3rem;">kg</span>
+                  <button class="qty-btn" onclick="changeQty(${i}, 'kg', 1)">+</button>
+                </div>
+                <div class="qty-box" style="padding: 0.2rem 0.5rem; background: #222;">
+                  <button class="qty-btn" onclick="changeQty(${i}, 'g', -100)">−</button>
+                  <input type="text" value="${Math.round((item.qty % 1) * 1000)}" readonly />
+                  <span style="color:#888; font-size:0.8rem; margin-right: 0.3rem;">g</span>
+                  <button class="qty-btn" onclick="changeQty(${i}, 'g', 100)">+</button>
+                </div>
+              </div>
+            </td>
+            <td style="color: #4ade80; font-weight: bold;">Rs ${isSelected ? finalSub.toFixed(2) : sub.toFixed(2)}${coinSaving > 0 ? `<div style="font-size:0.7rem; color:#f59e0b;">(-Rs ${coinSaving.toFixed(2)} coins)</div>` : ''}</td>
+            <td>
+              <button class="remove-btn" onclick="removeItem(${i})">&times;</button>
+            </td>
+          </tr>`;
+      }).join("");
+
+      // Logic to sync Select All checkbox
+      const selectAllBtn = document.getElementById('selectAll');
+      if (selectAllBtn) {
+        const allSelected = items.length > 0 && items.every((_, i) => selectedMap[i]);
+        selectAllBtn.checked = allSelected;
+      }
+
+      // Render Second Cart (Selected Items)
+      if (selectedItemsList.length > 0) {
+        selectedSection.style.display = 'block';
+        selectedBody.innerHTML = selectedItemsList.map(item => `
+          <tr>
+            <td>
+               <div style="font-weight:bold;">${item.name}</div>
+               <div style="font-size:0.8em; color:#888;">${item.location_name || ''}</div>
+            </td>
+            <td>Rs ${parseFloat(item.price).toFixed(2)}</td>
+            <td>${item.qty.toFixed(2)} units</td>
+            <td style="color:#4ade80;">Rs ${item.subtotal.toFixed(2)}</td>
+          </tr>
+        `).join('');
+      } else {
+        selectedSection.style.display = 'none';
+      }
+
+      // Surcharge Check
+      let surcharge = 0;
+      if (subtotal > 0 && subtotal < 800) {
+        surcharge = 500;
+        document.getElementById('surcharge-notice').style.display = 'block';
+        document.getElementById('surcharge-row').style.display = 'flex';
+        document.getElementById('surcharge-val').textContent = `+ Rs ${surcharge.toFixed(2)}`;
+      } else {
+        document.getElementById('surcharge-notice').style.display = 'none';
+        document.getElementById('surcharge-row').style.display = 'none';
+      }
+
+      updateTotals(subtotal, totalCoinSavings, remainingCoins, surcharge);
+    }
+
+    function updateTotals(subtotal, totalCoinSavings, remainingCoins, surcharge = 0) {
+      const finalTotal = subtotal + surcharge - totalCoinSavings;
+      document.getElementById("subtotal").textContent = `Rs ${subtotal.toFixed(2)}`;
+      document.getElementById("coins-discount").textContent = `- Rs ${totalCoinSavings.toFixed(2)}`;
+      document.getElementById("total").textContent = `Rs ${finalTotal.toFixed(2)}`;
+      document.getElementById("coinBalanceDisplay").textContent = remainingCoins.toFixed(2);
+      
+      // Save totals for next pages
+      sessionStorage.setItem('cartSurcharge', surcharge);
+    }
+
+    function toggleCoinUse(index) {
+      coinsUsedMap[index] = !coinsUsedMap[index];
+      renderCart();
+    }
+
+    async function changeQty(index, type, delta) {
+      let currentKg = Math.floor(items[index].qty);
+      let currentG = Math.round((items[index].qty % 1) * 1000);
+
+      if (type === 'kg') currentKg += delta;
+      if (type === 'g') currentG += delta;
+
+      if (currentKg < 0) currentKg = 0;
+      if (currentG < 0) currentG = 0;
+      if (currentG > 999) {
+        currentKg += Math.floor(currentG / 1000);
+        currentG = currentG % 1000;
+      }
+
+      let newQty = currentKg + (currentG / 1000);
+      let oldQty = items[index].qty;
+      let diff = newQty - oldQty;
+
+      if (diff === 0) return;
+
+      if (diff > 0) {
+        // Reserving more stock
+        try {
+          const res = await fetch(`http://localhost:5000/api/products/${items[index].id}/reserve-stock`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qty: diff })
+          });
+          if (!res.ok) {
+            const errData = await res.json();
+            showToast(errData.message || 'Not enough stock available.', 'error');
+            return;
+          }
+        } catch (err) {
+          console.error("Reserve stock error:", err);
+          showToast("Failed to reserve stock.", "error");
+          return;
+        }
+      } else {
+        // Releasing stock
+        try {
+          await fetch(`http://localhost:5000/api/products/${items[index].id}/release-stock`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qty: Math.abs(diff) })
+          });
+        } catch (err) {
+          console.error("Release stock error:", err);
+        }
+      }
+
+      if (newQty <= 0) {
+        return removeItem(index, true); // true = already released
+      }
+
+      items[index].qty = newQty;
+      sessionStorage.setItem('cart', JSON.stringify(items));
+      renderCart();
+    }
+
+    async function removeItem(index, alreadyReleased = false) {
+      const item = items[index];
+
+      if (!alreadyReleased && item.qty > 0) {
+        try {
+          await fetch(`http://localhost:5000/api/products/${item.id}/release-stock`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qty: item.qty })
+          });
+        } catch (err) {
+          console.error("Release stock error:", err);
+        }
+      }
+
+      items.splice(index, 1);
+
+      if (item.orderId && item.orderId.startsWith("#REQ-")) {
+        const reqId = parseInt(item.orderId.replace("#REQ-", ""));
+        let removedIds = JSON.parse(localStorage.getItem("removedOrders") || "[]");
+        if (!removedIds.includes(reqId)) {
+          removedIds.push(reqId);
+          localStorage.setItem("removedOrders", JSON.stringify(removedIds));
+        }
+      }
+      sessionStorage.setItem('cart', JSON.stringify(items));
+      renderCart();
+    }
+
+    async function resetCart() {
+      if (!confirm("Are you sure you want to clear the entire cart?")) return;
+      for (const item of items) {
+        if (item.qty > 0) {
+          try {
+            await fetch(`http://localhost:5000/api/products/${item.id}/release-stock`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ qty: item.qty })
+            });
+            if (item.orderId && item.orderId.startsWith("#REQ-")) {
+              const reqId = parseInt(item.orderId.replace("#REQ-", ""));
+              let removedIds = JSON.parse(localStorage.getItem("removedOrders") || "[]");
+              if (!removedIds.includes(reqId)) {
+                removedIds.push(reqId);
+                localStorage.setItem("removedOrders", JSON.stringify(removedIds));
+              }
+            }
+          } catch (e) { console.error(e); }
+        }
+      }
+      items = [];
+      selectedMap = {};
+      sessionStorage.setItem('cart', JSON.stringify(items));
+      renderCart();
+      showToast("Cart cleared and reset.", "success");
+    }
+
+    const BASE_URL = `http://${window.location.hostname}:5000`;
+
+    document.addEventListener('DOMContentLoaded', async function () {
+      const userStr = sessionStorage.getItem('user');
+
+      // Fetch coin balance
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          if (user.role === 'customer') {
+            const coinRes = await fetch(`${BASE_URL}/api/coins/${user.id}`);
+            if (coinRes.ok) {
+              const coinData = await coinRes.json();
+              customerCoinBalance = parseFloat(coinData.coins) || 0;
+            }
+          }
+        } catch (e) { console.error('Failed to fetch coins', e); }
+      }
+
+      // Sync cart items with latest product data (coins_percent etc.)
+      try {
+        const prodRes = await fetch(`${BASE_URL}/api/products/marketplace`);
+        if (prodRes.ok) {
+          const allProducts = await prodRes.json();
+          let cartUpdated = false;
+          items.forEach(item => {
+            // Try to match by id first, then by name
+            const match = allProducts.find(p => (item.id && p.id === item.id) || p.name === item.name);
+            if (match) {
+              if (!item.id) { item.id = match.id; cartUpdated = true; }
+              if (!item.coins_percent || item.coins_percent === 0) {
+                if (match.coins_percent && match.coins_percent > 0) {
+                  item.coins_percent = match.coins_percent;
+                  cartUpdated = true;
+                }
+              }
+            }
+          });
+          if (cartUpdated) {
+            sessionStorage.setItem('cart', JSON.stringify(items));
+          }
+        }
+      } catch (e) { console.error('Failed to sync product data', e); }
+
+      renderCart();
+      autoMergeApprovedOrders();
+    });
+
+    async function autoMergeApprovedOrders() {
+      const userStr = sessionStorage.getItem("user");
+      if (!userStr) return;
+
+      try {
+        const user = JSON.parse(userStr);
+        const res = await fetch(`http://localhost:5000/api/orders/customer/${user.id}`);
+        if (!res.ok) return;
+
+        const allOrders = await res.json();
+        let consumedIds = [];
+        let removedIds = [];
+        try {
+          consumedIds = JSON.parse(localStorage.getItem("consumedOrders") || "[]");
+          removedIds = JSON.parse(localStorage.getItem("removedOrders") || "[]");
+        } catch (e) { }
+
+        let cartChanged = false;
+        allOrders.forEach(o => {
+          if (o.status !== "approved" || consumedIds.includes(o.id) || removedIds.includes(o.id)) return;
+          
+          // Check if already in cart
+          const exists = items.some(item => item.orderId === `#REQ-${o.id}`);
+          if (exists) return;
+
+          let locs = o.locations;
+          if (typeof locs === "string") {
+            try { locs = JSON.parse(locs); } catch (e) { locs = []; }
+          }
+          if (!Array.isArray(locs)) return;
+
+          locs.forEach(loc => {
+            let basePrice = 0;
+            if (o.price) {
+              const priceMatch = String(o.price).match(/[\d.]+/);
+              if (priceMatch) basePrice = parseFloat(priceMatch[0]);
+            }
+
+            items.push({
+              orderId: `#REQ-${o.id}`,
+              id: o.product_id,
+              name: o.product_name,
+              price: basePrice,
+              qty: parseFloat(loc.qty) || 0,
+              district: loc.district || null,
+              location_name: loc.location || null,
+              img: o.image_url ? `http://localhost:5000/${o.image_url}` : "images/default.png",
+              seller_id: o.seller_id
+            });
+            cartChanged = true;
+          });
+        });
+
+        if (cartChanged) {
+          sessionStorage.setItem('cart', JSON.stringify(items));
+          renderCart();
+        }
+      } catch (err) { console.error("Auto-merge failed:", err); }
+    }
+
+    function addOrderLocationsToCart(orderIndex, btn) {
+      const order = approvedOrders[orderIndex];
+      let locs = order.locations;
+      if (typeof locs === "string") {
+        try { locs = JSON.parse(locs); } catch (e) { locs = []; }
+      }
+
+      locs.forEach(loc => {
+        // Extract numerical price first
+        let basePrice = 0;
+        if (order.price) {
+          const priceMatch = String(order.price).match(/[\d.]+/);
+          if (priceMatch) basePrice = parseFloat(priceMatch[0]);
+        }
+
+        items.push({
+          orderId: `#REQ-${order.id}`,
+          id: order.product_id,
+          name: order.product_name,
+          price: basePrice,
+          qty: parseFloat(loc.qty) || 0,
+          district: loc.district || null, // Store district info
+          img: order.image_url ? `http://localhost:5000/${order.image_url}` : "images/default.png"
+        });
+      });
+      sessionStorage.setItem('cart', JSON.stringify(items));
+
+      // Save this order ID into the consumed array so it disappears from the table next refresh
+      let consumedIds = [];
+      try {
+        const storedConsumed = localStorage.getItem("consumedOrders");
+        if (storedConsumed) consumedIds = JSON.parse(storedConsumed);
+      } catch (e) { }
+
+      if (!consumedIds.includes(order.id)) {
+        consumedIds.push(order.id);
+        localStorage.setItem("consumedOrders", JSON.stringify(consumedIds));
+      }
+
+      // Re-fetch orders so the UI updates and the consumed order immediately vanishes
+      renderCart();
+      renderApprovedOrders();
+      showToast("Items added to cart!", "success");
+    }
+
+    document.getElementById('proceedBtn').addEventListener('click', async function () {
+      const totalEl = document.getElementById('total');
+      const totalText = totalEl?.textContent || 'Rs 0.00';
+      const amount = parseFloat(totalText.replace(/[^0-9.]/g, '')) || 0;
+      if (amount <= 0) {
+        showToast('Your cart is empty.', 'error');
+        return;
+      }
+
+      const userStr = sessionStorage.getItem('user');
+      if (!userStr) {
+        showToast('Please login first.', 'error');
+        return;
+      }
+      const user = JSON.parse(userStr);
+
+      // Filter only selected items to proceed
+      const selectedItems = items.filter((_, i) => selectedMap[i]);
+      if (selectedItems.length === 0) {
+        showToast('Please select at least one item to checkout.', 'error');
+        return;
+      }
+
+      // Calculate total coins to spend (only for items where user checked 'Use Coins')
+      let totalSpend = 0;
+      let remaining = customerCoinBalance;
+      selectedItems.forEach((item, i) => {
+        const cp = parseFloat(item.coins_percent) || 0;
+        // Search the original items array to check if coins should be used
+        const originalIdx = items.indexOf(item);
+        if (cp > 0 && coinsUsedMap[originalIdx] && remaining > 0) {
+          const priceStr = String(item.price);
+          const price = parseFloat(priceStr) || 0;
+          const suffix = priceStr.replace(/[\d.]+/, '').trim().toLowerCase();
+          let unitInKg = 1;
+          if (suffix.includes('100g') || suffix.includes('100 g')) unitInKg = 0.1;
+          else if (suffix.includes('500g') || suffix.includes('500 g')) unitInKg = 0.5;
+          else if (suffix.includes('250g') || suffix.includes('250 g')) unitInKg = 0.25;
+          else if (suffix.includes('50g') || suffix.includes('50 g')) unitInKg = 0.05;
+          else if (suffix.includes('kg')) unitInKg = 1;
+          else if (suffix.includes('g')) {
+            const gMatch = suffix.match(/(\d+)\s*g/);
+            if (gMatch) unitInKg = parseFloat(gMatch[1]) / 1000;
+            else unitInKg = 0.001;
+          }
+          const costMul = item.qty / unitInKg;
+          const sub = price * costMul;
+          const potentialSaving = sub * (cp / 100);
+          const coinSaving = Math.min(potentialSaving, remaining);
+          remaining -= coinSaving;
+          totalSpend += coinSaving;
+        }
+      });
+
+      try {
+        if (totalSpend > 0) {
+          const spendRes = await fetch(`${BASE_URL}/api/coins/spend`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ customerId: user.id, coinsToSpend: totalSpend.toFixed(2) })
+          });
+          if (!spendRes.ok) {
+            const err = await spendRes.json();
+            showToast(err.error || 'Failed to spend coins', 'error');
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Coin API error', e);
+      }
+
+      // Save only selected items to checkout session
+      sessionStorage.setItem('checkoutItems', JSON.stringify(selectedItems));
+      sessionStorage.setItem('coinDiscount', totalSpend.toFixed(2));
+      const finalAmt = amount; // already includes surcharge if total display is correct
+      sessionStorage.setItem('checkoutAmount', finalAmt.toFixed(2));
+      window.location.href = 'order-confirm.html';
+    });
+  </script>
+</body>
+
+</html>

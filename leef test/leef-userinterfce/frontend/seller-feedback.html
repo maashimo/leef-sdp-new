@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Feedback - leef 🍃</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <style>
+        .feedback-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .feedback-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .feedback-card:hover {
+            border-color: #4ade80;
+            transform: translateY(-2px);
+        }
+
+        .product-info {
+            width: 120px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .product-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #eee;
+            line-break: anywhere;
+        }
+
+        .feedback-content {
+            flex-grow: 1;
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .customer-name {
+            font-weight: 700;
+            color: #fff;
+            font-size: 1.05rem;
+        }
+
+        .customer-email {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .rating-stars {
+            color: #fbbf24;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+        }
+
+        .comment-text {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .feedback-images {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .feedback-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #444;
+        }
+
+        .timestamp {
+            font-size: 0.75rem;
+            color: #666;
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: #111;
+            border-radius: 12px;
+            border: 1px dashed #333;
+            color: #888;
+        }
+
+        .top-navbar {
+            background-color: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid #333;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-logo {
+            text-decoration: none;
+            color: #4ade80;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            background: #333;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .btn-back:hover {
+            background: #444;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="top-navbar">
+        <a href="seller-dashboard.html" class="navbar-logo">leef 🍃</a>
+        <a href="seller-dashboard.html" class="btn-back">← Back to Dashboard</a>
+    </nav>
+
+    <div class="feedback-container">
+        <h1 style="margin-bottom: 0.5rem;">Product Feedbacks</h1>
+        <p style="color: #888; margin-bottom: 2rem;">What your customers are saying about your products.</p>
+
+        <div id="feedbackList">
+            <div style="text-align: center; padding: 2rem;">Loading feedback...</div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:5000';
+        const user = JSON.parse(sessionStorage.getItem('user'));
+
+        if (!user || user.role !== 'seller') {
+            window.location.href = 'login.html';
+        }
+
+        async function loadFeedback() {
+            try {
+                const res = await fetch(`${API}/api/feedback/seller/${user.id}`);
+                const feedback = await res.json();
+
+                const container = document.getElementById('feedbackList');
+                if (!feedback.length) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+                            <h3>No feedback yet</h3>
+                            <p>When customers review your products, they will appear here.</p>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = feedback.map(f => {
+                    const stars = '★'.repeat(f.rating) + '☆'.repeat(5 - f.rating);
+                    const date = new Date(f.created_at).toLocaleDateString(undefined, {
+                        year: 'numeric', month: 'long', day: 'numeric'
+                    });
+
+                    // Handle product image
+                    let pImg = 'https://via.placeholder.com/80';
+                    if (f.product_image) {
+                        pImg = f.product_image.startsWith('http') ? f.product_image : (f.product_image.startsWith('/') ? `${API}${f.product_image}` : `${API}/${f.product_image}`);
+                    }
+
+                    return `
+                        <div class="feedback-card">
+                            <div class="product-info">
+                                <img src="${pImg}" class="product-img" onerror="this.src='https://via.placeholder.com/80'">
+                                <div class="product-name">${f.product_name || 'Product Not Found'}</div>
+                            </div>
+                            <div class="feedback-content">
+                                <div class="feedback-header">
+                                    <div class="customer-info">
+                                        <span class="customer-name">${f.customer_name || 'Guest / Hidden Customer'}</span>
+                                        <span class="customer-email">${f.customer_email || ''}</span>
+                                    </div>
+                                    <div class="rating-stars">${stars}</div>
+                                </div>
+                                <div class="comment-text">"${f.comment || 'No comment provided.'}"</div>
+                                ${f.image_url ? `
+                                    <div class="feedback-images">
+                                        <img src="${API}${f.image_url}" class="feedback-img" onclick="openImageModal('${API}${f.image_url}')">
+                                    </div>
+                                ` : ''}
+                                <div class="timestamp">${date}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+                document.getElementById('feedbackList').innerHTML = `
+                    <div style="color:#ef4444; text-align:center; padding:2rem;">
+                        Failed to load feedback. Please try again later.
+                    </div>`;
+            }
+        }
+
+        function openImageModal(src) {
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.background = 'rgba(0,0,0,0.9)';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.zIndex = '10000';
+            modal.style.cursor = 'zoom-out';
+            modal.onclick = () => modal.remove();
+
+            const img = document.createElement('img');
+            img.src = src;
+            img.style.maxWidth = '90%';
+            img.style.maxHeight = '90%';
+            img.style.borderRadius = '8px';
+            img.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
+
+            modal.appendChild(img);
+            document.body.appendChild(modal);
+        }
+
+        loadFeedback();
+    </script>
+</body>
+
+</html>

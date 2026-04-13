@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Terms - leef 🍃</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #d1d5db;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(10, 10, 10, 0.97);
+            border-bottom: 1px solid #1f2937;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            text-decoration: none;
+            font-weight: 700;
+            color: #4ade80;
+            font-size: 1.15rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #4ade80;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1c0a26 0%, #0a0a0a 60%);
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(168, 85, 247, 0.1);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            border-radius: 20px;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            color: #9ca3af;
+            font-size: 1rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .last-updated {
+            font-size: 0.78rem;
+            color: #6b7280;
+            margin-top: 0.75rem;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 5rem;
+        }
+
+        .toc {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .toc h3 {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .toc-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 2rem;
+        }
+
+        .toc ol {
+            padding-left: 1.25rem;
+        }
+
+        .toc li {
+            font-size: 0.88rem;
+            line-height: 2;
+        }
+
+        .toc a {
+            color: #c084fc;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+            scroll-margin-top: 80px;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section p {
+            font-size: 0.92rem;
+            line-height: 1.75;
+            color: #d1d5db;
+            margin-bottom: 0.75rem;
+        }
+
+        .section ul {
+            padding-left: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .section ul li {
+            font-size: 0.92rem;
+            line-height: 1.75;
+            color: #d1d5db;
+            margin-bottom: 0.3rem;
+        }
+
+        .role-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        @media(max-width:600px) {
+            .role-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .toc-cols {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .role-card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .role-card h3 {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .role-card ul {
+            padding-left: 1rem;
+        }
+
+        .role-card ul li {
+            font-size: 0.85rem;
+            line-height: 1.8;
+            color: #d1d5db;
+        }
+
+        .info-box {
+            background: rgba(168, 85, 247, 0.06);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .info-box p {
+            color: #d8b4fe;
+            font-size: 0.88rem;
+            margin: 0;
+        }
+
+        .warn-box {
+            background: rgba(239, 68, 68, 0.06);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .warn-box p {
+            color: #fca5a5;
+            font-size: 0.88rem;
+            margin: 0;
+        }
+
+        .ok-box {
+            background: rgba(74, 222, 128, 0.06);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .ok-box p {
+            color: #86efac;
+            font-size: 0.88rem;
+            margin: 0;
+        }
+
+        .fee-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .fee-table th {
+            background: #111827;
+            color: #9ca3af;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .fee-table td {
+            padding: 0.75rem 1rem;
+            font-size: 0.88rem;
+            color: #d1d5db;
+            border-bottom: 1px solid #111827;
+        }
+
+        .fee-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .policy-nav {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .policy-nav a {
+            background: #111827;
+            border: 1px solid #1f2937;
+            color: #9ca3af;
+            text-decoration: none;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .policy-nav a:hover,
+        .policy-nav a.active {
+            background: rgba(168, 85, 247, 0.1);
+            color: #c084fc;
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        .cta {
+            background: linear-gradient(135deg, #1c0a26, #0a0a1a);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 14px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .cta h2 {
+            color: #fff;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cta p {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .cta-btns {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta a {
+            display: inline-block;
+            background: #7c3aed;
+            color: #fff;
+            padding: 0.65rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+
+        .cta a.secondary {
+            background: #374151;
+        }
+
+        .cta a:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">leef 🍃</a>
+        <ul class="nav-links">
+            <li><a href="customer-dashboard.html">Dashboard</a></li>
+            <li><a href="seller-dashboard.html">Seller Portal</a></li>
+            <li><a href="admin-dashboard.html">Admin</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-badge">📜 Legal</div>
+        <h1>Business Terms &amp; Conditions</h1>
+        <p>The rules that govern the use of leef for all customers, sellers, and platform participants.</p>
+        <div class="last-updated">Last updated: March 2026 · Governed by Sri Lankan law</div>
+    </div>
+
+    <div class="container">
+
+        <div class="policy-nav">
+            <a href="return-policy.html">Return Policy</a>
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="business-terms.html" class="active">Business Terms</a>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <h3>📑 Table of Contents</h3>
+            <div class="toc-cols">
+                <ol>
+                    <li><a href="#acceptance">Acceptance of Terms</a></li>
+                    <li><a href="#platform">The leef Platform</a></li>
+                    <li><a href="#accounts">Accounts &amp; Registration</a></li>
+                    <li><a href="#customers">Customer Obligations</a></li>
+                    <li><a href="#sellers">Seller Obligations</a></li>
+                </ol>
+                <ol start="6">
+                    <li><a href="#fees">Fees &amp; Commissions</a></li>
+                    <li><a href="#prohibited">Prohibited Conduct</a></li>
+                    <li><a href="#ip">Intellectual Property</a></li>
+                    <li><a href="#liability">Limitation of Liability</a></li>
+                    <li><a href="#termination">Termination</a></li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section" id="acceptance">
+            <div class="section-title">1. ✅ Acceptance of Terms</div>
+            <p>By registering an account or placing an order on leef, you agree to be bound by these Terms and
+                Conditions and all applicable Sri Lankan laws and regulations. If you do not agree, you may not use the
+                platform.</p>
+            <p>These terms apply to all users: <strong>customers, registered sellers, and administrators</strong>. leef
+                reserves the right to update these terms at any time with reasonable notice.</p>
+            <div class="ok-box">
+                <p>🟢 Continuing to use leef after a terms update constitutes acceptance of the revised terms.</p>
+            </div>
+        </div>
+
+        <div class="section" id="platform">
+            <div class="section-title">2. 🌿 The leef Platform</div>
+            <p>leef is an online marketplace connecting customers with verified agricultural product sellers across Sri
+                Lanka. leef acts as an <strong>intermediary platform</strong> and is not directly responsible for the
+                quality or delivery of individual seller products, beyond its dispute resolution role.</p>
+            <ul>
+                <li>leef reserves the right to modify, suspend, or discontinue any service at any time.</li>
+                <li>The platform is intended for lawful commerce in food and agricultural products only.</li>
+                <li>leef may run promotional offers, loyalty programmes, and discount schemes at its sole discretion.
+                </li>
+            </ul>
+        </div>
+
+        <div class="section" id="accounts">
+            <div class="section-title">3. 👤 Accounts &amp; Registration</div>
+            <ul>
+                <li>You must be at least <strong>18 years old</strong> to register an account.</li>
+                <li>You are responsible for maintaining the security of your login credentials.</li>
+                <li>You must provide accurate and truthful information during registration.</li>
+                <li>One individual or business may hold only one seller account without prior written approval from
+                    leef.</li>
+                <li>leef may suspend or terminate accounts that violate these terms without notice.</li>
+            </ul>
+        </div>
+
+        <div class="section" id="customers">
+            <div class="section-title">4. 🛒 Customer Obligations</div>
+            <div class="role-card" style="border: 1px solid #1f2937;">
+                <h3 style="color:#4ade80; margin-bottom:0.75rem;">Customer Responsibilities</h3>
+                <ul>
+                    <li>Ensure the delivery address provided is accurate and accessible.</li>
+                    <li>Be available to receive orders during the agreed delivery window.</li>
+                    <li>Inspect orders upon delivery and raise any issues within 48 hours.</li>
+                    <li>Not misuse the refund or loyalty coin system.</li>
+                    <li>Treat sellers, drivers, and leef staff with respect.</li>
+                    <li>Pay for all confirmed orders — repeated non-payment on COD orders may result in account
+                        suspension.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="sellers">
+            <div class="section-title">5. 🏪 Seller Obligations</div>
+            <div class="role-cards">
+                <div class="role-card">
+                    <h3 style="color:#c084fc;">Product Standards</h3>
+                    <ul>
+                        <li>List only products you are authorised to sell.</li>
+                        <li>Ensure products are fresh, accurately described, and priced in LKR.</li>
+                        <li>Maintain stock levels and mark unavailable items promptly.</li>
+                        <li>Comply with all Sri Lankan food safety regulations.</li>
+                    </ul>
+                </div>
+                <div class="role-card">
+                    <h3 style="color:#c084fc;">Order Fulfilment</h3>
+                    <ul>
+                        <li>Fulfil confirmed orders on time.</li>
+                        <li>Notify leef immediately if an order cannot be fulfilled.</li>
+                        <li>Package products appropriately for safe delivery.</li>
+                        <li>Cooperate with leef's dispute resolution process.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="warn-box" style="margin-top:1rem;">
+                <p>🔴 Repeated failed fulfilments or unresolved disputes may result in seller account suspension and
+                    removal from the platform.</p>
+            </div>
+        </div>
+
+        <div class="section" id="fees">
+            <div class="section-title">6. 💰 Fees &amp; Commissions</div>
+            <table class="fee-table">
+                <thead>
+                    <tr>
+                        <th>Fee Type</th>
+                        <th>Rate</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Platform Commission</td>
+                        <td>5% per order</td>
+                        <td>Deducted from seller payout automatically</td>
+                    </tr>
+                    <tr>
+                        <td>Customer Loyalty Coins Earned</td>
+                        <td>2% of order value</td>
+                        <td>Card payments only; not applicable for COD</td>
+                    </tr>
+                    <tr>
+                        <td>Refund Processing</td>
+                        <td>Free</td>
+                        <td>Seller bears the cost of approved refunds</td>
+                    </tr>
+                    <tr>
+                        <td>Late Fulfilment Penalty</td>
+                        <td>Case-by-case</td>
+                        <td>Applied after repeated delays</td>
+                    </tr>
+                    <tr>
+                        <td>Seller Registration</td>
+                        <td>Free</td>
+                        <td>Subject to admin approval</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="info-box">
+                <p>🟣 Loyalty coins have no cash value and cannot be transferred between accounts.</p>
+            </div>
+        </div>
+
+        <div class="section" id="prohibited">
+            <div class="section-title">7. 🚫 Prohibited Conduct</div>
+            <p>The following are strictly prohibited on the leef platform:</p>
+            <ul>
+                <li>Listing counterfeit, stolen, or illegally obtained products.</li>
+                <li>Manipulating reviews, ratings, or the loyalty coin system.</li>
+                <li>Harassing customers, sellers, drivers, or leef staff.</li>
+                <li>Circumventing platform fees by transacting off-platform.</li>
+                <li>Creating multiple accounts for the purpose of abuse.</li>
+                <li>Uploading harmful, illegal, or offensive content.</li>
+                <li>Attempting to hack, scrape, or disrupt leef's systems.</li>
+            </ul>
+            <div class="warn-box">
+                <p>🔴 Violations may result in immediate account termination and referral to relevant authorities.</p>
+            </div>
+        </div>
+
+        <div class="section" id="ip">
+            <div class="section-title">8. ©️ Intellectual Property</div>
+            <p>All leef branding, logos, UI design, and software are the exclusive property of leef (Pvt) Ltd. You may
+                not reproduce, copy, or distribute them without written permission.</p>
+            <p>By uploading product images or content to leef, you grant leef a non-exclusive, royalty-free licence to
+                use that content for platform purposes (e.g. product listings, marketing).</p>
+        </div>
+
+        <div class="section" id="liability">
+            <div class="section-title">9. ⚖️ Limitation of Liability</div>
+            <p>leef is not liable for:</p>
+            <ul>
+                <li>Loss or damage arising from seller errors, delivery failures, or product quality issues beyond our
+                    direct control.</li>
+                <li>Indirect, consequential, or incidental damages arising from use of the platform.</li>
+                <li>Service interruptions, data loss, or security breaches beyond our reasonable control.</li>
+            </ul>
+            <p>Our maximum aggregate liability to any user shall not exceed the total amount paid by that user in the
+                preceding 30 days.</p>
+        </div>
+
+        <div class="section" id="termination">
+            <div class="section-title">10. 🔚 Termination</div>
+            <p>Either party may terminate the relationship at any time:</p>
+            <ul>
+                <li><strong>Users</strong> may delete their accounts at any time via the Profile page. Outstanding
+                    obligations (e.g. pending orders, refunds) must be resolved first.</li>
+                <li><strong>leef</strong> may suspend or permanently terminate accounts for violations of these terms,
+                    with or without notice depending on severity.</li>
+            </ul>
+            <p>Upon termination, your personal data will be handled as described in our <a href="privacy-policy.html"
+                    style="color:#c084fc;">Privacy Policy</a>.</p>
+            <p style="margin-top:1rem; color:#6b7280; font-size:0.85rem;">These Terms are governed by the laws of the
+                Democratic Socialist Republic of Sri Lanka. Any disputes shall be resolved in the courts of Colombo.</p>
+        </div>
+
+        <div class="cta">
+            <h2>Questions about our Terms?</h2>
+            <p>Our legal and support teams are available to clarify any aspect of these Terms.</p>
+            <div class="cta-btns">
+                <a href="mailto:legal@leef.lk">Contact Legal Team</a>
+                <a href="customer-dashboard.html" class="secondary">Back to Dashboard</a>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

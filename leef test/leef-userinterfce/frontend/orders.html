@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - leef 🍃</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        .top-navbar {
+            background-color: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid #333;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar-logo {
+            text-decoration: none;
+            font-weight: bold;
+            color: #4ade80;
+            font-size: 1.2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .table-container {
+            background: #141414;
+            border: 1px solid #222;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #eee;
+        }
+        .table th, .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #222;
+        }
+        .table th {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #888;
+            background: #1a1a1a;
+        }
+        .status-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body style="background:#0a0a0a; color:#eee; font-family:'Inter', sans-serif;">
+    <nav class="top-navbar">
+        <a href="index.html" class="navbar-logo">leef 🍃</a>
+        <div style="display:flex; gap:1.5rem;">
+            <a href="customer-dashboard.html" style="color:#eee; text-decoration:none;">Dashboard</a>
+            <a href="products.html" style="color:#eee; text-decoration:none;">Shop</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">My Order History</h1>
+        <p style="color: #888; font-size: 0.9rem;">View and download invoices for all your successful orders.</p>
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Product</th>
+                        <th>Date</th>
+                        <th>Total Price</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-tbody">
+                    <tr><td colspan="7" style="text-align:center; padding:3rem; color:#888;">Loading orders...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:5000';
+        const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+        if (!user) window.location.href = 'login.html';
+
+        async function loadOrders() {
+            try {
+                const res = await fetch(`${API}/api/orders/customer/${user.id}`);
+                const orders = await res.json();
+                
+                const tbody = document.getElementById('orders-tbody');
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:3rem;">No orders found.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = orders.map(o => {
+                    const date = new Date(o.created_at).toLocaleDateString();
+                    const idPrefix = o.source === 'request' ? 'REQ' : 'ORD';
+                    const isCompleted = o.status === 'completed';
+                    
+                    return `
+                        <tr>
+                            <td>#${idPrefix}-${o.id}</td>
+                            <td>
+                                <strong>${o.product_name}</strong><br>
+                                <small style="color:#666">${o.shop_name || 'Seller'}</small>
+                            </td>
+                            <td>${date}</td>
+                            <td style="color:#4ade80; font-weight:bold;">Rs ${parseFloat(o.total_price).toFixed(2)}</td>
+                            <td>
+                                <span style="font-size:0.8rem; color:${o.payment_status==='paid'?'#4ade80':'#fbbf24'}">
+                                    ${o.payment_status==='paid'?'✅ Paid':'⏳ Pending'}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge" style="background:${getStatusColor(o.status)}22; color:${getStatusColor(o.status)}">
+                                    ${o.status.toUpperCase()}
+                                </span>
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:0.5rem;">
+                                    ${isCompleted ? `<button class="btn-small" style="background:#059669; color:#fff;" onclick='generateInvoice(${JSON.stringify(o).replace(/'/g, "&apos;")})'>Invoice</button>` : ''}
+                                    <button class="btn-small" style="background:#222; color:#ccc;" onclick="window.location.href='product-details.html?id=${o.product_id}'">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'completed': return '#4ade80';
+                case 'pending': return '#fbbf24';
+                case 'rejected': return '#f87171';
+                default: return '#60a5fa';
+            }
+        }
+
+        function generateInvoice(order) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(22);
+            doc.setTextColor(22, 163, 74);
+            doc.text("leef - Order Invoice", 105, 20, { align: 'center' });
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 28, { align: 'center' });
+
+            doc.setTextColor(0);
+            doc.setFontSize(12);
+            doc.text("Order Detail:", 14, 45);
+            doc.setFontSize(10);
+            doc.text(`Order ID: #${order.source==='request'?'REQ':'ORD'}-${order.id}`, 14, 52);
+            doc.text(`Date: ${new Date(order.created_at).toLocaleDateString()}`, 14, 57);
+            doc.text(`Customer: ${user.name || user.username}`, 14, 62);
+            doc.text(`Seller Shop: ${order.shop_name || 'N/A'}`, 14, 67);
+
+            doc.autoTable({
+                startY: 75,
+                head: [['Item', 'Qty', 'Unit Price', 'Total']],
+                body: [[
+                    order.product_name,
+                    `${parseFloat(order.quantity).toFixed(2)} units`,
+                    `Rs ${parseFloat(order.unit_price).toFixed(2)}`,
+                    `Rs ${parseFloat(order.total_price).toFixed(2)}`
+                ]],
+                theme: 'striped',
+                headStyles: { fillColor: [22, 163, 74] },
+            });
+
+            const finalY = doc.lastAutoTable.finalY + 15;
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text(`Total Amount: Rs ${parseFloat(order.total_price).toFixed(2)}`, 140, finalY);
+
+            doc.save(`leef_invoice_${order.id}.pdf`);
+        }
+
+        loadOrders();
+    </script>
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback - leef 🍃</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <style>
+    .top-navbar {
+      background-color: rgba(10, 10, 10, 0.95);
+      border-bottom: 1px solid #333;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .navbar-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .navbar-logo {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: bold;
+      color: #4ade80;
+    }
+
+    .navbar-nav {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 2rem;
+    }
+
+    .navbar-link {
+      text-decoration: none;
+      color: #eee;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s;
+    }
+
+    .navbar-link.active {
+      background-color: #10b981;
+      color: white;
+    }
+
+    .navbar-link:hover {
+      background-color: #333;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 600px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      color: #eee;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.6rem;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #fff;
+      margin-top: 0.3rem;
+      box-sizing: border-box;
+    }
+
+    .form-input:focus {
+      border-color: #4ade80;
+      outline: none;
+    }
+
+    .order-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 0.7em;
+      padding: 1em 1.2em;
+      margin-bottom: 1em;
+      gap: 1em;
+      flex-wrap: wrap;
+    }
+
+    .order-item.highlight {
+      background: rgba(22, 163, 74, 0.1);
+      border-color: rgba(22, 163, 74, 0.3);
+    }
+
+    .star-rating {
+      display: flex;
+      flex-direction: row-reverse;
+      gap: 4px;
+    }
+
+    .star-rating input {
+      display: none;
+    }
+
+    .star-rating label {
+      font-size: 1.5rem;
+      color: #555;
+      cursor: pointer;
+      transition: color 0.1s;
+    }
+
+    .star-rating input:checked~label,
+    .star-rating label:hover,
+    .star-rating label:hover~label {
+      color: #fbbf24;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="top-navbar">
+    <div class="navbar-header">
+      <a href="index.html" class="navbar-logo">leef 🍃</a>
+    </div>
+    <ul class="navbar-nav">
+      <li><a href="customer-dashboard.html" class="navbar-link">Dashboard</a></li>
+      <li><a href="products.html" class="navbar-link">Products</a></li>
+      <li><a href="cart.html" class="navbar-link">Cart</a></li>
+      <li><a href="feedback.html" class="navbar-link active">Feedback</a></li>
+      <li><a href="returns.html" class="navbar-link">Refund</a></li>
+      <li><a href="profile.html" class="navbar-link">Profile</a></li>
+      <li><a href="index.html" class="navbar-link" onclick="sessionStorage.removeItem('user')">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="main-content container" style="max-width: 900px; margin: 2em auto;">
+    <h1 class="page-title">Product Feedback</h1>
+    <p class="page-subtitle" style="margin-bottom: 2em;">Share your experience and help others make informed decisions
+    </p>
+
+    <div class="product-card" style="text-align: left; background: #1a1a1a; border: 1px solid #333;">
+      <h2 class="section-title" style="margin-bottom: 1.5em; border-bottom: 1px solid #333; padding-bottom: 1rem;">
+        Completed Orders</h2>
+      <div id="orders-list" style="display:flex; flex-direction:column; gap:1em;">
+        <div style="text-align:center; color:#888; padding:2em;">Loading your completed orders...</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Feedback Modal -->
+  <div id="feedbackModal" class="modal-overlay">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h3 class="section-title" style="margin:0;">Leave Feedback</h3>
+        <button onclick="closeFeedback()"
+          style="background:transparent; border:none; font-size:1.5rem; color:#fff; cursor:pointer;">&times;</button>
+      </div>
+
+      <form id="feedbackForm" onsubmit="submitFeedback(event)">
+        <input type="hidden" id="fbOrderId">
+        <input type="hidden" id="fbProductId">
+        <input type="hidden" id="fbSellerId">
+
+        <div style="display:flex; gap:1rem; margin-bottom: 1rem;">
+          <div style="flex:1;">
+            <label style="font-size:0.9rem; color:#ccc;">Product</label>
+            <input id="fbProduct" readonly class="form-input" style="opacity: 0.7;">
+          </div>
+          <div style="width:140px;">
+            <label style="font-size:0.9rem; color:#ccc;">Order ID</label>
+            <input id="fbOrder" readonly class="form-input" style="opacity: 0.7;">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; margin-bottom: 1.5rem;">
+          <div>
+            <label style="font-size:0.9rem; color:#ccc; display:block; margin-bottom:0.5rem;">Product Quality</label>
+            <div class="star-rating" id="productStars">
+              <input type="radio" name="productRating" id="pr5" value="5"><label for="pr5">★</label>
+              <input type="radio" name="productRating" id="pr4" value="4"><label for="pr4">★</label>
+              <input type="radio" name="productRating" id="pr3" value="3"><label for="pr3">★</label>
+              <input type="radio" name="productRating" id="pr2" value="2"><label for="pr2">★</label>
+              <input type="radio" name="productRating" id="pr1" value="1"><label for="pr1">★</label>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:0.9rem; color:#ccc; display:block; margin-bottom:0.5rem;">Delivery Service</label>
+            <div class="star-rating" id="sellerStars">
+              <input type="radio" name="sellerRating" id="sr5" value="5"><label for="sr5">★</label>
+              <input type="radio" name="sellerRating" id="sr4" value="4"><label for="sr4">★</label>
+              <input type="radio" name="sellerRating" id="sr3" value="3"><label for="sr3">★</label>
+              <input type="radio" name="sellerRating" id="sr2" value="2"><label for="sr2">★</label>
+              <input type="radio" name="sellerRating" id="sr1" value="1"><label for="sr1">★</label>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label style="font-size:0.9rem; color:#ccc;">Comments (optional)</label>
+          <textarea id="fbComments" rows="4" placeholder="Write about product quality, packaging, delivery..."
+            class="form-input"></textarea>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label style="font-size:0.9rem; color:#ccc; display:block; margin-bottom:0.5rem;">Photo (optional)</label>
+          <label for="fbImage"
+            style="display:flex; align-items:center; gap:0.8rem; padding:0.8rem 1rem; background:#111; border:1px dashed #444; border-radius:8px; cursor:pointer; transition:border-color 0.2s;"
+            onmouseover="this.style.borderColor='#4ade80'" onmouseout="this.style.borderColor='#444'">
+            <span style="font-size:1.4rem;">📷</span>
+            <div>
+              <div style="color:#ccc; font-size:0.9rem;">Click to upload an image</div>
+              <div style="color:#666; font-size:0.78rem;">JPG, PNG up to 5MB — helps verify your review</div>
+            </div>
+          </label>
+          <input type="file" id="fbImage" name="image" accept="image/*" style="display:none;"
+            onchange="previewFbImage(this)">
+          <div id="fbImagePreview" style="margin-top:0.6rem; display:none;">
+            <img id="fbImagePreviewImg" style="max-height:100px; border-radius:8px; border:1px solid #333;">
+            <button type="button" onclick="clearFbImage()"
+              style="display:block; margin-top:0.3rem; background:transparent; border:none; color:#f87171; cursor:pointer; font-size:0.85rem;">✕
+              Remove image</button>
+          </div>
+        </div>
+
+        <div id="fbError" style="color:#f87171; font-size:0.9rem; margin-bottom:0.8rem; display:none;"></div>
+
+        <div style="display:flex; gap:0.6rem; justify-content:flex-end;">
+          <button type="button" onclick="closeFeedback()" class="btn"
+            style="background: #333; color: #fff;">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="fbSubmitBtn">Submit Feedback</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000';
+    const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+
+    if (!user) {
+      sessionStorage.setItem('redirectAfterLogin', 'feedback.html');
+      window.location.href = 'login.html';
+    }
+
+    async function loadOrders() {
+      const list = document.getElementById('orders-list');
+      try {
+        const res = await fetch(`${API}/api/orders/customer/${user.id}`);
+        const orders = await res.json();
+        const now = new Date();
+        const approved = orders.filter(o => {
+          if (o.status !== 'approved' && o.status !== 'completed') return false;
+          const completionDate = new Date(o.updated_at || o.created_at);
+          const diffDays = (now - completionDate) / (1000 * 60 * 60 * 24);
+          return diffDays <= 30; // Within 1 month
+        });
+
+        if (approved.length === 0) {
+          list.innerHTML = '<div style="text-align:center;color:#888;padding:2em;">No orders from the last 30 days found. You can only leave feedback within 1 month of an order.</div>';
+          return;
+        }
+
+        // Check which orders already have feedback
+        const feedbackChecks = await Promise.all(
+          approved.map(o => fetch(`${API}/api/feedback/order/${o.id}`).then(r => r.json()))
+        );
+
+        list.innerHTML = '';
+        approved.forEach((order, idx) => {
+          const alreadySubmitted = feedbackChecks[idx]?.submitted;
+          const imgUrl = order.image_url ? `${API}${order.image_url}` : 'https://via.placeholder.com/48x48?text=🍃';
+          const div = document.createElement('div');
+          div.className = `order-item${!alreadySubmitted ? ' highlight' : ''}`;
+          div.innerHTML = `
+            <div style="display:flex; align-items:center; gap:1.2em;">
+              <img src="${imgUrl}" alt="${order.product_name}" onerror="this.src='https://via.placeholder.com/64x64?text=🍃'"
+                style="width:64px; height:64px; object-fit:cover; border-radius:0.8em; border: 1px solid #333;">
+              <div>
+                <div style="font-weight:700; color: #fff; font-size:1.1rem; margin-bottom: 0.2rem;">${order.product_name || 'Unknown Product'}</div>
+                <div style="font-size:0.85em; color:#9ca3af; margin-bottom: 0.2rem;">Order: #REQ-${order.id} &nbsp;•&nbsp; ${new Date(order.updated_at || order.created_at).toLocaleDateString()}</div>
+                <div style="color: #4ade80; font-weight: 700; font-size: 0.95rem;">Total Paid: Rs. ${parseFloat(order.total_price || 0).toLocaleString()}</div>
+              </div>
+            </div>
+            ${alreadySubmitted
+              ? `<div style="color:#4ade80; font-weight:600; font-size:0.9em;">⭐ Review Submitted</div>`
+              : `<div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.4em;">
+                  <div style="font-size:0.78rem; color:#fbbf24; font-weight:600;">🪙 Earn up to 15 coins!</div>
+                  <button class="btn btn-primary" style="padding:0.5em 1.2em; font-size:0.9rem; font-weight:700;"
+                    onclick="openFeedback('${order.product_name}', ${order.id}, ${order.product_id}, ${order.seller_id || 'null'})">Leave Feedback</button>
+                  <div style="font-size:0.72rem; color:#9ca3af;">+10 base · +5 with photo</div>
+                </div>`
+            }
+          `;
+          list.appendChild(div);
+        });
+      } catch (e) {
+        list.innerHTML = `<div style="color:#f87171;text-align:center;padding:2em;">Failed to load orders: ${e.message}</div>`;
+      }
+    }
+
+    function openFeedback(productName, orderId, productId, sellerId) {
+      document.getElementById('fbProduct').value = productName;
+      document.getElementById('fbOrder').value = '#REQ-' + orderId;
+      document.getElementById('fbOrderId').value = orderId;
+      document.getElementById('fbProductId').value = productId;
+      document.getElementById('fbSellerId').value = sellerId || '';
+      document.getElementById('fbError').style.display = 'none';
+      document.getElementById('feedbackModal').style.display = 'flex';
+    }
+
+    function closeFeedback() {
+      document.getElementById('feedbackModal').style.display = 'none';
+      document.getElementById('feedbackForm').reset();
+    }
+
+    async function submitFeedback(e) {
+      e.preventDefault();
+      const btn = document.getElementById('fbSubmitBtn');
+      const errDiv = document.getElementById('fbError');
+      errDiv.style.display = 'none';
+
+      const productRating = document.querySelector('input[name="productRating"]:checked')?.value;
+      const sellerRating = document.querySelector('input[name="sellerRating"]:checked')?.value;
+
+      if (!productRating || !sellerRating) {
+        errDiv.textContent = 'Please select both a product and seller rating.';
+        errDiv.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      try {
+        // Use FormData for multipart (image upload support)
+        const fd = new FormData();
+        fd.append('userId', user.id);
+        fd.append('orderId', document.getElementById('fbOrderId').value);
+        fd.append('productId', document.getElementById('fbProductId').value);
+        fd.append('sellerId', document.getElementById('fbSellerId').value || '');
+        fd.append('productRating', productRating);
+        fd.append('sellerRating', sellerRating);
+        fd.append('comment', document.getElementById('fbComments').value);
+        const imgFile = document.getElementById('fbImage').files[0];
+        if (imgFile) fd.append('image', imgFile);
+
+        const res = await fetch(`${API}/api/feedback`, { method: 'POST', body: fd });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to submit');
+
+        closeFeedback();
+        await loadOrders();
+        showCoinClaimBanner(data.coinsAvailable || 10);
+      } catch (err) {
+        errDiv.textContent = err.message;
+        errDiv.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit Feedback';
+      }
+    }
+
+    function previewFbImage(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('fbImagePreviewImg').src = e.target.result;
+          document.getElementById('fbImagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function clearFbImage() {
+      document.getElementById('fbImage').value = '';
+      document.getElementById('fbImagePreview').style.display = 'none';
+    }
+
+    function showToast(msg, color = '#16a34a') {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      Object.assign(t.style, {
+        position: 'fixed', right: '20px', bottom: '20px',
+        background: color, color: '#fff', padding: '12px 18px',
+        borderRadius: '8px', zIndex: 99999, boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+        fontWeight: '600'
+      });
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+    let _pendingCoins = 0;
+
+    function showCoinClaimBanner(coins) {
+      _pendingCoins = coins;
+      let existing = document.getElementById('coinClaimBanner');
+      if (existing) existing.remove();
+
+      const banner = document.createElement('div');
+      banner.id = 'coinClaimBanner';
+      Object.assign(banner.style, {
+        position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+        background: '#1a1a1a', border: '1px solid #fbbf24', borderRadius: '12px',
+        padding: '1rem 1.5rem', zIndex: 99999,
+        boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+        display: 'flex', alignItems: 'center', gap: '1.2rem', flexWrap: 'wrap',
+        maxWidth: '420px', width: '90%'
+      });
+      banner.innerHTML = `
+        <div style="font-size:1.8rem;">🪙</div>
+        <div style="flex:1;">
+          <div style="color:#fbbf24; font-weight:700; font-size:1rem;">You earned ${coins} loyalty coins!</div>
+          <div style="color:#9ca3af; font-size:0.82rem; margin-top:2px;">Claim them now or dismiss — your choice.</div>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button onclick="claimCoins()" style="background:#fbbf24; color:#000; border:none; border-radius:8px; padding:0.45rem 1rem; font-weight:700; cursor:pointer; font-size:0.9rem;">Claim</button>
+          <button onclick="document.getElementById('coinClaimBanner').remove()" style="background:#333; color:#fff; border:none; border-radius:8px; padding:0.45rem 0.8rem; cursor:pointer; font-size:0.9rem;">✕</button>
+        </div>
+      `;
+      document.body.appendChild(banner);
+    }
+
+    async function claimCoins() {
+      const banner = document.getElementById('coinClaimBanner');
+      try {
+        const res = await fetch(`${API}/api/coins/add`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customerId: user.id, coins: _pendingCoins })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed');
+        if (banner) banner.remove();
+        showToast(`+${_pendingCoins} coins added! Balance: ${data.newBalance.toFixed(0)} 🪙`, '#d97706');
+      } catch (err) {
+        showToast('Could not claim coins. Try again.', '#ef4444');
+      }
+    }
+
+    loadOrders();
+  </script>
+</body>
+
+</html>

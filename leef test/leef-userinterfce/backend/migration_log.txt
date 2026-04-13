@@ -1,0 +1,8 @@
+Starting schema update...
+DB Config: {"host":"localhost","user":"root","database":"leef-db"}
+Connected to database.
+Adding column: district
+Adding column: delivery_address
+Adding column: locations
+Database schema updated successfully.
+Connection closed.

@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "name": "leef-sdp-new",
+  "rootDirectory": "leef test/leef-userinterfce/frontend",
+  "builds": [
+    {
+      "src": "**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}

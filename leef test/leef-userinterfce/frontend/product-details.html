@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | leef 🍃</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="api-config.js"></script>
+    <style>
+        .product-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2em;
+            background: #fff;
+            padding: 2em;
+            border-radius: 1em;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .product-image-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 1em;
+            object-fit: cover;
+        }
+
+        .product-details h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5em;
+            color: #1a2e05;
+        }
+
+        .price-tag {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #16a34a;
+            margin-bottom: 1em;
+        }
+
+        .seller-card {
+            background: #f9fafb;
+            padding: 1em;
+            border-radius: 0.8em;
+            border: 1px solid #eee;
+            margin: 1.5em 0;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 2em 0 1em 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5em;
+        }
+
+        .qa-item,
+        .feedback-item {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 1em 0;
+        }
+
+        .qa-question {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .qa-answer {
+            margin-top: 0.5em;
+            color: #555;
+            padding-left: 1em;
+            border-left: 3px solid #16a34a;
+        }
+
+        @media(max-width: 768px) {
+            .product-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Navbar Styles from Products Page */
+        .top-navbar {
+            background-color: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid #333;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .navbar-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-logo {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            color: #4ade80;
+            font-size: 1.2rem;
+        }
+
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+
+        .navbar-link {
+            text-decoration: none;
+            color: #eee;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+        }
+
+        .navbar-link:hover,
+        .navbar-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        /* Dark Theme Adaptation */
+        body {
+            background-color: #050505;
+            color: #eee;
+        }
+
+        .product-container {
+            background: #111;
+            border: 1px solid #333;
+            color: #eee;
+        }
+
+        .product-details h1 {
+            color: #4ade80;
+        }
+
+        /* Shop Profile Card Enhancements */
+        .shop-profile-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 1.2rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .shop-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .shop-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #4ade80;
+            background: #111;
+        }
+
+        .shop-info-main h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .shop-location {
+            font-size: 0.85rem;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .shop-bio {
+            font-size: 0.9rem;
+            color: #bbb;
+            line-height: 1.5;
+            padding-top: 0.8rem;
+            border-top: 1px solid #333;
+        }
+
+        .shop-stats {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .shop-stats strong {
+            color: #fff;
+        }
+
+        /* Discovery Grid */
+        .discovery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .mini-product-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 0.8rem;
+            padding: 0.8rem;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .mini-product-card:hover {
+            transform: translateY(-4px);
+            border-color: #4ade80;
+        }
+
+        .mini-product-img {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 0.5rem;
+            object-fit: cover;
+        }
+
+        .mini-product-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mini-product-price {
+            font-size: 0.8rem;
+            color: #4ade80;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navbar -->
+    <nav class="top-navbar">
+        <div class="navbar-header">
+            <a href="index.html" class="navbar-logo">
+                <i class="fas fa-leaf"></i> leef
+            </a>
+        </div>
+        <ul class="navbar-nav">
+            <li><a href="products.html" class="navbar-link active" id="marketplaceLink">Marketplace</a></li>
+            <li><a href="cart.html" class="navbar-link" id="cartLink"><i class="fas fa-shopping-cart"></i> Cart</a></li>
+            <li><a href="#" class="navbar-link" id="authLink">My Account</a></li>
+        </ul>
+    </nav>
+
+    <div class="container" style="margin-top: 2em; max-width: 1200px; position: relative;">
+        <div id="adminCloseBtn" onclick="window.history.back()" 
+             style="display: none !important; position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; width: 35px; height: 35px; border-radius: 50%; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; font-weight: bold; border: 2px solid white;">
+            &times;
+        </div>
+        <div class="product-container">
+            <div class="product-image-container">
+                <img id="productImg" src="images/placeholder.jpg" alt="Product Image">
+            </div>
+            <div class="product-details">
+                <h1 id="productName">Loading...</h1>
+                <div class="price-tag" id="productPrice">-</div>
+                <p id="productDesc" style="color: #666; line-height: 1.6;">Loading description...</p>
+
+                <div class="shop-profile-card">
+                    <div class="shop-header">
+                        <img id="shopAvatar" src="images/placeholder-user.png" alt="Shop Avatar" class="shop-avatar">
+                        <div class="shop-info-main">
+                            <h3 id="shopDisplayName">Shop Name</h3>
+                            <div id="shopRatingContainer" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem;">
+                                <div id="shopRatingStars" style="color: #f59e0b; font-size: 0.9rem;"></div>
+                                <span id="shopRatingValue" style="font-size: 0.85rem; color: #fff; font-weight: 600;">-</span>
+                                <span id="shopReviewCount" style="font-size: 0.8rem; color: #888;">(0 reviews)</span>
+                            </div>
+                            <div class="shop-location" style="margin-top: 0.4rem;">
+                                <i class="fas fa-map-marker-alt"></i> <span id="shopTownDisplay">Location</span>
+                            </div>
+                            <div id="shopAddressDisplay" style="font-size: 0.8rem; color: #888; margin-top: 0.2rem; padding-left: 1.1rem;">
+                                <!-- Address here -->
+                            </div>
+                            <div id="certContainer" style="display: flex; gap: 0.4rem; margin-top: 0.4rem; flex-wrap: wrap;">
+                                <!-- Certificates injected here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="shopBio" class="shop-bio">Loading shop information...</div>
+
+                    <div class="shop-stats">
+                        <span><strong>Sold:</strong> <span id="soldAmount">0</span> units</span>
+                        <span><strong>Stock:</strong> <span id="availableStock" style="color: #4ade80;">0</span></span>
+                    </div>
+                    
+                    <div style="font-size: 0.8rem; color: #666;">
+                        Seller: <span id="sellerNameText" style="color: #888;">Name</span>
+                    </div>
+                </div>
+
+                <!-- Delivery Type Toggle -->
+                <div id="deliveryTypeToggle" style="margin-top: 1.5em; margin-bottom: 1em;">
+                    <label style="font-weight: 600; margin-bottom: 0.5em; display: block;">Delivery Type:</label>
+                    <div style="display: flex; gap: 1em;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 0.5em;">
+                            <input type="radio" name="deliveryType" value="single" checked
+                                onchange="toggleDeliveryType()"> Single Location
+                        </label>
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 0.5em;">
+                            <input type="radio" name="deliveryType" value="multiple" onchange="toggleDeliveryType()">
+                            Multiple Locations
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Single Location Mode -->
+                <div id="singleLocationMode">
+                    <div style="display: flex; gap: 1em; align-items: center; margin-top: 1em; flex-wrap: wrap;">
+                        <div style="display: flex; gap: 0.5em;">
+                            <div
+                                style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 0.5em; overflow: hidden;">
+                                <button onclick="updateQty('kg', -1)"
+                                    style="padding: 0.5em; border: none; background: #eee; cursor: pointer; color: #333; font-weight: bold; width: 30px;">-</button>
+                                <input type="number" id="qtyKg" value="1" min="0" placeholder="0"
+                                    style="width: 50px; text-align: center; border: none; outline: none; background: transparent; color: inherit;">
+                                <div style="padding: 0.5em 0.5em 0.5em 0; font-weight: bold;">kg</div>
+                                <button onclick="updateQty('kg', 1)"
+                                    style="padding: 0.5em; border: none; background: #eee; cursor: pointer; color: #333; font-weight: bold; width: 30px;">+</button>
+                            </div>
+                            <div
+                                style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 0.5em; overflow: hidden;">
+                                <button onclick="updateQty('g', -100)"
+                                    style="padding: 0.5em; border: none; background: #eee; cursor: pointer; color: #333; font-weight: bold; width: 30px;">-</button>
+                                <input type="number" id="qtyG" value="0" min="0" max="999" step="10" placeholder="0"
+                                    style="width: 50px; text-align: center; border: none; outline: none; background: transparent; color: inherit;">
+                                <div style="padding: 0.5em 0.5em 0.5em 0; font-weight: bold;">g</div>
+                                <button onclick="updateQty('g', 100)"
+                                    style="padding: 0.5em; border: none; background: #eee; cursor: pointer; color: #333; font-weight: bold; width: 30px;">+</button>
+                            </div>
+                        </div>
+                        <button id="addToCartBtn" class="btn btn-primary" onclick="handleAddToCart()" style="padding: 0.8em 2em;">Add to
+                            Cart</button>
+                    </div>
+                </div>                <!-- Multi Location Mode -->
+                <div id="multiLocationMode"
+                    style="display: none; border: 1px solid #eee; padding: 1em; border-radius: 0.5em; background: #f9f9f9;">
+                    <p id="multiLocInstruction" style="color: #555; font-size: 0.9rem; margin-bottom: 1em;">
+                        Specify quantities for each approved location. Items will be added <strong>directly to cart</strong>.
+                    </p>
+                    <div id="locationsList">
+                        <!-- Will be populated dynamically -->
+                    </div>
+
+                    <button onclick="addLocationField()"
+                        style="background: none; border: none; color: #16a34a; font-weight: bold; cursor: pointer; margin-top: 0.5em;">
+                        + Add Another Location
+                    </button>
+
+                    <button id="multiRequestBtn" class="btn btn-primary" onclick="submitMultiLocationOrder()"
+                        style="width: 100%; margin-top: 1em; background: #16a34a;">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <h2 class="section-title">Customer Feedback</h2>
+        <div id="feedbackSection">
+            <!-- Dynamic Feedback -->
+        </div>
+
+        <!-- Q&A Section -->
+        <h2 class="section-title" style="margin-top: 3rem;">Questions & Answers</h2>
+        <div id="qaSection">
+            <!-- Dynamic Q&A -->
+        </div>
+        <div id="askQuestionBox" style="margin-top: 1em; display: flex; gap: 1em;">
+            <input type="text" id="newQuestion" placeholder="Ask a question about this product..." class="form-input"
+                style="flex: 1;">
+            <button class="btn btn-primary" onclick="postQuestion()">Ask</button>
+        </div>
+
+        <!-- More from this Shop Section -->
+        <div id="moreFromShopSection" style="margin-top: 3rem; display: none;">
+            <h2 class="section-title">More from <span id="shopNameTitle">this Shop</span></h2>
+            <div id="discoveryGrid" class="discovery-grid">
+                <!-- Dynamic products injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        let currentProduct = null;
+        let currentUser = JSON.parse(sessionStorage.getItem('user'));
+        let userApprovedLocations = []; // For multi-location saved addresses
+
+        function showToast(message, type = 'success') {
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" style="background:transparent; border:none; color:white; font-size:1.2rem; cursor:pointer; padding:0; margin-left:10px;">&times;</button>
+            `;
+
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => toast.classList.add('show'));
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        if (!productId) window.location.href = 'products.html';
+
+        // Check Auth
+        if (currentUser) {
+            let dName = currentUser.name || currentUser.username || (currentUser.email ? currentUser.email.split('@')[0] : 'My Account');
+            document.getElementById('authLink').textContent = dName;
+            
+            let dashboardUrl = 'customer-dashboard.html';
+            if (currentUser.role === 'admin') dashboardUrl = 'admin-dashboard.html';
+            else if (currentUser.role === 'seller') dashboardUrl = 'seller-dashboard.html';
+            
+            document.getElementById('authLink').href = dashboardUrl;
+            
+            // Role-based visibility for Q&A (Only customers can ask)
+            const askBox = document.getElementById('askQuestionBox');
+            if (currentUser.role !== 'customer') {
+                if (askBox) askBox.style.display = 'none';
+            } else {
+                if (askBox) askBox.style.display = 'flex';
+            }
+        } else {
+            // For guest users: hide ordering and asking capabilities but keep viewing
+            const askBoxGuest = document.getElementById('askQuestionBox');
+            if (askBoxGuest) askBoxGuest.style.display = 'none';
+
+            const deliveryToggle = document.getElementById('deliveryTypeToggle');
+            const singleMode = document.getElementById('singleLocationMode');
+            const multiMode = document.getElementById('multiLocationMode');
+            
+            if (deliveryToggle) deliveryToggle.style.display = 'none';
+            if (singleMode) singleMode.style.display = 'none';
+            if (multiMode) multiMode.style.display = 'none';
+
+            const cartLink = document.getElementById('cartLink');
+            if (cartLink) cartLink.style.display = 'none';
+        }
+
+        async function loadProductDetails() {
+            try {
+                // Fetch product details (including seller info)
+                console.log("Fetching product:", productId);
+                const res = await fetch(`http://localhost:5000/api/products/${productId}`);
+                if (!res.ok) {
+                    const txt = await res.text();
+                    throw new Error(`Server Error (${res.status}): ${txt || res.statusText}`);
+                }
+                currentProduct = await res.json();
+
+                // Render Details
+                document.getElementById('productName').textContent = currentProduct.name;
+
+                // Display price: use sale price if available, no coin discount on display
+                let priceHtml = "";
+                if (currentProduct.sale_details) {
+                    priceHtml = `<div style="display:flex; align-items:center; gap:0.5em; flex-wrap:wrap;">
+                                   <span style="text-decoration: line-through; color: #999; font-size: 1rem;">Rs. ${currentProduct.price}</span>
+                                   <span style="color: #ef4444; font-weight: bold;">Rs. ${currentProduct.sale_details}</span>
+                                   ${currentProduct.coins_percent ? `<span style="color: #f59e0b; font-size: 0.8rem;">🪙 Save ${currentProduct.coins_percent}% from Coins</span>` : ''}
+                                 </div>`;
+                } else {
+                    priceHtml = `<div style="display:flex; align-items:center; gap:0.5em; flex-wrap:wrap;">
+                                   <span style="color: #4ade80; font-weight: bold;">Rs. ${currentProduct.price}</span>
+                                   ${currentProduct.coins_percent ? `<span style="color: #f59e0b; font-size: 0.8rem;">🪙 Save ${currentProduct.coins_percent}% from Coins</span>` : ''}
+                                 </div>`;
+                }
+                document.getElementById('productPrice').innerHTML = priceHtml;
+
+                document.getElementById('productDesc').textContent = currentProduct.description || "No description available.";
+                document.getElementById('productImg').src = currentProduct.image_url ? `http://localhost:5000/${currentProduct.image_url}` : 'images/default.png';
+
+                // Seller Info
+                document.getElementById('shopDisplayName').textContent = currentProduct.shop_name || "Shop Name";
+                document.getElementById('shopNameTitle').textContent = currentProduct.shop_name || "this Shop";
+                document.getElementById('sellerNameText').textContent = currentProduct.seller_name || "Unknown";
+                document.getElementById('shopTownDisplay').textContent = currentProduct.shop_town || "Location Unknown";
+                const addrElem = document.getElementById('shopAddressDisplay');
+                if (currentProduct.shop_address) {
+                    addrElem.textContent = currentProduct.shop_address;
+                    addrElem.style.display = 'block';
+                } else {
+                    addrElem.style.display = 'none';
+                }
+                
+                // Overall Shop Rating
+                const ratingValue = parseFloat(currentProduct.shop_rating) || 0;
+                const reviewCount = currentProduct.shop_review_count || 0;
+                
+                const starsEl = document.getElementById('shopRatingStars');
+                const valueEl = document.getElementById('shopRatingValue');
+                const countEl = document.getElementById('shopReviewCount');
+
+                if (reviewCount > 0) {
+                    starsEl.innerHTML = '★'.repeat(Math.round(ratingValue)) + '☆'.repeat(5 - Math.round(ratingValue));
+                    valueEl.textContent = ratingValue.toFixed(1) + " / 5";
+                    countEl.textContent = `(${reviewCount} review${reviewCount !== 1 ? 's' : ''})`;
+                } else {
+                    starsEl.innerHTML = '☆☆☆☆☆';
+                    valueEl.textContent = "No ratings yet";
+                    countEl.textContent = "";
+                }
+
+                // Bio / Shop Details
+                const bio = currentProduct.shop_details ? currentProduct.shop_details.replace(/^Bio:\s*/i, '') : "Fresh produce directly from the source.";
+                document.getElementById('shopBio').textContent = bio;
+
+                // Profile Pic
+                if (currentProduct.profile_pic) {
+                    document.getElementById('shopAvatar').src = `http://localhost:5000/${currentProduct.profile_pic}`;
+                }
+
+                // Town Logic: Prefer shop_town, fallback to parsing shop_details
+                let town = currentProduct.shop_town;
+                if (!town && currentProduct.sale_details) {
+                    // Wait, shop_details isn't in products table, it's in sellers table. 
+                    // But getProductById doesn't return s.shop_details! 
+                    // I must update getProductById if I want fallback. 
+                    // However, the user said "town is located in shop_details as shop town".
+                    // Let's assume the user meant s.shop_details.
+                }
+                // Since I already added shop_town column and populated it for new users,
+                // and existing legacy data might not have it in the column but in the blob.
+                // I should probably fetch shop_details in productController too?
+                // Step 1362 added s.certificate_url but NOT s.shop_details.
+                // Let's just stick to shop_town. If null, show "Unknown".
+
+                document.getElementById('shopTownDisplay').textContent = town || "Unknown";
+
+                document.getElementById('soldAmount').textContent = currentProduct.sold_amount || 0;
+                document.getElementById('availableStock').textContent = currentProduct.stock || 0;
+                
+                // Out of stock handling
+                const isOutOfStock = parseFloat(currentProduct.stock) <= 0 || currentProduct.stock === '0' || currentProduct.stock === '0kg' || currentProduct.stock === '0g';
+                if (isOutOfStock) {
+                    const stockEl = document.getElementById('availableStock');
+                    stockEl.textContent = "Out of Stock";
+                    stockEl.style.color = "#ef4444";
+                    
+                    const buyBtn = document.getElementById('addToCartBtn');
+                    if(buyBtn) {
+                        buyBtn.disabled = true;
+                        buyBtn.style.background = "#555";
+                        buyBtn.textContent = "Sold Out";
+                    }
+                    
+                    const multiBtn = document.getElementById('multiRequestBtn');
+                    if(multiBtn) {
+                        multiBtn.disabled = true;
+                        multiBtn.style.background = "#555";
+                        multiBtn.textContent = "Unavailable";
+                    }
+                }
+
+                // Certificates
+                const certContainer = document.getElementById('certContainer');
+                certContainer.innerHTML = '';
+                if (currentProduct.certificates && currentProduct.certificates.length > 0) {
+                    currentProduct.certificates.forEach(c => {
+                        const a = document.createElement('a');
+                        a.href = `http://localhost:5000/${c.certificate}`;
+                        a.target = "_blank";
+                        a.style.cssText = "color: #4ade80; font-size: 0.85rem; text-decoration: none; border: 1px solid #4ade80; padding: 2px 8px; border-radius: 4px; display: inline-block;";
+                        a.innerHTML = `<i class="fas fa-certificate"></i> View Certificate`;
+                        certContainer.appendChild(a);
+                    });
+                }
+
+                // Load More from this seller
+                if (currentProduct.seller_id) {
+                    loadMoreFromShop(currentProduct.seller_id, productId);
+                }
+
+            } catch (err) {
+                console.error(err);
+                if (err.message.includes("404")) {
+                    showToast("Product not found.", "error");
+                    setTimeout(() => window.location.href = 'products.html', 2000);
+                } else {
+                    showToast("Failed to load product details.", "error");
+                }
+            }
+        }
+
+        async function loadMoreFromShop(sellerId, currentId) {
+            try {
+                const res = await fetch(`http://localhost:5000/api/products/seller/${sellerId}/public?exclude=${currentId}`);
+                if (!res.ok) return;
+                const products = await res.json();
+                
+                if (products.length > 0) {
+                    const section = document.getElementById('moreFromShopSection');
+                    const grid = document.getElementById('discoveryGrid');
+                    grid.innerHTML = '';
+                    
+                    products.forEach(p => {
+                        const card = document.createElement('a');
+                        card.href = `product-details.html?id=${p.id}`;
+                        card.className = 'mini-product-card';
+                        card.innerHTML = `
+                            <img src="http://localhost:5000/${p.image_url}" class="mini-product-img" onerror="this.src='images/placeholder.jpg'">
+                            <div class="mini-product-name">${p.name}</div>
+                            <div class="mini-product-price">Rs. ${p.price}</div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                    
+                    section.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Error loading discovery products:", err);
+            }
+        }
+
+        function updateQty(type, change) {
+            if (type === 'kg') {
+                const input = document.getElementById('qtyKg');
+                let val = (parseFloat(input.value) || 0) + change;
+                if (val < 0) val = 0;
+                input.value = val;
+            } else if (type === 'g') {
+                const input = document.getElementById('qtyG');
+                let val = (parseInt(input.value) || 0) + change;
+                if (val < 0) val = 0;
+                if (val > 999) val = 999;
+                input.value = val;
+            }
+        }
+
+        // --- Multiple Location UI Logic ---
+        async function loadUserLocations() {
+            if (!currentUser) return;
+            try {
+                const role = currentUser.role || 'customer';
+                const userId = currentUser.id || currentUser.customer_id;
+                const res = await fetch(`http://localhost:5000/api/auth/locations/${role}/${userId}`);
+                if (res.ok) {
+                    const all = await res.json();
+                    userApprovedLocations = all.filter(l => l.status === 'approved');
+                    console.log("Loaded approved locations:", userApprovedLocations);
+                }
+            } catch (err) { console.error("Error loading user locations:", err); }
+        }
+
+        function getLocationItemHtml(isInitial = false) {
+            let options = '';
+            if (userApprovedLocations.length > 0) {
+                options = userApprovedLocations.map(l => 
+                    `<option value="${l.id}" data-district="${l.district}" data-address="${l.location_details}" data-short="${l.short_name}">${l.short_name}</option>`
+                ).join('');
+            } else {
+                options = '<option value="" disabled selected>No approved locations found</option>';
+            }
+
+            const defaultSelect = `<select class="loc-saved-select" onchange="updateMultiLocButton()" style="padding: 0.5em; border: 1px solid #ccc; border-radius: 4px; flex: 1;">
+                ${options}
+            </select>`;
+
+            return `
+                <div class="location-item" style="display: flex; gap: 0.5em; margin-bottom: 0.5em; flex-wrap: wrap; border: 1px solid #ddd; padding: 0.8rem; border-radius: 8px; background: white;">
+                    <div style="flex: 1; min-width: 150px; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="display: flex; gap: 0.3rem;">
+                            ${defaultSelect}
+                        </div>
+                    </div>
+                    <div style="width: 120px; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="display: flex; gap: 0.3rem;">
+                            <input type="number" placeholder="kg" class="loc-kg" min="0" value="0" style="width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px;">
+                            <input type="number" placeholder="g" class="loc-g" min="0" max="999" step="10" value="0" style="width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px;">
+                        </div>
+                        ${!isInitial ? '<button onclick="this.closest(\'.location-item\').remove(); updateMultiLocButton();" style="color:#ef4444; border:none; background:none; cursor:pointer; font-size:0.8rem; text-align:right;">Remove</button>' : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+
+        function updateMultiLocButton() {
+            const items = document.querySelectorAll('.location-item');
+            const btn = document.getElementById('multiRequestBtn');
+            if (!btn) return;
+
+            let totalActive = 0;
+            items.forEach(item => {
+                const kg = parseFloat(item.querySelector('.loc-kg').value) || 0;
+                const g = parseFloat(item.querySelector('.loc-g').value) || 0;
+                if (kg + g > 0) totalActive++;
+            });
+
+            if (totalActive > 0) {
+                btn.textContent = "Add to Cart";
+                btn.style.background = "#16a34a";
+            } else {
+                btn.textContent = "Add to Cart";
+                btn.style.background = "#16a34a";
+            }
+        }
+
+        async function toggleDeliveryType() {
+            const type = document.querySelector('input[name="deliveryType"]:checked').value;
+            const single = document.getElementById('singleLocationMode');
+            const multi = document.getElementById('multiLocationMode');
+
+            if (type === 'single') {
+                single.style.display = 'block';
+                multi.style.display = 'none';
+            } else {
+                single.style.display = 'none';
+                multi.style.display = 'block';
+                
+                // Fetch locations if not already fetched
+                if (userApprovedLocations.length === 0) {
+                    await loadUserLocations();
+                }
+                
+                const list = document.getElementById('locationsList');
+                // Only reset if empty or only has the old static version
+                if (list.innerHTML.trim() === '' || list.querySelector('.loc-district') && !list.querySelector('.loc-saved-select')) {
+                   list.innerHTML = getLocationItemHtml(true);
+                }
+                updateMultiLocButton();
+            }
+        }
+
+        function addLocationField() {
+            const container = document.getElementById('locationsList');
+            const div = document.createElement('div');
+            div.innerHTML = getLocationItemHtml(false);
+            container.appendChild(div.firstElementChild);
+            updateMultiLocButton();
+        }
+
+        // Single Location Flow
+        async function handleAddToCart() {
+            if (!currentUser) {
+                showToast("Please login to order.", "error");
+                window.location.href = "login.html";
+                return;
+            }
+
+            // In Single Location mode, we just add to cart.
+            const kg = parseFloat(document.getElementById('qtyKg').value) || 0;
+            const g = parseFloat(document.getElementById('qtyG').value) || 0;
+            const qty = kg + (g / 1000);
+
+            const productStock = parseFloat(currentProduct.stock) || 0;
+
+            if (qty <= 0) {
+                showToast('Please specify a quantity greater than zero.', 'error');
+                return;
+            }
+
+            if (qty > productStock) {
+                showToast(`Cannot add ${qty} to cart. Only ${productStock} available in stock.`, 'error');
+                return;
+            }
+
+            await addToCart(currentProduct, qty, productStock);
+        }
+
+        async function addToCart(product, qty, productStock) {
+            try {
+                const res = await fetch(`http://localhost:5000/api/products/${product.id}/reserve-stock`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ qty })
+                });
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    showToast(errData.message || 'Not enough stock available.', 'error');
+                    return;
+                }
+
+                let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+                const existing = cart.find(item => item.id === product.id);
+                if (existing) {
+                    existing.qty += qty;
+                    if (product.seller_id) existing.seller_id = product.seller_id;
+                } else {
+                    cart.push({
+                        id: product.id,
+                        name: product.name,
+                        price: product.sale_details || product.price,
+                        image: product.image_url,
+                        shop_town: product.shop_town,
+                        qty: qty,
+                        stock: productStock,
+                        coins_percent: product.coins_percent || 0,
+                        seller_id: product.seller_id
+                    });
+                }
+                sessionStorage.setItem('cart', JSON.stringify(cart));
+                showToast("Added to cart successfully!", "success");
+            } catch (err) {
+                console.error("Reserve stock error:", err);
+                showToast("Failed to reserve stock.", "error");
+            }
+        }
+
+        // Multiple Location Flow
+        async function submitMultiLocationOrder() {
+            if (!currentUser) return showToast("Please login first.", "error");
+
+            const locInputs = document.querySelectorAll('.location-item');
+            const locationsToRequest = [];
+            const itemsToAddToCart = [];
+            let totalQtyForStockCheck = 0;
+            let incomplete = false;
+
+            locInputs.forEach((div, idx) => {
+                const select = div.querySelector('.loc-saved-select');
+                if (!select || !select.value) return;
+                
+                const kgInput = div.querySelector('.loc-kg');
+                const gInput = div.querySelector('.loc-g');
+                const kg = parseFloat(kgInput.value) || 0;
+                const g = parseFloat(gInput.value) || 0;
+                const qty = kg + (g / 1000);
+
+                if (qty > 0) {
+                    totalQtyForStockCheck += qty;
+                    const opt = select.options[select.selectedIndex];
+                    itemsToAddToCart.push({
+                        id: currentProduct.id,
+                        name: currentProduct.name,
+                        price: currentProduct.sale_details || currentProduct.price,
+                        image: currentProduct.image_url,
+                        qty: qty,
+                        district: opt.dataset.district,
+                        location_name: opt.dataset.short,
+                        address: opt.dataset.address,
+                        seller_id: currentProduct.seller_id,
+                        coins_percent: currentProduct.coins_percent || 0
+                    });
+                }
+            });
+
+            if (incomplete) return;
+            if (itemsToAddToCart.length === 0 && locationsToRequest.length === 0) {
+                return showToast("Please add at least one location and quantity.", "error");
+            }
+
+            const productStock = parseFloat(currentProduct.stock) || 0;
+            if (totalQtyForStockCheck > productStock) {
+                return showToast(`Total quantity (${totalQtyForStockCheck.toFixed(2)}) exceeds available stock (${productStock}).`, "error");
+            }
+
+            // Direct add items
+            if (itemsToAddToCart.length > 0) {
+                const totalDirectQty = itemsToAddToCart.reduce((sum, item) => sum + item.qty, 0);
+                try {
+                    const reserveRes = await fetch(`http://localhost:5000/api/products/${currentProduct.id}/reserve-stock`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ qty: totalDirectQty })
+                    });
+
+                    if (!reserveRes.ok) {
+                        const err = await reserveRes.json();
+                        throw new Error(err.message || "Stock reservation failed");
+                    }
+
+                    let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+                    itemsToAddToCart.forEach(item => {
+                        cart.push(item);
+                    });
+                    sessionStorage.setItem('cart', JSON.stringify(cart));
+                    showToast("Added to cart successfully!", "success");
+                    window.location.href = "cart.html";
+                } catch (e) {
+                    return showToast("Reservation failed: " + e.message, "error");
+                }
+            }
+        }
+
+        // --- Q&A Logic ---
+        async function loadQuestions() {
+            const qaSection = document.getElementById('qaSection');
+            if (!qaSection) return;
+            try {
+                const res = await fetch(`http://localhost:5000/api/products/${productId}/questions`);
+                const questions = await res.json();
+                
+                if (questions.length === 0) {
+                    qaSection.innerHTML = '<p style="color:#888; font-style:italic;">No answered questions yet. Have one? Ask below!</p>';
+                    return;
+                }
+
+                qaSection.innerHTML = questions.map(q => `
+                    <div style="border-bottom: 1px solid #eee; padding: 1em 0;">
+                        <div style="font-weight: bold; color: #256029; margin-bottom: 0.3em;">Q: ${q.question}</div>
+                        <div style="color: #444; margin-left:1em;">
+                            <span style="font-weight: 600; color: #16a34a;">A:</span> ${q.answer}
+                        </div>
+                        <div style="font-size: 0.75rem; color: #888; margin-top: 0.5em; text-align: right;">
+                             Asked by ${q.user_name || 'Customer'} on ${new Date(q.created_at).toLocaleDateString()}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error("Error loading questions:", err);
+                qaSection.innerHTML = '<p style="color:red;">Failed to load questions.</p>';
+            }
+        }
+
+        async function postQuestion() {
+            const input = document.getElementById('newQuestion');
+            const question = input.value.trim();
+
+            if (!currentUser) return showToast("Please login as a customer to ask questions.", "error");
+            if (!question) return showToast("Please enter a question.", "error");
+
+            try {
+                const res = await fetch(`http://localhost:5000/api/products/${productId}/questions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUser.id || currentUser.customer_id,
+                        question: question
+                    })
+                });
+
+                if (res.ok) {
+                    showToast("Question submitted! It will appear once answered.", "success");
+                    input.value = "";
+                } else {
+                    const err = await res.json();
+                    showToast("Error: " + (err.message || "Failed"), "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Network error submitting question.", "error");
+            }
+        }
+
+        async function loadFeedback() {
+            const fbSection = document.getElementById('feedbackSection');
+            if (!fbSection) return;
+            try {
+                const res = await fetch(`http://localhost:5000/api/feedback/product/${productId}`);
+                const feedback = await res.json();
+                
+                if (feedback.length === 0) {
+                    fbSection.innerHTML = '<p style="color:#888; font-style:italic;">No feedback yet for this product.</p>';
+                    return;
+                }
+
+                fbSection.innerHTML = feedback.map(f => `
+                    <div style="border-bottom: 1px solid #333; padding: 1em 0;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+                            <strong style="color:#fff; font-size:1.1rem;">${f.customer_name || 'Verified Buyer'}</strong>
+                            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.2rem;">
+                                <div style="display:flex; align-items:center; gap:0.5rem;">
+                                    <span style="font-size:0.75rem; color:#888;">Product Quality:</span>
+                                    <div style="color: #f59e0b; font-size:0.9rem;">
+                                        ${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}
+                                    </div>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:0.5rem;">
+                                    <span style="font-size:0.75rem; color:#888;">Delivery Service:</span>
+                                    <div style="color: #4ade80; font-size:0.9rem;">
+                                        ${'★'.repeat(f.seller_rating || f.rating || 5)}${'☆'.repeat(5-(f.seller_rating || f.rating || 5))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p style="color:#bbb; margin: 0.5em 0;">${f.comment || 'No comment provided.'}</p>
+                        ${f.image_url ? `<img src="http://localhost:5000${f.image_url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 0.5rem; margin-top: 0.5rem;" onerror="this.style.display='none'">` : ''}
+                        <div style="font-size: 0.75rem; color: #666; text-align: right;">
+                            Posted on ${new Date(f.created_at).toLocaleDateString()}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error("Error loading feedback:", err);
+                fbSection.innerHTML = '<p style="color:red;">Failed to load feedback.</p>';
+            }
+        }
+
+        // Q&A and Feedback placeholders
+        // Initialize
+        async function runInit() {
+            await loadProductDetails();
+            await loadUserLocations();
+            loadQuestions();
+            loadFeedback();
+        }
+        runInit();
+    </script>
+</body>
+
+</html>

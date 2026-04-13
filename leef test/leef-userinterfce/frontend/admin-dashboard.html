@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - leef 🍃</title>
+  <style>
+    /* Variables */
+    :root {
+      --green: #16a34a;
+      --orange: #f97316;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --bg: #ffffff;
+      --card: #fff;
+      --muted: #555;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    aside {
+      width: 240px;
+      background: var(--card);
+      padding: 1.5em 1em;
+      box-shadow: 2px 0 6px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2em;
+    }
+
+    aside .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 1.4rem;
+      margin-bottom: 2em;
+      text-decoration: none;
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    aside nav a {
+      display: block;
+      padding: 0.7em 1em;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 0.5em;
+      transition: background 0.2s, color 0.2s;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    aside nav a.active,
+    aside nav a:hover {
+      background: var(--green);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    aside button.redeem-btn {
+      margin-top: auto;
+      width: 100%;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      padding: 0.6em;
+      border-radius: 0.5em;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Main content */
+    main {
+      flex: 1;
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      gap: 2em;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      padding: 1.2em;
+      border-radius: 1em;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+    }
+
+    .flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: #222;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.2em;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5em;
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin-bottom: 0.4em;
+    }
+
+    .text-muted {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* Notification */
+    .notifications {
+      position: relative;
+    }
+
+    .btn-icon {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--green);
+      position: relative;
+    }
+
+    .notification-count {
+      position: absolute;
+      top: -0.3em;
+      right: -0.3em;
+      background: var(--red);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: bold;
+      padding: 0.1em 0.4em;
+      border-radius: 50%;
+    }
+
+    .notification-panel {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 2em;
+      width: 250px;
+      background: var(--card);
+      padding: 1em;
+      border-radius: 1em;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+      z-index: 10;
+    }
+
+    .notification-panel ul {
+      list-style: none;
+    }
+
+    .notification-panel li {
+      padding: 0.5em 0;
+      border-bottom: 1px solid #eee;
+      font-size: 0.9rem;
+      color: #444;
+    }
+
+    .notification-panel li:last-child {
+      border-bottom: none;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.6em;
+      border-bottom: 1px solid #eee;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f5f5f5;
+      font-weight: bold;
+    }
+
+    /* Metrics */
+    .metrics {
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+    }
+
+    .metric {
+      flex: 1;
+      min-width: 150px;
+      background: #fdfdfd;
+      border: 1px solid #eee;
+      padding: 1em;
+      border-radius: 1em;
+    }
+
+    .metric h3 {
+      font-size: 1.5rem;
+      margin-top: 0.2em;
+    }
+
+    .metric span {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* Responsive */
+    @media(max-width:900px) {
+      .dashboard {
+        flex-direction: column;
+        height: auto;
+      }
+
+      aside {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 1rem;
+      }
+
+      main {
+        padding: 1em;
+      }
+
+      .metrics {
+        flex-direction: column;
+      }
+
+      .card {
+        padding: 1em;
+      }
+
+      /* Ensure nav links are horizontal on mobile */
+      nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      nav ul li {
+        margin-bottom: 0;
+        flex: 1 1 auto;
+      }
+
+      nav ul li a {
+        text-align: center;
+        justify-content: center;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Seller Analysis Styles */
+    .analysis-container {
+      display: flex;
+      /* Changed from none */
+      flex-direction: column;
+      gap: 2rem;
+      margin-top: 2rem;
+      /* Added spacing */
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 2rem;
+    }
+
+    .seller-search-card {
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-input-wrapper input {
+      width: 100%;
+      padding: 0.8rem 1rem 0.8rem 2.5rem;
+      border: 1px solid #ddd;
+      border-radius: 0.8rem;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input-wrapper input:focus {
+      border-color: var(--green);
+    }
+
+    .search-icon-fixed {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+    }
+
+    .seller-list {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .seller-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: 0.8rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 1px solid transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .seller-item:hover {
+      background: #f8fafc;
+    }
+
+    .seller-item.active {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .seller-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #eee;
+      object-fit: cover;
+    }
+
+    .seller-info h4 {
+      font-size: 0.95rem;
+      color: #1e293b;
+      margin-bottom: 0.2rem;
+    }
+
+    .seller-info p {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .graph-card {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .graph-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .revenue-summary {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .summary-item label {
+      display: block;
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-bottom: 0.3rem;
+    }
+
+    .summary-item span {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+  </style>
+  <link id="dynamic-style" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <aside>
+    <a href="admin-dashboard.html" class="logo">leef 🍃</a>
+    <nav>
+      <a href="admin-dashboard.html" class="active">Overview</a>
+      <a href="ledger-view.html">Ledger</a>
+      <a href="new-registration.html">Registration Requests</a>
+      <a href="location-requests.html">Location Requests</a>
+      <a href="product-admin.html">Products</a>
+      <a href="feedback-admin.html">Feedback</a>
+      <a href="questions-admin.html">Questions</a>
+      <a href="refund-approval.html">Refunds</a>
+      <a href="admin-profile.html">Profile</a>
+    </nav>
+  </aside>
+
+  <script src="admin-sidebar.js"></script>
+
+  <!-- Main Dashboard -->
+  <main>
+    <!-- Header -->
+    <div class="card flex" style="justify-content:space-between; align-items:center;">
+      <div>
+        <h1>Admin Dashboard</h1>
+      </div>
+      <div class="flex" style="gap:1em; align-items:center;">
+        <div class="notifications">
+          <button class="btn-icon" id="notifBtn">🔔</button>
+          <span class="notification-count">6</span>
+          <div class="notification-panel" id="notificationPanel">
+            <ul>
+              <li>Truck-02 delayed by 1h</li>
+              <li>New seller registration awaiting approval</li>
+              <li>Payment gateway test succeeded</li>
+              <li>Order #A-1002 is ready</li>
+              <li>Order #A-1003 cancelled</li>
+              <li>Order #A-1001 delivered</li>
+            </ul>
+          </div>
+        </div>
+        <button class="download-btn"
+          style="background:var(--blue);color:#fff;padding:0.7em 1.4em;border:none;border-radius:0.6em;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(37,99,235,0.10);">
+          ⬇️ Download Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Top Insights: Sellers, Customers, Products -->
+    <div class="card">
+      <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        📊 Performance Insights
+      </h2>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:2em;">
+        <!-- Top Sellers -->
+        <div class="stat-group">
+          <h3
+            style="color:var(--green); border-bottom: 2px solid var(--green); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+            🏆 Top Sellers
+          </h3>
+          <table id="topSellersTable">
+            <thead>
+              <tr style="background:#e7fbe9;">
+                <th>Seller</th>
+                <th style="text-align:right;">Revenue (Rs)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="2" style="text-align:center; color:#888;">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Top Customers -->
+        <div class="stat-group">
+          <h3
+            style="color:var(--blue); border-bottom: 2px solid var(--blue); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+            💎 Top Customers
+          </h3>
+          <div class="table-responsive">
+            <table id="topCustomersTable">
+              <thead>
+                <tr style="background:#e7f0fb;">
+                  <th>Customer</th>
+                  <th style="text-align:right;">Spent (Rs)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="2" style="text-align:center; color:#888;">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Most Sold Products -->
+        <div class="stat-group">
+          <h3
+            style="color:var(--orange); border-bottom: 2px solid var(--orange); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+            📦 Most Sold Products
+          </h3>
+          <div class="table-responsive">
+            <table id="mostSoldTable">
+              <thead>
+                <tr style="background:#fff7ed;">
+                  <th>Product</th>
+                  <th style="text-align:right;">Qty Sold</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="2" style="text-align:center; color:#888;">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Best Reviewed -->
+        <div class="stat-group">
+          <h3 style="color:#a855f7; border-bottom: 2px solid #a855f7; padding-bottom: 0.5rem; margin-bottom: 1rem;">
+            ⭐ Best Reviewed
+          </h3>
+          <div class="table-responsive">
+            <table id="topRatedTable">
+              <thead>
+                <tr style="background:#faf5ff;">
+                  <th>Product</th>
+                  <th style="text-align:right;">Rating</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="2" style="text-align:center; color:#888;">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Order Prep Summary -->
+    <div class="card" id="adminPrepSummaryCard" style="margin-top: 2rem;">
+      <div class="graph-header"
+        style="margin-bottom: 1rem; border-bottom: 1px solid #f0f0f0; padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap:wrap; gap:1rem;">
+        <div>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <h2 style="font-size: 1.2rem; color: var(--green); margin:0;">📋 Order Prep Summary</h2>
+            <button id="adminPrepBtn-all" onclick="resetAdminPrepFilter()"
+              style="display:none; padding:0.3rem 0.7rem; font-size:0.75rem; border:1px solid #ddd; background:#f8fafc; border-radius:6px; cursor:pointer; color:#64748b; font-weight:600; transition:background 0.2s;"
+              onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f8fafc'">← All
+              Shops</button>
+          </div>
+          <p class="text-muted" id="adminPrepSubtitle" style="font-size: 0.85rem; margin-top:0.2rem;">Total needed
+            quantities for today — Top 5 across all shops.</p>
+        </div>
+        <div style="display:flex; gap: 0.5rem; align-items:center; flex-wrap:wrap;">
+          <button id="adminPrepBtn-today" onclick="setAdminPrepDate('today')"
+            style="padding:0.4rem 0.8rem; border-radius:0.5rem; border:1px solid #16a34a; background:#16a34a; color:#fff; cursor:pointer; font-weight:600; transition:all 0.2s;">Today</button>
+          <button id="adminPrepBtn-yesterday" onclick="setAdminPrepDate('yesterday')"
+            style="padding:0.4rem 0.8rem; border-radius:0.5rem; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:600; transition:all 0.2s;">Yesterday</button>
+          <input type="date" id="adminPrepDateSelector" onchange="setAdminPrepDate('custom')"
+            style="padding:0.4rem; border:1px solid #ddd; border-radius:0.5rem; outline:none;">
+        </div>
+      </div>
+      <div id="adminPrepSummaryBody"
+        style="display:flex; flex-direction:column; gap:0.8rem; max-height: 400px; overflow-y:auto; padding-right:0.5rem;">
+        <div style="text-align:center; padding:2rem; color:#888;">Loading prep summary...</div>
+      </div>
+    </div>
+
+    <!-- Seller Analysis Section (Initially Hidden) -->
+    <div id="sellerAnalysisSection" class="analysis-container">
+      <div class="analysis-grid">
+        <!-- Seller Search -->
+        <div class="seller-search-card">
+          <h3 style="margin-bottom:1rem;">Sellers</h3>
+          <div class="search-input-wrapper">
+            <span class="search-icon-fixed">🔍</span>
+            <input type="text" id="sellerSearchInput" placeholder="Search by name or shop...">
+          </div>
+          <div id="sellerList" class="seller-list">
+            <!-- Sellers injected here -->
+          </div>
+        </div>
+
+        <!-- Analytics Content Wrapper -->
+        <div style="display:flex; flex-direction:column; gap:2rem;">
+          <!-- Revenue Graph -->
+          <div class="graph-card">
+            <div id="graphEmptyState"
+              style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#94a3b8;">
+              <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
+              <p>Select a seller to view their analysis</p>
+            </div>
+
+            <div id="graphContent" style="display:none; flex:1; flex-direction:column;">
+              <div class="graph-header">
+                <div>
+                  <h2 id="selectedSellerName">Seller Name</h2>
+                  <div class="text-muted" id="selectedSellerId">#SELLER-001</div>
+                </div>
+                <div class="revenue-summary">
+                  <div class="summary-item">
+                    <label>Lifetime Revenue</label>
+                    <span id="totalRevenue">Rs 0.00</span>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="flex:1; position:relative; min-height:400px; display: flex; align-items: center; justify-content: center;">
+                <canvas id="revenueChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API = 'http://localhost:5000';
+
+    // Notification toggle
+    const notifBtn = document.getElementById('notifBtn');
+    const notifPanel = document.getElementById('notificationPanel');
+    notifBtn.addEventListener('click', e => {
+      notifPanel.style.display = notifPanel.style.display === 'block' ? 'none' : 'block';
+      e.stopPropagation();
+    });
+    document.body.addEventListener('click', () => { notifPanel.style.display = 'none'; });
+    notifPanel.addEventListener('click', e => e.stopPropagation());
+
+    // Fetch notifications
+    async function loadNotifications() {
+      try {
+        const res = await fetch(`${API}/api/products/admin/notifications`);
+        const notifs = await res.json();
+        const ul = document.querySelector("#notificationPanel ul");
+        const countSpan = document.querySelector(".notification-count");
+        ul.innerHTML = "";
+        countSpan.textContent = notifs.length;
+        if (notifs.length === 0) {
+          ul.innerHTML = "<li style='color:#888; text-align:center; padding:0.5em;'>No new notifications</li>";
+          return;
+        }
+        notifs.forEach(n => {
+          const li = document.createElement("li");
+          li.textContent = n.message;
+          if (n.type === 'warning') { li.style.borderLeft = "3px solid #f97316"; li.style.background = "#fff7ed"; }
+          li.style.padding = "0.5em"; li.style.marginBottom = "0.2em"; li.style.fontSize = "0.9rem";
+          ul.appendChild(li);
+        });
+      } catch (err) { console.error("Error loading notifications:", err); }
+    }
+    document.addEventListener("DOMContentLoaded", loadNotifications);
+    setInterval(loadNotifications, 30000);
+
+
+
+    async function loadDashboardStats() {
+      try {
+        const res = await fetch(`${API}/api/orders/admin/dashboard-stats`);
+        const stats = await res.json();
+
+        // Populate Top Sellers
+        const sellerBody = document.querySelector("#topSellersTable tbody");
+        sellerBody.innerHTML = stats.topSellers.map(s => `
+          <tr>
+            <td>${s.seller_name || s.name}</td>
+            <td style="text-align:right; font-weight:700;">Rs ${parseFloat(s.total_revenue).toLocaleString()}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="2" style="text-align:center;">No data</td></tr>';
+
+        // Populate Top Customers
+        const customerBody = document.querySelector("#topCustomersTable tbody");
+        customerBody.innerHTML = stats.topCustomers.map(c => `
+          <tr>
+            <td>${c.customer_name}</td>
+            <td style="text-align:right; font-weight:700;">Rs ${parseFloat(c.total_spent).toLocaleString()}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="2" style="text-align:center;">No data</td></tr>';
+
+        // Populate Most Sold
+        const soldBody = document.querySelector("#mostSoldTable tbody");
+        soldBody.innerHTML = stats.mostSoldProducts.map(p => `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <img src="${p.image_url.startsWith('http') ? p.image_url : API + '/' + p.image_url}" style="width:25px; height:25px; border-radius:4px; object-fit:cover;">
+                <span>${p.product_name}</span>
+              </div>
+            </td>
+            <td style="text-align:right; font-weight:700;">${p.total_qty} units</td>
+          </tr>
+        `).join('') || '<tr><td colspan="2" style="text-align:center;">No data</td></tr>';
+
+        // Populate Top Rated
+        const ratedBody = document.querySelector("#topRatedTable tbody");
+        ratedBody.innerHTML = stats.bestReviewedProducts.map(p => `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <img src="${p.image_url.startsWith('http') ? p.image_url : API + '/' + p.image_url}" style="width:25px; height:25px; border-radius:4px; object-fit:cover;">
+                <span>${p.product_name}</span>
+              </div>
+            </td>
+            <td style="text-align:right; font-weight:700; color:#fbbf24;">★ ${parseFloat(p.avg_rating).toFixed(1)}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="2" style="text-align:center;">No data</td></tr>';
+
+      } catch (e) {
+        console.error("Dashboard Stats Error:", e);
+      }
+    }
+
+    function refreshDashboard() {
+      loadDashboardStats();
+      loadAdminPrepSummary();
+    }
+
+    document.addEventListener('DOMContentLoaded', refreshDashboard);
+    setInterval(refreshDashboard, 60000);
+
+    async function openCustomerModal(customerId) {
+      const modal = document.getElementById('customerModal');
+      const title = document.getElementById('cm-name');
+      const body = document.getElementById('cm-body');
+
+      modal.style.display = 'flex';
+      title.textContent = 'Loading...';
+      body.innerHTML = '';
+
+      try {
+        const res = await fetch(`${API}/api/auth/customer-stats/${customerId}/all`);
+        if (!res.ok) throw new Error('Failed to fetch details');
+        const data = await res.json();
+
+        title.textContent = data.name || 'Unknown Customer';
+        body.innerHTML = `
+          <div style="margin-bottom:1rem;">
+            <strong>Phone 1:</strong> ${data.phone || '<span style="color:#888;">N/A</span>'}<br>
+            <strong>Phone 2:</strong> ${data.phone2 || '<span style="color:#888;">N/A</span>'}<br>
+            <strong>Email:</strong> ${data.email || '<span style="color:#888;">N/A</span>'}<br>
+            <strong>Location:</strong> ${data.address || ''} ${data.town ? ', ' + data.town : ''}
+          </div>
+          <div style="background:#f9f9f9; padding:1rem; border-radius:8px; border:1px solid #eee;">
+            <div style="font-weight:600; color:var(--blue); margin-bottom:0.8rem; font-size:0.85rem; text-transform:uppercase;">Platform-Wide Activity</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+              <span>Total Orders placed:</span>
+              <strong style="color:#222;">${data.total_orders}</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span>Total Refunds requested:</span>
+              <strong style="color:var(--red);">${data.total_refunds}</strong>
+            </div>
+          </div>
+          <div style="background:#f9f9f9; padding:1rem; border-radius:8px; border:1px solid #eee; margin-top:1rem; max-height:200px; overflow-y:auto;">
+            <div style="font-weight:600; color:var(--green); margin-bottom:0.8rem; font-size:0.85rem; text-transform:uppercase;">Recent Approved Refunds</div>
+            ${data.approved_refunds && data.approved_refunds.length > 0 ?
+            data.approved_refunds.map(r => `
+              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:0.4rem; margin-bottom:0.4rem;">
+                <div>
+                  <div style="color:#333; font-size:0.85rem; font-weight:600;">${r.product_name || 'Item'}</div>
+                  <div style="color:#888; font-size:0.75rem;">${new Date(r.updated_at).toLocaleDateString()}</div>
+                </div>
+                <strong style="color:var(--red); font-size:0.85rem;">- Rs ${parseFloat(r.refund_amount).toFixed(2)}</strong>
+              </div>
+            `).join('')
+            : '<div style="color:#888; font-style:italic; font-size:0.85rem;">No past approved refunds found.</div>'}
+          </div>
+        `;
+      } catch (err) {
+        title.textContent = 'Error';
+        body.innerHTML = `<div style="color:var(--red);">${err.message}</div>`;
+      }
+    }
+
+    // Load new-registration.css when Registration Requests is clicked
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', function (e) {
+        if (this.textContent.trim() === 'Registration Requests') {
+          document.getElementById('dynamic-style').setAttribute('href', 'new-registration.css');
+        } else {
+          document.getElementById('dynamic-style').removeAttribute('href');
+        }
+      });
+    });
+    // Seller Analysis Logic
+    let allSellers = [];
+    let revenueChart = null;
+
+    // Load sellers immediately
+    loadAllSellers();
+
+    const saBtn = document.getElementById('sellerAnalysisBtn');
+    if (saBtn) {
+      saBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.getElementById('sellerAnalysisSection').scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+
+    async function loadAllSellers() {
+      const listDiv = document.getElementById('sellerList');
+      listDiv.innerHTML = '<div style="text-align:center; padding:2rem; color:#888;">Finding sellers...</div>';
+
+      try {
+        const res = await fetch(`${API}/api/auth/admin/sellers`);
+        allSellers = await res.json();
+        renderSellerList(allSellers.slice(0, 5)); // Show only recent 5 initially
+
+        // Search behavior: Recent 5 on focus, Filter on input
+        const searchInput = document.getElementById('sellerSearchInput');
+
+        searchInput.addEventListener('input', (e) => {
+          const query = e.target.value.toLowerCase().trim();
+          if (!query) {
+            renderSellerList(allSellers.slice(0, 5));
+            return;
+          }
+          const filtered = allSellers.filter(s =>
+            (s.name || "").toLowerCase().includes(query) ||
+            (s.shop_name || "").toLowerCase().includes(query) ||
+            (s.email || "").toLowerCase().includes(query)
+          );
+          renderSellerList(filtered);
+        });
+
+        searchInput.addEventListener('focus', () => {
+          if (!searchInput.value.trim()) {
+            renderSellerList(allSellers.slice(0, 5));
+          }
+        });
+      } catch (err) {
+        listDiv.innerHTML = '<div style="color:var(--red); padding:1rem;">Failed to load sellers</div>';
+      }
+    }
+
+    function renderSellerList(sellers) {
+      const listDiv = document.getElementById('sellerList');
+      if (sellers.length === 0) {
+        listDiv.innerHTML = '<div style="text-align:center; padding:1.5rem; color:#888; font-size:0.85rem;">No sellers found matching your search.</div>';
+        return;
+      }
+
+      listDiv.innerHTML = sellers.map(s => `
+            <div class="seller-item" data-seller-id="${s.seller_id}" onclick="handleSellerClick(this)">
+                <img src="${API}/${s.profile_pic || 'uploads/default-avatar.png'}" class="seller-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(s.name || s.shop_name)}&background=random'">
+                <div class="seller-info">
+                    <h4>${s.name}</h4>
+                    <p>${s.email}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function handleSellerClick(element) {
+      const sellerId = element.getAttribute('data-seller-id');
+      const seller = allSellers.find(s => String(s.seller_id) === String(sellerId));
+      if (seller) {
+        // Show Modal
+        const modal = document.getElementById('sellerModal');
+        const title = document.getElementById('sm-name');
+        const body = document.getElementById('sm-body');
+        
+        modal.style.display = 'flex';
+        title.textContent = seller.shop_name || seller.name;
+        
+        const joinedDate = seller.created_at ? new Date(seller.created_at).toLocaleDateString() : 'N/A';
+        
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+              <span style="font-weight:600; color:#64748b;">Username:</span>
+              <span style="color:#1e293b;">@${seller.username || 'N/A'}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+              <span style="font-weight:600; color:#64748b;">Email:</span>
+              <span style="color:#1e293b;">${seller.email || 'N/A'}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+              <span style="font-weight:600; color:#64748b;">Primary Phone:</span>
+              <span style="color:#1e293b;">${seller.phone || 'N/A'}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+              <span style="font-weight:600; color:#64748b;">Secondary Phone:</span>
+              <span style="color:#1e293b;">${seller.phone2 || 'N/A'}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+              <span style="font-weight:600; color:#64748b;">Town / Shop Town:</span>
+              <span style="color:#1e293b;">${seller.shop_town || 'N/A'}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+              <span style="font-weight:600; color:#64748b;">Address:</span>
+              <span style="color:#1e293b; text-align:right; max-width:200px;">${seller.shop_address || 'Refer to shop town'}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+              <span style="font-weight:600; color:#64748b;">Role:</span>
+              <span style="color:#16a34a; font-weight:700;">Seller</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="font-weight:600; color:#64748b;">Joined On:</span>
+              <span style="color:#1e293b;">${joinedDate}</span>
+            </div>
+          </div>
+          <div style="margin-top:1.5rem; text-align:center;">
+            <button onclick="document.getElementById('sellerModal').style.display='none'; selectSellerByData(${seller.seller_id})" 
+              style="background:var(--green); color:#fff; border:none; padding:0.6rem 1.2rem; border-radius:8px; cursor:pointer; font-weight:600; width:100%;">
+              View Analytics & Prep Summary
+            </button>
+          </div>
+        `;
+
+        // The analytics part stays but now triggered after modal or on background?
+        // Let's keep the analytics update on click but also show the modal.
+        selectSeller(seller, element);
+      }
+    }
+
+    // Helper to select seller without element reference (e.g. from modal)
+    function selectSellerByData(sellerId) {
+      const seller = allSellers.find(s => String(s.seller_id) === String(sellerId));
+      if (seller) {
+        const element = document.querySelector(`.seller-item[data-seller-id="${sellerId}"]`);
+        selectSeller(seller, element);
+      }
+    }
+
+    async function selectSeller(seller, element) {
+      // Update UI elements
+      document.querySelectorAll('.seller-item').forEach(i => i.classList.remove('active'));
+      element.classList.add('active');
+
+      document.getElementById('graphEmptyState').style.display = 'none';
+      document.getElementById('graphContent').style.display = 'flex';
+
+      document.getElementById('selectedSellerName').textContent = seller.name;
+      document.getElementById('selectedSellerId').textContent = `#SELLER-${seller.seller_id}`;
+
+      // Set global reference for prep summary features
+      currentSelectedSellerId = seller.seller_id;
+      document.getElementById('adminPrepBtn-all').style.display = 'inline-block';
+      updatePrepSubtitle();
+
+      // Fetch revenue data
+      try {
+        const res = await fetch(`${API}/api/orders/admin/revenue/${seller.seller_id}`);
+        const data = await res.json();
+
+        updateRevenueChart(data);
+
+        const total = data.reduce((sum, row) => sum + parseFloat(row.revenue), 0);
+        document.getElementById('totalRevenue').textContent = `Rs ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+      } catch (err) {
+        console.error("Error loading revenue:", err);
+      }
+
+      // Load prep summary for the selected seller and scroll to it
+      await loadAdminPrepSummary();
+      document.getElementById('adminPrepSummaryCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function updateRevenueChart(data) {
+      const ctx = document.getElementById('revenueChart').getContext('2d');
+
+      if (revenueChart) {
+        revenueChart.destroy();
+      }
+
+      const labels = data.map(row => {
+        const [year, month] = row.month.split('-');
+        const date = new Date(year, month - 1);
+        return date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+      });
+
+      const values = data.map(row => parseFloat(row.revenue));
+
+      revenueChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Monthly Revenue (Rs)',
+            data: values,
+            backgroundColor: 'rgba(22, 163, 74, 0.2)',
+            borderColor: '#16a34a',
+            borderWidth: 2,
+            borderRadius: 8,
+            barThickness: 40,
+            hoverBackgroundColor: '#16a34a'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              padding: 12,
+              titleFont: { size: 14 },
+              bodyFont: { size: 13 },
+              callbacks: {
+                label: (context) => `Rs ${context.raw.toLocaleString()}`
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: '#f1f5f9' },
+              ticks: {
+                callback: (val) => 'Rs ' + val.toLocaleString()
+              }
+            },
+            x: {
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    // --- Admin Prep Summary Logic ---
+    let currentAdminPrepDate = new Date().toISOString().split('T')[0];
+    let currentSelectedSellerId = null;
+    let currentSelectedShopName = null;
+
+    function setAdminPrepDate(mode) {
+      const today = new Date();
+      const selector = document.getElementById('adminPrepDateSelector');
+
+      const btnToday = document.getElementById('adminPrepBtn-today');
+      const btnYesterday = document.getElementById('adminPrepBtn-yesterday');
+
+      btnToday.style.background = '#fff'; btnToday.style.color = '#444'; btnToday.style.borderColor = '#ddd';
+      btnYesterday.style.background = '#fff'; btnYesterday.style.color = '#444'; btnYesterday.style.borderColor = '#ddd';
+
+      if (mode === 'today') {
+        currentAdminPrepDate = today.toISOString().split('T')[0];
+        selector.value = '';
+        btnToday.style.background = '#16a34a'; btnToday.style.color = '#fff'; btnToday.style.borderColor = '#16a34a';
+      } else if (mode === 'yesterday') {
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        currentAdminPrepDate = yesterday.toISOString().split('T')[0];
+        selector.value = '';
+        btnYesterday.style.background = '#16a34a'; btnYesterday.style.color = '#fff'; btnYesterday.style.borderColor = '#16a34a';
+      } else {
+        currentAdminPrepDate = selector.value;
+        if (!currentAdminPrepDate) return;
+      }
+
+      updatePrepSubtitle();
+      loadAdminPrepSummary();
+    }
+
+    function updatePrepSubtitle() {
+      const sub = document.getElementById('adminPrepSubtitle');
+      const today = new Date().toISOString().split('T')[0];
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+      let dateLabel = currentAdminPrepDate;
+      if (currentAdminPrepDate === today) dateLabel = 'today';
+      else if (currentAdminPrepDate === yesterdayStr) dateLabel = 'yesterday';
+
+      if (currentSelectedSellerId) {
+        sub.textContent = 'Prep needs for ' + (currentSelectedShopName || 'Selected Shop') + ' \u2014 ' + dateLabel + '.';
+      } else {
+        sub.textContent = 'Shops with active orders for ' + dateLabel + '.';
+      }
+    }
+
+    async function loadAdminPrepSummary() {
+      const container = document.getElementById('adminPrepSummaryBody');
+
+      container.innerHTML = '<div style="color:#888; text-align:center; padding:1.5rem;">Fetching summary...</div>';
+
+      try {
+        if (currentSelectedSellerId) {
+          // DRILLED INTO A SHOP: show product-level prep details
+          const res = await fetch(API + '/api/orders/seller/prep-summary/' + currentSelectedSellerId + '?date=' + currentAdminPrepDate);
+          const summary = await res.json();
+
+          if (!summary.length) {
+            container.innerHTML = '<div style="color:#888; text-align:center; padding:1.5rem;">No orders found for this shop on this date.</div>';
+            return;
+          }
+
+          container.innerHTML = summary.map(function (item) {
+            const amount = parseFloat(item.total_amount) || 0;
+            const qty = parseFloat(item.total_qty);
+            const kg = Math.floor(qty);
+            const grams = Math.round((qty * 1000) % 1000);
+            let displayQty = '';
+            if (kg > 0) displayQty += kg + ' kg ';
+            if (grams > 0) displayQty += grams + ' g';
+            if (kg === 0 && grams === 0) displayQty = '0 g';
+
+            return '<div style="background:#f9fafb; border:1px solid #e2e8f0; border-radius:10px; padding:1rem; display:flex; gap:1.2rem; align-items:center; transition: all 0.2s;" onmouseover="this.style.background=\'#f1f5f9\'; this.style.transform=\'translateY(-1px)\';" onmouseout="this.style.background=\'#f9fafb\'; this.style.transform=\'translateY(0)\';">' +
+              '<img src="' + item.image_url + '" style="width:50px; height:50px; border-radius:8px; object-fit:cover; border:1px solid #e2e8f0;">' +
+              '<div style="flex:1;">' +
+              '<div style="font-weight:700; color:#1e293b; font-size:1rem; margin-bottom:2px;">' + item.product_name + '</div>' +
+              '<div style="font-size:0.8rem; color:#64748b;">' + (item.price_string || '') + ' \u00b7 <span style="color:#16a34a; font-weight:600;">' + displayQty + '</span></div>' +
+              '</div>' +
+              '<div style="text-align:right; min-width:100px; padding:0.5rem 0.8rem; background:#f0fdf4; border-radius:8px; border:1px solid #dcfce7;">' +
+              '<div style="font-size:0.7rem; color:#166534; text-transform:uppercase; font-weight:700; letter-spacing:0.5px; margin-bottom:2px;">AMOUNT</div>' +
+              '<div style="font-size:1.15rem; font-weight:800; color:#16a34a; white-space:nowrap;">Rs ' + amount.toLocaleString() + '</div>' +
+              '</div>' +
+              '</div>';
+          }).join('');
+        } else {
+          // DEFAULT VIEW: show SHOP CARDS only
+          const res = await fetch(API + '/api/orders/admin/prep-shops?date=' + currentAdminPrepDate);
+          const shops = await res.json();
+
+          if (!shops.length) {
+            container.innerHTML = '<div style="color:#888; text-align:center; padding:1.5rem;">No shops with orders for this date.</div>';
+            return;
+          }
+
+          const displayShops = shops.slice(0, 5);
+
+          let html = displayShops.map(function (shop) {
+            const amount = parseFloat(shop.total_amount) || 0;
+            const latestTime = new Date(shop.latest_order).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const avatarUrl = shop.profile_pic
+              ? API + '/' + shop.profile_pic
+              : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(shop.seller_name || shop.shop_name) + '&background=16a34a&color=fff&bold=true';
+
+            return '<div onclick="drillIntoShop(' + shop.seller_id + ', \'' + (shop.seller_name || '').replace(/'/g, "\\'") + '\')" style="background:#f9fafb; border:1px solid #e2e8f0; border-radius:12px; padding:1.2rem; display:flex; gap:1.2rem; align-items:center; cursor:pointer; transition: all 0.2s;" onmouseover="this.style.background=\'#f0fdf4\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 4px 12px rgba(22,163,74,0.1)\'; this.style.borderColor=\'#bbf7d0\';" onmouseout="this.style.background=\'#f9fafb\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'none\'; this.style.borderColor=\'#e2e8f0\';">' +
+              '<img src="' + avatarUrl + '" onerror="this.src=\'https://ui-avatars.com/api/?name=' + encodeURIComponent(shop.seller_name || shop.shop_name) + '&background=16a34a&color=fff\'" style="width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid #dcfce7;">' +
+              '<div style="flex:1;">' +
+              '<div style="font-weight:700; color:#1e293b; font-size:1.05rem; margin-bottom:3px;">\u238d ' + (shop.seller_name || shop.shop_name) + '</div>' +
+              '<div style="font-size:0.8rem; color:#64748b;">' +
+              '<span style="font-weight:600; color:#16a34a;">' + shop.total_products + ' product' + (shop.total_products > 1 ? 's' : '') + '</span> \u00b7 ' +
+              '<span>' + shop.total_orders + ' order' + (shop.total_orders > 1 ? 's' : '') + '</span> \u00b7 ' +
+              '<span>Latest: ' + latestTime + '</span>' +
+              '</div>' +
+              '</div>' +
+              '<div style="display:flex; align-items:center; gap:0.8rem;">' +
+              '<div style="text-align:right; padding:0.5rem 0.8rem; background:#f0fdf4; border-radius:8px; border:1px solid #dcfce7;">' +
+              '<div style="font-size:0.65rem; color:#166534; text-transform:uppercase; font-weight:700; letter-spacing:0.5px; margin-bottom:2px;">Total Amount</div>' +
+              '<div style="font-size:1.1rem; font-weight:800; color:#16a34a; white-space:nowrap;">Rs ' + amount.toLocaleString() + '</div>' +
+              '</div>' +
+              '<div style="color:#94a3b8; font-size:1.2rem;">\u2192</div>' +
+              '</div>' +
+              '</div>';
+          }).join('');
+
+          if (shops.length > 5) {
+            html += '<div style="text-align:center; padding:0.8rem;"><button onclick="showAllPrepShops()" style="background:none; border:1px solid #16a34a; color:#16a34a; padding:0.5rem 1.2rem; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.85rem; transition:all 0.2s;" onmouseover="this.style.background=\'#f0fdf4\'" onmouseout="this.style.background=\'none\'">View More (' + (shops.length - 5) + ' more)</button></div>';
+          }
+
+          container.innerHTML = html;
+          container._allShops = shops;
+        }
+      } catch (err) {
+        container.innerHTML = '<div style="color:var(--red); text-align:center; padding:1.5rem;">Error: ' + err.message + '</div>';
+      }
+    }
+
+    function showAllPrepShops() {
+      const container = document.getElementById('adminPrepSummaryBody');
+      const shops = container._allShops;
+      if (!shops) return;
+
+      container.style.maxHeight = '600px';
+      container.innerHTML = shops.map(function (shop) {
+        const amount = parseFloat(shop.total_amount) || 0;
+        const latestTime = new Date(shop.latest_order).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const shopNameSafe = (shop.shop_name || '').replace(/'/g, "\\'");
+        const avatarUrl = shop.profile_pic
+          ? API + '/' + shop.profile_pic
+          : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(shop.shop_name) + '&background=16a34a&color=fff&bold=true';
+
+        return '<div onclick="drillIntoShop(' + shop.seller_id + ', \'' + (shop.seller_name || '').replace(/'/g, "\\'") + '\')" style="background:#f9fafb; border:1px solid #e2e8f0; border-radius:12px; padding:1.2rem; display:flex; gap:1.2rem; align-items:center; cursor:pointer; transition: all 0.2s;" onmouseover="this.style.background=\'#f0fdf4\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 4px 12px rgba(22,163,74,0.1)\'; this.style.borderColor=\'#bbf7d0\';" onmouseout="this.style.background=\'#f9fafb\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'none\'; this.style.borderColor=\'#e2e8f0\';">' +
+          '<img src="' + avatarUrl + '" onerror="this.src=\'https://ui-avatars.com/api/?name=' + encodeURIComponent(shop.seller_name || shop.shop_name) + '&background=16a34a&color=fff\'" style="width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid #dcfce7;">' +
+          '<div style="flex:1;">' +
+          '<div style="font-weight:700; color:#1e293b; font-size:1.05rem; margin-bottom:3px;">\u238d ' + (shop.seller_name || shop.shop_name) + '</div>' +
+          '<div style="font-size:0.8rem; color:#64748b;">' +
+          '<span style="font-weight:600; color:#16a34a;">' + shop.total_products + ' product' + (shop.total_products > 1 ? 's' : '') + '</span> \u00b7 ' +
+          '<span>' + shop.total_orders + ' order' + (shop.total_orders > 1 ? 's' : '') + '</span> \u00b7 ' +
+          '<span>Latest: ' + latestTime + '</span>' +
+          '</div>' +
+          '</div>' +
+          '<div style="display:flex; align-items:center; gap:0.8rem;">' +
+          '<div style="text-align:right; padding:0.5rem 0.8rem; background:#f0fdf4; border-radius:8px; border:1px solid #dcfce7;">' +
+          '<div style="font-size:0.65rem; color:#166534; text-transform:uppercase; font-weight:700; letter-spacing:0.5px; margin-bottom:2px;">Total Amount</div>' +
+          '<div style="font-size:1.1rem; font-weight:800; color:#16a34a; white-space:nowrap;">Rs ' + amount.toLocaleString() + '</div>' +
+          '</div>' +
+          '<div style="color:#94a3b8; font-size:1.2rem;">\u2192</div>' +
+          '</div>' +
+          '</div>';
+      }).join('');
+    }
+
+    function drillIntoShop(sellerId, sellerName) {
+      currentSelectedSellerId = sellerId;
+      currentSelectedShopName = sellerName;
+      document.getElementById('adminPrepBtn-all').style.display = 'inline-block';
+      updatePrepSubtitle();
+      loadAdminPrepSummary();
+    }
+
+    function resetAdminPrepFilter() {
+      currentSelectedSellerId = null;
+      currentSelectedShopName = null;
+      document.getElementById('adminPrepBtn-all').style.display = 'none';
+      document.querySelectorAll('.seller-item').forEach(function (i) { i.classList.remove('active'); });
+      updatePrepSubtitle();
+      loadAdminPrepSummary();
+    }
+
+  </script>
+
+
+  <!-- Customer Details Modal -->
+  <div id="customerModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; align-items:center; justify-content:center; backdrop-filter: blur(4px);">
+    <div
+      style="background:#fff; width:450px; max-width:90%; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,0.2); overflow:hidden; animation: slideUp 0.3s ease-out;">
+      <div
+        style="padding:1.5rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; background:#f8fafc;">
+        <h3 style="margin:0; color:#1e293b; font-size:1.2rem;" id="cm-name">Loading...</h3>
+        <button onclick="document.getElementById('customerModal').style.display='none'"
+          style="background:none; border:none; color:#94a3b8; font-size:1.8rem; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+      <div style="padding:1.5rem; color:#475569; font-size:0.95rem; line-height:1.6;" id="cm-body">
+        <!-- Content injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Seller Details Modal -->
+  <div id="sellerModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; align-items:center; justify-content:center; backdrop-filter: blur(4px);">
+    <div
+      style="background:#fff; width:450px; max-width:90%; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,0.2); overflow:hidden; animation: slideUp 0.3s ease-out;">
+      <div
+        style="padding:1.5rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; background:#f0fdf4;">
+        <h3 style="margin:0; color:#166534; font-size:1.2rem;" id="sm-name">Seller Details</h3>
+        <button onclick="document.getElementById('sellerModal').style.display='none'"
+          style="background:none; border:none; color:#94a3b8; font-size:1.8rem; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+      <div style="padding:1.5rem; color:#475569; font-size:0.95rem; line-height:1.6;" id="sm-body">
+        <!-- Content injected here -->
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</body>
+
+</html>

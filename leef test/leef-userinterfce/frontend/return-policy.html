@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Policy - leef 🍃</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #d1d5db;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        nav {
+            background: rgba(10, 10, 10, 0.97);
+            border-bottom: 1px solid #1f2937;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            text-decoration: none;
+            font-weight: 700;
+            color: #4ade80;
+            font-size: 1.15rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #4ade80;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #052e16 0%, #0a0a0a 60%);
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.25);
+            border-radius: 20px;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            color: #9ca3af;
+            font-size: 1rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .last-updated {
+            font-size: 0.78rem;
+            color: #6b7280;
+            margin-top: 0.75rem;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 5rem;
+        }
+
+        /* Quick Summary cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .summary-card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .summary-card .icon {
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-card h3 {
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .summary-card p {
+            color: #9ca3af;
+            font-size: 0.82rem;
+            line-height: 1.5;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section p {
+            font-size: 0.92rem;
+            line-height: 1.75;
+            color: #d1d5db;
+            margin-bottom: 0.75rem;
+        }
+
+        .section ul {
+            padding-left: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .section ul li {
+            font-size: 0.92rem;
+            line-height: 1.75;
+            color: #d1d5db;
+            margin-bottom: 0.3rem;
+        }
+
+        /* Info box */
+        .info-box {
+            background: rgba(74, 222, 128, 0.06);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .info-box p {
+            color: #86efac;
+            font-size: 0.88rem;
+            margin: 0;
+        }
+
+        .warn-box {
+            background: rgba(245, 158, 11, 0.06);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .warn-box p {
+            color: #fde68a;
+            font-size: 0.88rem;
+            margin: 0;
+        }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .tl-step {
+            display: flex;
+            gap: 1.25rem;
+            padding-bottom: 1.5rem;
+        }
+
+        .tl-step:last-child {
+            padding-bottom: 0;
+        }
+
+        .tl-dot-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tl-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #16a34a;
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .tl-line {
+            width: 2px;
+            flex: 1;
+            background: #1f2937;
+            margin-top: 4px;
+        }
+
+        .tl-step:last-child .tl-line {
+            display: none;
+        }
+
+        .tl-content {
+            padding-top: 5px;
+        }
+
+        .tl-content h4 {
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .tl-content p {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Contact CTA */
+        .cta {
+            background: linear-gradient(135deg, #052e16, #064e3b);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 14px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .cta h2 {
+            color: #fff;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cta p {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .cta a {
+            display: inline-block;
+            background: #16a34a;
+            color: #fff;
+            padding: 0.65rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+
+        .cta a:hover {
+            opacity: 0.9;
+        }
+
+        /* Policy nav */
+        .policy-nav {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .policy-nav a {
+            background: #111827;
+            border: 1px solid #1f2937;
+            color: #9ca3af;
+            text-decoration: none;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .policy-nav a:hover,
+        .policy-nav a.active {
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">leef 🍃</a>
+        <ul class="nav-links">
+            <li><a href="customer-dashboard.html">Dashboard</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="returns.html">My Refunds</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-badge">📦 Policy</div>
+        <h1>Return &amp; Refund Policy</h1>
+        <p>We stand by the quality of every product we deliver. If something isn't right, we'll make it right.</p>
+        <div class="last-updated">Last updated: March 2026</div>
+    </div>
+
+    <div class="container">
+
+        <!-- Other policies quick nav -->
+        <div class="policy-nav">
+            <a href="return-policy.html" class="active">Return Policy</a>
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="business-terms.html">Business Terms</a>
+        </div>
+
+        <!-- Quick summary -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="icon">⏱️</div>
+                <h3>48-Hour Window</h3>
+                <p>Report issues within 48 hours of delivery for eligibility.</p>
+            </div>
+            <div class="summary-card">
+                <div class="icon">📸</div>
+                <h3>Photo Required</h3>
+                <p>Attach a photo of the damaged or incorrect item when submitting.</p>
+            </div>
+            <div class="summary-card">
+                <div class="icon">💰</div>
+                <h3>Full Refund</h3>
+                <p>Eligible refunds are processed as store credit or original payment method.</p>
+            </div>
+            <div class="summary-card">
+                <div class="icon">🚫</div>
+                <h3>No Returns for Fresh Produce</h3>
+                <p>Quality complaints must be reported; physical returns are not required for perishables.</p>
+            </div>
+        </div>
+
+        <!-- Section 1 -->
+        <div class="section">
+            <div class="section-title">1. 📋 Eligibility for Refunds</div>
+            <p>You may be eligible for a refund if your order meets the following conditions:</p>
+            <ul>
+                <li>The item delivered was <strong>damaged, spoiled, or significantly different</strong> from what was
+                    ordered.</li>
+                <li>The complaint is raised within <strong>48 hours</strong> of the delivery timestamp.</li>
+                <li>You provide photographic evidence of the issue at the time of reporting.</li>
+                <li>The order was placed through the leef platform and payment was confirmed.</li>
+            </ul>
+            <div class="info-box">
+                <p>🟢 Tip: Always inspect your order upon delivery and report issues immediately to speed up processing.
+                </p>
+            </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="section">
+            <div class="section-title">2. 🚫 Non-Refundable Situations</div>
+            <p>Refunds will <strong>not</strong> be issued in the following cases:</p>
+            <ul>
+                <li>Complaints raised <strong>after 48 hours</strong> of delivery.</li>
+                <li>Items that were <strong>accepted at delivery</strong> without noting any issues to the driver.</li>
+                <li>Change of mind or incorrect quantity ordered by the customer.</li>
+                <li>Items that were stored improperly after delivery.</li>
+                <li>Orders placed using promotional or discounted pricing unless the product is genuinely faulty.</li>
+            </ul>
+            <div class="warn-box">
+                <p>⚠️ COD orders: Refunds for COD payments will be issued as leef wallet credit only.</p>
+            </div>
+        </div>
+
+        <!-- Section 3: How to request -->
+        <div class="section">
+            <div class="section-title">3. 🔄 How to Request a Refund</div>
+            <div class="timeline">
+                <div class="tl-step">
+                    <div class="tl-dot-wrap">
+                        <div class="tl-dot">1</div>
+                        <div class="tl-line"></div>
+                    </div>
+                    <div class="tl-content">
+                        <h4>Submit a Refund Request</h4>
+                        <p>Go to your Dashboard → Refunds → New Request. Select the affected order and describe the
+                            issue.</p>
+                    </div>
+                </div>
+                <div class="tl-step">
+                    <div class="tl-dot-wrap">
+                        <div class="tl-dot">2</div>
+                        <div class="tl-line"></div>
+                    </div>
+                    <div class="tl-content">
+                        <h4>Attach Evidence</h4>
+                        <p>Upload clear photographs of the damaged or incorrect items. This is mandatory for approval.
+                        </p>
+                    </div>
+                </div>
+                <div class="tl-step">
+                    <div class="tl-dot-wrap">
+                        <div class="tl-dot">3</div>
+                        <div class="tl-line"></div>
+                    </div>
+                    <div class="tl-content">
+                        <h4>Seller Review</h4>
+                        <p>The seller is notified and given 24 hours to accept or dispute the refund request.</p>
+                    </div>
+                </div>
+                <div class="tl-step">
+                    <div class="tl-dot-wrap">
+                        <div class="tl-dot">4</div>
+                        <div class="tl-line"></div>
+                    </div>
+                    <div class="tl-content">
+                        <h4>Admin Decision</h4>
+                        <p>leef admin reviews and makes a final decision. Approved refunds are processed within 3–5
+                            business days.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="section">
+            <div class="section-title">4. 💳 Refund Methods</div>
+            <p>Approved refunds are returned via one of the following:</p>
+            <ul>
+                <li><strong>Card Payments:</strong> Refunded to the original card within 5–7 business days.</li>
+                <li><strong>COD Payments:</strong> Refunded as leef loyalty coins / store credit.</li>
+                <li><strong>Partial Refunds:</strong> If only part of an order is affected, only the affected portion is
+                    refunded.</li>
+            </ul>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="section">
+            <div class="section-title">5. 📞 Contact for Disputes</div>
+            <p>If your refund request is denied and you believe the decision was incorrect, contact our support team
+                within <strong>7 days</strong> of the denial notice. We will escalate to a senior reviewer.</p>
+            <p>Email: <strong>support@leef.lk</strong> &nbsp;|&nbsp; Phone: <strong>+94 11 234 5678</strong></p>
+        </div>
+
+        <div class="cta">
+            <h2>Need to Request a Refund?</h2>
+            <p>Head to your refund portal to submit a new request quickly and easily.</p>
+            <a href="returns.html">Go to My Refunds →</a>
+        </div>
+
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - leef 🍃</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #d1d5db;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(10, 10, 10, 0.97);
+            border-bottom: 1px solid #1f2937;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            text-decoration: none;
+            font-weight: 700;
+            color: #4ade80;
+            font-size: 1.15rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #4ade80;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #0c1a2e 0%, #0a0a0a 60%);
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(96, 165, 250, 0.1);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.25);
+            border-radius: 20px;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            color: #9ca3af;
+            font-size: 1rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .last-updated {
+            font-size: 0.78rem;
+            color: #6b7280;
+            margin-top: 0.75rem;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 5rem;
+        }
+
+        .toc {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .toc h3 {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .toc ol {
+            padding-left: 1.25rem;
+        }
+
+        .toc li {
+            font-size: 0.88rem;
+            line-height: 2;
+        }
+
+        .toc a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+            scroll-margin-top: 80px;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section p {
+            font-size: 0.92rem;
+            line-height: 1.75;
+            color: #d1d5db;
+            margin-bottom: 0.75rem;
+        }
+
+        .section ul {
+            padding-left: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .section ul li {
+            font-size: 0.92rem;
+            line-height: 1.75;
+            color: #d1d5db;
+            margin-bottom: 0.3rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .data-table th {
+            background: #111827;
+            color: #9ca3af;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .data-table td {
+            padding: 0.75rem 1rem;
+            font-size: 0.88rem;
+            color: #d1d5db;
+            border-bottom: 1px solid #111827;
+            vertical-align: top;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .info-box {
+            background: rgba(96, 165, 250, 0.06);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .info-box p {
+            color: #93c5fd;
+            font-size: 0.88rem;
+            margin: 0;
+        }
+
+        .warn-box {
+            background: rgba(245, 158, 11, 0.06);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .warn-box p {
+            color: #fde68a;
+            font-size: 0.88rem;
+            margin: 0;
+        }
+
+        .rights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .right-card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .right-card .icon {
+            font-size: 1.4rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .right-card h4 {
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .right-card p {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .policy-nav {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .policy-nav a {
+            background: #111827;
+            border: 1px solid #1f2937;
+            color: #9ca3af;
+            text-decoration: none;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .policy-nav a:hover,
+        .policy-nav a.active {
+            background: rgba(96, 165, 250, 0.1);
+            color: #60a5fa;
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .cta {
+            background: linear-gradient(135deg, #0c1a2e, #083344);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            border-radius: 14px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .cta h2 {
+            color: #fff;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cta p {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .cta a {
+            display: inline-block;
+            background: #2563eb;
+            color: #fff;
+            padding: 0.65rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+
+        .cta a:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">leef 🍃</a>
+        <ul class="nav-links">
+            <li><a href="customer-dashboard.html">Dashboard</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-badge">🔒 Privacy</div>
+        <h1>Privacy Policy</h1>
+        <p>We respect your privacy and are committed to protecting your personal data.</p>
+        <div class="last-updated">Last updated: March 2026</div>
+    </div>
+
+    <div class="container">
+
+        <div class="policy-nav">
+            <a href="return-policy.html">Return Policy</a>
+            <a href="privacy-policy.html" class="active">Privacy Policy</a>
+            <a href="business-terms.html">Business Terms</a>
+        </div>
+
+        <!-- Table of contents -->
+        <div class="toc">
+            <h3>📑 Table of Contents</h3>
+            <ol>
+                <li><a href="#collect">Information We Collect</a></li>
+                <li><a href="#use">How We Use Your Data</a></li>
+                <li><a href="#share">Data Sharing</a></li>
+                <li><a href="#security">Data Security</a></li>
+                <li><a href="#rights">Your Rights</a></li>
+                <li><a href="#cookies">Cookies</a></li>
+                <li><a href="#retention">Data Retention</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ol>
+        </div>
+
+        <div class="section" id="collect">
+            <div class="section-title">1. 📂 Information We Collect</div>
+            <p>When you use leef, we collect the following types of information:</p>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Examples</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Account Data</strong></td>
+                        <td>Name, email, phone, password (hashed)</td>
+                        <td>Authentication, account management</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Order Data</strong></td>
+                        <td>Items ordered, delivery address, order history</td>
+                        <td>Fulfillment, invoice generation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Payment Data</strong></td>
+                        <td>Payment method type, transaction reference</td>
+                        <td>Payment recording (no raw card data stored)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Usage Data</strong></td>
+                        <td>Pages visited, time on site, device type</td>
+                        <td>Platform improvement, analytics</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Feedback Data</strong></td>
+                        <td>Reviews, ratings, uploaded photos</td>
+                        <td>Product quality monitoring</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="info-box">
+                <p>🔵 We never store raw credit card numbers. Payments are processed securely and only transaction
+                    references are retained.</p>
+            </div>
+        </div>
+
+        <div class="section" id="use">
+            <div class="section-title">2. ⚙️ How We Use Your Data</div>
+            <p>We use the data we collect to:</p>
+            <ul>
+                <li>Process and fulfill your orders and payments.</li>
+                <li>Send order confirmation, delivery, and refund notifications.</li>
+                <li>Manage your loyalty coin balance and rewards.</li>
+                <li>Provide customer support and resolve disputes.</li>
+                <li>Improve our platform through aggregated analytics.</li>
+                <li>Comply with legal obligations.</li>
+            </ul>
+            <p>We do <strong>not</strong> use your data for automated decision-making or profiling for third-party
+                advertising.</p>
+        </div>
+
+        <div class="section" id="share">
+            <div class="section-title">3. 🤝 Data Sharing</div>
+            <p>We share your data only in the following limited circumstances:</p>
+            <ul>
+                <li><strong>Sellers:</strong> Your name, delivery address, and order details are shared with the
+                    relevant seller to fulfil your order.</li>
+                <li><strong>Delivery Partners:</strong> Basic contact and location information shared for delivery
+                    coordination.</li>
+                <li><strong>Legal Requirements:</strong> We may disclose data if required by Sri Lankan law or a valid
+                    court order.</li>
+            </ul>
+            <div class="warn-box">
+                <p>⚠️ We never sell your personal data to third parties for marketing purposes.</p>
+            </div>
+        </div>
+
+        <div class="section" id="security">
+            <div class="section-title">4. 🔐 Data Security</div>
+            <p>We implement the following measures to protect your data:</p>
+            <ul>
+                <li>Passwords are stored using industry-standard hashing (bcrypt).</li>
+                <li>All data transmission is encrypted via HTTPS/TLS.</li>
+                <li>Database access is restricted to authorised backend services only.</li>
+                <li>Regular security reviews and dependency updates.</li>
+            </ul>
+            <p>Despite these measures, no system is 100% secure. If you suspect a breach of your account, contact us
+                immediately.</p>
+        </div>
+
+        <div class="section" id="rights">
+            <div class="section-title">5. 🧑‍⚖️ Your Rights</div>
+            <p>Under applicable data protection laws, you have the following rights:</p>
+            <div class="rights-grid">
+                <div class="right-card">
+                    <div class="icon">👁️</div>
+                    <h4>Access</h4>
+                    <p>Request a copy of all personal data we hold about you.</p>
+                </div>
+                <div class="right-card">
+                    <div class="icon">✏️</div>
+                    <h4>Correction</h4>
+                    <p>Ask us to correct inaccurate or incomplete data.</p>
+                </div>
+                <div class="right-card">
+                    <div class="icon">🗑️</div>
+                    <h4>Deletion</h4>
+                    <p>Request deletion of your account and data (subject to legal holds).</p>
+                </div>
+                <div class="right-card">
+                    <div class="icon">📤</div>
+                    <h4>Portability</h4>
+                    <p>Receive your data in a structured, machine-readable format.</p>
+                </div>
+                <div class="right-card">
+                    <div class="icon">🛑</div>
+                    <h4>Objection</h4>
+                    <p>Object to specific processing activities.</p>
+                </div>
+            </div>
+            <p style="margin-top:1rem;">To exercise any of these rights, email us at <strong>privacy@leef.lk</strong>.
+            </p>
+        </div>
+
+        <div class="section" id="cookies">
+            <div class="section-title">6. 🍪 Cookies &amp; Local Storage</div>
+            <p>leef uses <strong>browser localStorage</strong> (not third-party tracking cookies) to store:</p>
+            <ul>
+                <li>Your login session (user object)</li>
+                <li>Cart contents</li>
+                <li>Checkout preferences</li>
+            </ul>
+            <p>This data is stored locally on your device and is not transmitted to advertising networks.</p>
+        </div>
+
+        <div class="section" id="retention">
+            <div class="section-title">7. 🗓️ Data Retention</div>
+            <p>We retain your personal data for as long as your account is active. Upon account deletion:</p>
+            <ul>
+                <li>Personal profile data is deleted within 30 days.</li>
+                <li>Order and payment records are retained for 7 years for legal / tax compliance.</li>
+                <li>Feedback and reviews are anonymised and may remain visible.</li>
+            </ul>
+        </div>
+
+        <div class="section" id="contact">
+            <div class="section-title">8. 📞 Contact Us</div>
+            <p>For privacy-related questions or to exercise your rights, contact our Data Protection Officer:</p>
+            <ul>
+                <li><strong>Email:</strong> privacy@leef.lk</li>
+                <li><strong>Address:</strong> leef (Pvt) Ltd, 42 Green Lane, Colombo 05, Sri Lanka</li>
+                <li><strong>Phone:</strong> +94 11 234 5678</li>
+            </ul>
+            <p>We aim to respond to all requests within <strong>14 business days</strong>.</p>
+        </div>
+
+        <div class="cta">
+            <h2>Questions about your privacy?</h2>
+            <p>Our team is happy to help with any questions or data requests.</p>
+            <a href="mailto:privacy@leef.lk">Contact Privacy Team →</a>
+        </div>
+
+    </div>
+</body>
+
+</html>

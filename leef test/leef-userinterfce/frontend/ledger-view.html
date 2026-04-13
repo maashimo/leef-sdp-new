@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Ledger - 🍃 Leef</title>
+  <style>
+    :root {
+      --green: #16a34a;
+      --orange: #f97316;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --bg: #ffffff;
+      --card: #fff;
+      --muted: #555;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    aside {
+      width: 240px;
+      background: var(--card);
+      padding: 1.5em 1em;
+      box-shadow: 2px 0 6px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2em;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    aside .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 1.5rem;
+      margin-bottom: 2em;
+      text-decoration: none;
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    aside nav a {
+      display: block;
+      padding: 0.7em 1em;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 0.5em;
+      transition: background 0.2s, color 0.2s;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    aside nav a.active,
+    aside nav a:hover {
+      background: var(--green);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    aside button.redeem-btn {
+      margin-top: auto;
+      width: 100%;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      padding: 0.6em;
+      border-radius: 0.5em;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Main content */
+    main {
+      flex: 1;
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .page-title {
+      color: #222 !important;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+
+    .page-subtitle {
+      color: #555 !important;
+      margin-top: 0.3em;
+      font-size: 1rem;
+    }
+
+    .filters-bar {
+      background: #fff;
+      padding: 1.2rem;
+      border-radius: 12px;
+      border: 1px solid #eee;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+    }
+
+    .filters-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .search-box {
+      padding: 0.6rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      width: 300px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .search-box:focus {
+      border-color: #16a34a;
+    }
+
+    select,
+    input[type="date"] {
+      padding: 0.6rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .btn-export {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-export:hover {
+      background: #1d4ed8;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+      padding: 1.5rem;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      color: #555;
+      padding: 1rem;
+      text-align: left;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-bottom: 2px solid #eee;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+      color: #444;
+      font-size: 0.95rem;
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status-badge {
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .status-finalized {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-request {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .currency {
+      font-weight: 600;
+    }
+
+    .profit {
+      color: #16a34a;
+      font-weight: bold;
+    }
+
+    .product-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .product-cell img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid #eee;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 3rem;
+      color: #888;
+      font-size: 1.1rem;
+    }
+
+    .btn-pdf {
+      background: #dc2626;
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-pdf:hover {
+      background: #b91c1c;
+    }
+
+    .btn-summary {
+      background: #16a34a;
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-summary:hover {
+      background: #15803d;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+
+  <aside>
+    <a href="admin-dashboard.html" class="logo">leef 🍃</a>
+    <nav>
+      <a href="admin-dashboard.html">Overview</a>
+      <a href="ledger-view.html" class="active">Ledger</a>
+      <a href="new-registration.html">Registration Requests</a>
+      <a href="location-requests.html">Location Requests</a>
+      <a href="product-admin.html">Products</a>
+      <a href="feedback-admin.html">Feedback</a>
+      <a href="questions-admin.html">Questions</a>
+      <a href="refund-approval.html">Refunds</a>
+      <a href="admin-profile.html">Profile</a>
+    </nav>
+  </aside>
+
+  <script src="admin-sidebar.js"></script>
+
+  <main class="main-content container">
+    <div
+      style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <h1 class="page-title">Admin Ledger</h1>
+        <p class="page-subtitle" id="dateDisplay">Full History</p>
+      </div>
+    </div>
+
+    <div class="filters-bar">
+      <div class="filters-group">
+        <input type="text" id="searchInput" class="search-box" placeholder="Search by ID, Product, or Customer...">
+        <select id="dayFilter">
+          <option value="today">Today</option>
+          <option value="yesterday">Yesterday</option>
+          <option value="all">All Time History</option>
+          <option value="custom">Custom Date</option>
+        </select>
+        <input type="date" id="customDateInput" style="display:none;">
+      </div>
+      <div class="filters-group">
+        <button class="btn-pdf" onclick="downloadDetailedPDF()">📄 Detailed PDF</button>
+        <button class="btn-summary" onclick="downloadShopSummaryPDF()" style="background:#0891b2;">🏪 Shop Summary</button>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <table id="ledgerTable">
+        <thead>
+          <tr>
+            <th style="width: 80px;">Cart ID</th>
+            <th>Date & Time</th>
+            <th>Customer</th>
+            <th>Product Details</th>
+            <th>Seller</th>
+            <th>Quantity</th>
+            <th>Seller (Rs)</th>
+            <th>Final (Rs)</th>
+            <th style="color:#166534;">Profit (Rs)</th>
+          </tr>
+        </thead>
+        <tbody id="ledgerBody">
+          <!-- Data injected here -->
+        </tbody>
+      </table>
+      <div id="loading">Loading transaction records...</div>
+    </div>
+  </main>
+
+  <script>
+    const API = "http://localhost:5000";
+    let allLedgerData = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+    });
+
+    function init() {
+      fetchLedger();
+
+      document.getElementById('dayFilter').addEventListener('change', (e) => {
+        const customInput = document.getElementById('customDateInput');
+        if (e.target.value === 'custom') {
+          customInput.style.display = 'block';
+        } else {
+          customInput.style.display = 'none';
+          fetchLedger();
+        }
+      });
+
+      document.getElementById('customDateInput').addEventListener('change', fetchLedger);
+      document.getElementById('searchInput').addEventListener('input', applySearch);
+
+      // Auto-refresh every 30 seconds
+      setInterval(fetchLedger, 30000);
+    }
+
+    async function fetchLedger() {
+      const dayFilter = document.getElementById('dayFilter').value;
+      const customDate = document.getElementById('customDateInput').value;
+      const loading = document.getElementById('loading');
+      const body = document.getElementById('ledgerBody');
+
+      body.innerHTML = "";
+      loading.style.display = 'block';
+      loading.textContent = "Fetching platform transactions...";
+
+      let url = `${API}/api/orders/admin/ledger`;
+      const now = new Date();
+      let targetDate = "";
+
+      if (dayFilter === 'today') {
+        targetDate = formatDate(now);
+        url += `?date=${targetDate}`;
+      } else if (dayFilter === 'yesterday') {
+        const yesterday = new Date(now);
+        yesterday.setDate(now.getDate() - 1);
+        targetDate = formatDate(yesterday);
+        url += `?date=${targetDate}`;
+      } else if (dayFilter === 'custom' && customDate) {
+        url += `?date=${customDate}`;
+      }
+
+      document.getElementById('dateDisplay').textContent = targetDate || "Full History";
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed to fetch ledger");
+        allLedgerData = await res.json();
+        renderTable(allLedgerData);
+        loading.style.display = 'none';
+      } catch (err) {
+        console.error(err);
+        loading.textContent = "Error loading ledger.";
+      }
+    }
+
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function renderTable(data) {
+      const body = document.getElementById('ledgerBody');
+      if (data.length === 0) {
+        body.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:3rem; color:#888;">No transactions found for this period.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = data.map(o => {
+        // Profit calculation handled by backend, but we cross-verify
+        const profit = parseFloat(o.admin_profit) || 0;
+        const finalPrice = parseFloat(o.total_price) || 0;
+        const sellerPrice = finalPrice - profit;
+
+        const timestamp = new Date(o.created_at);
+        const dateTimeStr = `<div>${timestamp.toLocaleDateString()}</div><div style="font-size:0.75rem; color:#999;">${timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
+
+        return `
+          <tr>
+            <td style="font-weight:700; color:#64748b;">#C-${o.id}</td>
+            <td>${dateTimeStr}</td>
+            <td style="font-weight:600;">${o.customer_name}</td>
+            <td>
+              <div class="product-cell">
+                <img src="${o.image_url}" onerror="this.src='/images/default.png'">
+                <div>
+                  <div style="font-weight:600;">${o.product_name}</div>
+                  <div style="font-size:0.7rem; color:#888;">#P-${o.product_id}</div>
+                </div>
+              </div>
+            </td>
+            <td>${o.seller_name}</td>
+            <td style="font-weight:600;">${formatQty(o.quantity)}</td>
+            <td class="currency">Rs ${sellerPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+            <td class="currency" style="font-weight:700;">Rs ${finalPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+            <td class="currency profit">Rs ${profit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function applySearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = allLedgerData.filter(o =>
+        o.id.toString().includes(query) ||
+        o.product_name.toLowerCase().includes(query) ||
+        o.customer_name.toLowerCase().includes(query) ||
+        o.seller_name.toLowerCase().includes(query)
+      );
+      renderTable(filtered);
+    }
+
+    function formatQty(val) {
+      const num = parseFloat(val) || 0;
+      const kg = Math.floor(num);
+      const g = Math.round((num - kg) * 1000);
+      let parts = [];
+      if (kg > 0) parts.push(`${kg}kg`);
+      if (g > 0) parts.push(`${g}g`);
+      return parts.length ? parts.join(' ') : '0kg';
+    }
+
+    function exportToCSV() {
+      // ... existing exportToCSV logic ...
+      if (allLedgerData.length === 0) return alert("No data to export");
+
+      const headers = ["Cart ID", "Date", "Time", "Customer", "Product", "Seller", "Qty", "Seller Price", "Final Price", "Profit", "Status"];
+      const rows = allLedgerData.map(o => {
+        const profit = parseFloat(o.admin_profit) || 0;
+        const final = parseFloat(o.total_price) || 0;
+        const d = new Date(o.created_at);
+        return [
+          `#C-${o.id}`,
+          d.toLocaleDateString(),
+          d.toLocaleTimeString(),
+          o.customer_name,
+          o.product_name,
+          o.seller_name,
+          formatQty(o.quantity),
+          (final - profit).toFixed(2),
+          final.toFixed(2),
+          profit.toFixed(2),
+          o.type.toUpperCase()
+        ].map(val => `"${val}"`).join(',');
+      });
+
+      const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + "\n" + rows.join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `ledger_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // PDF GENERATION
+    async function downloadDetailedPDF() {
+      if (allLedgerData.length === 0) return alert("No data to download");
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('l', 'mm', 'a4');
+      const dayFilter = document.getElementById('dayFilter').value;
+      const dateStr = document.getElementById('dateDisplay').textContent;
+
+      doc.setFontSize(18);
+      doc.setTextColor(22, 163, 74);
+      doc.text("leef - Detailed Order Ledger Report", 14, 20);
+
+      doc.setFontSize(11);
+      doc.setTextColor(100);
+      doc.text(`Period: ${dateStr}`, 14, 28);
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 34);
+
+      const headers = [["ID", "Customer", "Contact", "District", "Address", "Product", "Qty", "Price (Rs)", "Shop"]];
+      const data = [];
+
+      allLedgerData.forEach(o => {
+        // Parse locations if available
+        let locs = [];
+        if (o.locations) {
+          try {
+            locs = typeof o.locations === 'string' ? JSON.parse(o.locations) : o.locations;
+          } catch (e) {
+            console.error("Failed to parse locations JSON", e);
+          }
+        }
+
+        const contact = [o.customer_phone, o.customer_phone2].filter(p => p).join(', ') || '-';
+
+        if (Array.isArray(locs) && locs.length > 0) {
+          // Flatten into multiple rows for multi-location
+          locs.forEach(l => {
+            const locQty = parseFloat(l.qty) || 0;
+            const locPrice = (parseFloat(o.unit_price) || 0) * locQty;
+
+            data.push([
+              `#${o.id}`,
+              o.customer_name,
+              contact,
+              l.district || o.district || o.customer_town || '-',
+              l.location || o.delivery_address || o.customer_address || '-',
+              o.product_name,
+              formatQty(locQty),
+              locPrice.toFixed(2),
+              o.shop_name || o.seller_name
+            ]);
+          });
+        } else {
+          // Single row for standard orders
+          data.push([
+            `#${o.id}`,
+            o.customer_name,
+            contact,
+            o.district || o.customer_town || '-',
+            o.delivery_address || o.customer_address || '-',
+            o.product_name,
+            formatQty(o.quantity),
+            parseFloat(o.total_price).toFixed(2),
+            o.shop_name || o.seller_name
+          ]);
+        }
+      });
+
+      doc.autoTable({
+        head: headers,
+        body: data,
+        startY: 40,
+        styles: { fontSize: 8, cellPadding: 2 },
+        headStyles: { fillColor: [22, 163, 74] },
+        alternateRowStyles: { fillColor: [240, 250, 240] }
+      });
+
+      doc.save(`Leef_Detailed_Report_${dateStr.replace(/ /g, '_')}.pdf`);
+    }
+
+    async function downloadShopSummaryPDF() {
+      if (allLedgerData.length === 0) return alert("No data to download");
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'mm', 'a4');
+      const dateStr = document.getElementById('dateDisplay').textContent;
+
+      doc.setFontSize(18);
+      doc.setTextColor(22, 163, 74);
+      doc.text("leef - Order Prep Summary", 14, 20);
+      doc.setFontSize(11);
+      doc.setTextColor(100);
+      doc.text(`Target Date: ${dateStr}`, 14, 28);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 34);
+
+      // Group by Shop, then Aggregate by Product
+      const shopAggregates = {};
+
+      allLedgerData.forEach(o => {
+        const shop = o.shop_name || o.seller_name || "Unknown Shop";
+        if (!shopAggregates[shop]) {
+          shopAggregates[shop] = {
+            products: {},
+            info: {
+              town: o.shop_town || '-',
+              address: o.shop_address || '-',
+              phone: [o.seller_phone, o.seller_phone2].filter(p => p).join(', ') || '-'
+            }
+          };
+        }
+
+        const prod = o.product_name;
+        if (!shopAggregates[shop].products[prod]) {
+          shopAggregates[shop].products[prod] = {
+            qty: 0,
+            id: o.product_id
+          };
+        }
+        shopAggregates[shop].products[prod].qty += parseFloat(o.quantity) || 0;
+      });
+
+      let currentY = 42;
+
+      Object.keys(shopAggregates).forEach((shopName) => {
+        if (currentY > 230) {
+          doc.addPage();
+          currentY = 20;
+        }
+
+        const shop = shopAggregates[shopName];
+
+        doc.setFontSize(14);
+        doc.setTextColor(0);
+        doc.setFont(undefined, 'bold');
+        doc.text(shopName, 14, currentY);
+
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
+        doc.setTextColor(80);
+        doc.text(`Location: ${shop.info.town} | Address: ${shop.info.address} | Phone: ${shop.info.phone}`, 14, currentY + 5);
+
+        const products = shop.products;
+        const tableData = Object.keys(products).map(prodName => [
+          prodName,
+          `#P-${products[prodName].id}`,
+          formatQty(products[prodName].qty)
+        ]);
+
+        doc.autoTable({
+          head: [["Product Name", "Product ID", "Total Prep Quantity"]],
+          body: tableData,
+          startY: currentY + 9,
+          margin: { left: 14 },
+          styles: { fontSize: 10, cellPadding: 3 },
+          headStyles: { fillColor: [60, 60, 60] },
+          theme: 'grid'
+        });
+
+        currentY = doc.lastAutoTable.finalY + 15;
+      });
+
+      doc.save(`Leef_Shop_Prep_Summary_${dateStr.replace(/ /g, '_')}.pdf`);
+    }
+
+
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Gateway - leef 🍃</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0a;
+      color: #eee;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    .top-navbar {
+      background: rgba(10, 10, 10, 0.97);
+      border-bottom: 1px solid #222;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-logo {
+      text-decoration: none;
+      font-weight: 700;
+      color: #4ade80;
+      font-size: 1.1rem;
+    }
+
+    .page-wrap {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .step-bar {
+      display: flex;
+      gap: 0;
+      margin-bottom: 2rem;
+    }
+
+    .step {
+      flex: 1;
+      text-align: center;
+      padding: 0.6rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #555;
+      border-bottom: 3px solid #222;
+    }
+
+    .step.done {
+      color: #4ade80;
+      border-color: #4ade80;
+    }
+
+    .step.active {
+      color: #fff;
+      border-color: #16a34a;
+    }
+
+    .card {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 14px;
+      padding: 1.8rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0 0 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Amount display */
+    .amount-box {
+      background: #0d0d0d;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .amount-label {
+      color: #888;
+      font-size: 0.85rem;
+    }
+
+    .amount-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #4ade80;
+    }
+
+    /* Method badge */
+    .method-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(22, 163, 74, 0.12);
+      border: 1px solid rgba(22, 163, 74, 0.3);
+      color: #4ade80;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Card form */
+    .field-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: #0d0d0d;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      font-family: 'Inter', monospace;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .field-input:focus {
+      border-color: #16a34a;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    }
+
+    .field-input::placeholder {
+      color: #444;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    /* Card visual */
+    .card-visual {
+      background: linear-gradient(135deg, #1a3a2a 0%, #0d2016 100%);
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-visual::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 120px;
+      height: 120px;
+      background: rgba(22, 163, 74, 0.1);
+      border-radius: 50%;
+    }
+
+    .card-chip {
+      width: 36px;
+      height: 28px;
+      background: linear-gradient(135deg, #d4a843, #f7d079);
+      border-radius: 5px;
+      margin-bottom: 1rem;
+    }
+
+    .card-number-display {
+      font-family: monospace;
+      font-size: 1.1rem;
+      letter-spacing: 3px;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .card-footer-label {
+      font-size: 0.65rem;
+      color: #4ade80;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card-footer-value {
+      font-size: 0.85rem;
+      color: #fff;
+      font-family: monospace;
+    }
+
+    /* COD panel */
+    .cod-panel {
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .cod-icon {
+      font-size: 3.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .cod-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .cod-sub {
+      color: #888;
+      font-size: 0.88rem;
+    }
+
+    /* Pay button */
+    .pay-btn {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1.2rem;
+      background: linear-gradient(135deg, #16a34a, #059669);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .pay-btn:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .pay-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      color: #888;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      color: #ccc;
+    }
+
+    /* Security note */
+    .security {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #555;
+      font-size: 0.78rem;
+      margin-top: 1rem;
+      justify-content: center;
+    }
+
+    /* Success screen */
+    #successScreen {
+      display: none;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    .success-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      animation: pop 0.4s ease;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0)
+      }
+
+      80% {
+        transform: scale(1.15)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .success-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #4ade80;
+      margin-bottom: 0.5rem;
+    }
+
+    .success-sub {
+      color: #888;
+      margin-bottom: 1.5rem;
+    }
+
+    .txn-box {
+      background: #0d0d0d;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-family: monospace;
+      color: #4ade80;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .coins-earned {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fbbf24;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .action-btn.primary {
+      background: #16a34a;
+      color: #fff;
+    }
+
+    .action-btn.secondary {
+      background: #222;
+      color: #ccc;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="top-navbar">
+    <a href="index.html" class="navbar-logo">leef 🍃</a>
+    <span style="color:#888; font-size:0.9rem;">🔒 Secure Payment</span>
+  </nav>
+
+  <div class="page-wrap">
+    <!-- Step bar -->
+    <div class="step-bar">
+      <div class="step done">🛒 Cart</div>
+      <div class="step done">📋 Confirm</div>
+      <div class="step active">💳 Payment</div>
+      <div class="step">✅ Done</div>
+    </div>
+
+    <!-- Payment form -->
+    <div id="paymentScreen">
+      <div class="card">
+        <div class="card-title">💳 Complete Your Payment</div>
+
+        <!-- Amount -->
+        <div class="amount-box">
+          <div>
+            <div class="amount-label">Total Amount</div>
+            <div class="amount-value" id="amountDisplay">Rs 0.00</div>
+          </div>
+          <div id="methodBadge" class="method-badge">🚚 Cash on Delivery</div>
+        </div>
+
+        <!-- COD Panel -->
+        <div id="codPanel" class="cod-panel">
+          <div class="cod-icon">🚚</div>
+          <div class="cod-title">Cash on Delivery</div>
+          <div class="cod-sub">Your order will be placed and payment collected upon delivery. You will earn 10 loyalty coins upon placing this order.</div>
+        </div>
+
+        <!-- Card Panel -->
+        <div id="cardPanel" style="display:none;">
+          <!-- Visual card preview -->
+          <div class="card-visual">
+            <div class="card-chip"></div>
+            <div class="card-number-display" id="cardNumDisplay">•••• •••• •••• ••••</div>
+            <div class="card-footer">
+              <div>
+                <div class="card-footer-label">Card Holder</div>
+                <div class="card-footer-value" id="cardHolderDisplay">YOUR NAME</div>
+              </div>
+              <div style="text-align:right;">
+                <div class="card-footer-label">Expires</div>
+                <div class="card-footer-value" id="cardExpiryDisplay">MM/YY</div>
+              </div>
+              <div style="text-align:right;">
+                <div class="card-footer-label" style="color:#fff; opacity:0.6;">VISA</div>
+                <div style="font-size: 1.4rem; font-style: italic; color: #fff; font-weight: 800;">VISA</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card inputs -->
+          <div class="field-group">
+            <label class="field-label">Card Number</label>
+            <input id="cardNumber" class="field-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Card Holder Name</label>
+            <input id="cardHolder" class="field-input" type="text" placeholder="John Silva">
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Expiry Date</label>
+              <input id="cardExpiry" class="field-input" type="text" placeholder="MM/YY" maxlength="5">
+            </div>
+            <div class="field-group">
+              <label class="field-label">CVC / CVV</label>
+              <input id="cardCvc" class="field-input" type="text" placeholder="•••" maxlength="4">
+            </div>
+          </div>
+        </div>
+
+        <button class="pay-btn" id="payBtn" onclick="processPayment()">
+          <span id="payBtnText">Place Order</span>
+        </button>
+        <a href="order-confirm.html" class="back-link">← Back to Confirmation</a>
+        <div class="security">🔒 All transactions are encrypted and secure</div>
+      </div>
+    </div>
+
+    <!-- Success screen -->
+    <div id="successScreen" class="card">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Payment Successful!</div>
+      <div class="success-sub" id="successSub">Your order has been placed successfully.</div>
+      <div class="txn-box" id="txnBox"></div>
+      <div class="coins-earned" id="coinsEarnedBox" style="display:none;"></div>
+      <div class="action-btns">
+        <button class="action-btn primary"
+          onclick="window.location.href=(user && user.role==='seller' ? 'seller-dashboard.html' : 'customer-dashboard.html')">Go
+          to
+          Dashboard</button>
+        <button class="action-btn secondary" onclick="window.location.href='products.html'">Continue Shopping</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script>
+    const API = 'http://localhost:5000';
+    const user = JSON.parse(sessionStorage.getItem('user') || 'null');
+    if (!user) window.location.href = 'login.html';
+
+    const amount = parseFloat(sessionStorage.getItem('finalCheckoutAmount') || sessionStorage.getItem('checkoutAmount') || '0');
+    const deliveryCharge = parseFloat(sessionStorage.getItem('deliveryCharge') || '0');
+    const method = sessionStorage.getItem('selectedPaymentMethod') || 'cod';
+    const coinSavingsApplied = parseFloat(sessionStorage.getItem('coinDiscount') || '0');
+    let lastOrderDetails = null; // To store for invoice
+
+    document.getElementById('amountDisplay').textContent = `Rs ${amount.toFixed(2)}`;
+    document.getElementById('methodBadge').innerHTML = method === 'cod' ? '🚚 Cash on Delivery' : '💳 Visa / Card';
+
+    if (method === 'visa') {
+      document.getElementById('codPanel').style.display = 'none';
+      document.getElementById('cardPanel').style.display = 'block';
+      document.getElementById('payBtnText').textContent = `Pay Rs ${amount.toFixed(2)}`;
+    } else {
+      document.getElementById('payBtnText').textContent = 'Place Order (COD)';
+    }
+
+    // Live card preview
+    document.getElementById('cardNumber').addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '').slice(0, 16);
+      this.value = v.replace(/(.{4})/g, '$1 ').trim();
+      document.getElementById('cardNumDisplay').textContent = (v.padEnd(16, '•')).replace(/(.{4})/g, '$1 ').trim();
+    });
+    document.getElementById('cardHolder')?.addEventListener('input', function () {
+      document.getElementById('cardHolderDisplay').textContent = this.value.toUpperCase() || 'YOUR NAME';
+    });
+    document.getElementById('cardExpiry')?.addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '').slice(0, 4);
+      if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+      this.value = v;
+      document.getElementById('cardExpiryDisplay').textContent = v || 'MM/YY';
+    });
+    document.getElementById('cardCvc')?.addEventListener('input', function () {
+      this.value = this.value.replace(/\D/g, '').slice(0, 4);
+    });
+
+    function setLoading(on) {
+      const btn = document.getElementById('payBtn');
+      const txt = document.getElementById('payBtnText');
+      if (on) {
+        btn.disabled = true;
+        txt.innerHTML = '<div class="spinner"></div>';
+      } else {
+        btn.disabled = false;
+        txt.textContent = method === 'cod' ? 'Place Order (COD)' : `Pay Rs ${amount.toFixed(2)}`;
+      }
+    }
+
+    async function processPayment() {
+      if (amount <= 0) { alert('Invalid amount. Please go back to cart.'); return; }
+
+      // Card validation
+      if (method === 'visa') {
+        const num = document.getElementById('cardNumber').value.replace(/\s/g, '');
+        const name = document.getElementById('cardHolder').value.trim();
+        const exp = document.getElementById('cardExpiry').value.trim();
+        const cvc = document.getElementById('cardCvc').value.trim();
+        if (num.length < 16) { alert('Enter a valid 16-digit card number.'); return; }
+        if (!name) { alert('Enter the card holder name.'); return; }
+        if (exp.length < 5) { alert('Enter a valid expiry date (MM/YY).'); return; }
+        if (cvc.length < 3) { alert('Enter a valid CVC/CVV.'); return; }
+      }
+
+      setLoading(true);
+
+      // Simulate processing delay
+      await new Promise(r => setTimeout(r, method === 'visa' ? 2000 : 800));
+
+      const txnRef = method === 'visa' ? `TXN-${Date.now()}` : `COD-${Date.now()}`;
+      const payStatus = method === 'visa' ? 'paid' : 'pending'; 
+      const orderStatus = 'completed'; // Hidden from "Pay Now", but reflects that the checkout flow is finished
+      let coinsEarned = 0;
+
+      const cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+      lastOrderDetails = {
+        cart: [...cart],
+        amount,
+        method,
+        txnRef,
+        payStatus,
+        orderStatus,
+        coinSavingsApplied,
+        date: new Date().toLocaleString()
+      };
+
+      const firstItem = cart[0] || {};
+      let cleanOrderId = null;
+      if (firstItem.orderId && typeof firstItem.orderId === 'string') {
+        const match = firstItem.orderId.match(/\d+/);
+        if (match) cleanOrderId = parseInt(match[0]);
+      }
+
+      try {
+        // 1. Save payment record to DB (Ledger)
+        const payRes = await fetch(`${API}/api/payments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerId: user.id,
+            orderId: cleanOrderId, // This is the request_id
+            productId: firstItem.id || null,
+            amount,
+            method,
+            status: payStatus,
+            transactionRef: txnRef,
+            coinsEarned: 0
+          })
+        });
+        const payData = await payRes.json();
+
+        // 2. Sync with order_items (Consolidated Orders)
+        // Robust price parsing (converts "40 per 500 g" to 80, i.e., price per 1.0 unit/kg)
+        const parsePricePerKg = (val) => {
+          if (typeof val === 'number') return val;
+          const str = String(val || '0');
+          const match = str.match(/(\d+(?:\.\d+)?)\s*(?:per|\/|Rs\.?)\s*(\d+)?\s*([a-zA-Z]+)/i);
+          if (match) {
+            let price = parseFloat(match[1]);
+            let amount = parseFloat(match[2]) || 1;
+            let unit = match[3].toLowerCase();
+            let unitInKg = 1;
+            if (unit.startsWith('g')) unitInKg = amount / 1000;
+            else if (unit.startsWith('kg')) unitInKg = amount;
+            else unitInKg = amount; // unit, pack, etc.
+            return price / unitInKg;
+          }
+          const fallback = str.match(/[\d.]+/);
+          return fallback ? parseFloat(fallback[0]) : 0;
+        };
+
+        for (const item of cart) {
+          const itemPrice = parsePricePerKg(item.price);
+          const itemTotal = itemPrice * (item.qty || 1);
+
+          if (item.orderId && typeof item.orderId === 'string') {
+            // This is a requested order (#REQ-123)
+            const reqIdMatch = item.orderId.match(/\d+/);
+            if (reqIdMatch) {
+              const reqId = reqIdMatch[0];
+              // Update payment status for all order_items linked to this request
+              await fetch(`${API}/api/orders/item/${reqId}/payment`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  userId: user.id,          // Added for strict scoping
+                  paymentStatus: payStatus, // 'paid' for visa, 'pending' for cod
+                  status: orderStatus       // 'completed'
+                })
+              });
+            }
+          } else {
+            // This is a direct marketplace order
+            await fetch(`${API}/api/orders/direct`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: user.id,
+                productId: item.id,
+                sellerId: item.seller_id || 0,
+                quantity: item.qty,
+                unitPrice: itemPrice,
+                totalPrice: itemTotal,
+                paymentMethod: method,
+                paymentStatus: payStatus, // 'paid' for visa, 'pending' for cod
+                status: orderStatus,       // 'completed'
+                district: item.district,
+                address: item.address || item.location_name
+              })
+            });
+          }
+        }
+
+        // 3. Award 10 loyalty coins for every purchase
+        try {
+          const coinRes = await fetch(`${API}/api/coins/earn`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ customerId: user.id, amount })
+          });
+          if (coinRes.ok) {
+            const coinData = await coinRes.json();
+            coinsEarned = parseFloat(coinData.earned) || 0;
+          }
+        } catch (e) { console.warn('Coins error:', e); }
+      } catch (e) {
+        console.warn('Order/Payment sync error:', e);
+      }
+
+      // 3. Clear cart and show success
+      sessionStorage.removeItem('cart');
+      sessionStorage.removeItem('checkoutAmount');
+      sessionStorage.removeItem('coinDiscount');
+      sessionStorage.removeItem('selectedPaymentMethod');
+
+      showSuccess(txnRef, coinsEarned);
+    }
+
+    function generateInvoice() {
+      if (!lastOrderDetails) return alert('Invoice data not found.');
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Header
+      doc.setFontSize(22);
+      doc.setTextColor(22, 163, 74);
+      doc.text("leef - Order Invoice", 105, 20, { align: 'center' });
+      
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 28, { align: 'center' });
+
+      // Customer Info
+      doc.setTextColor(0);
+      doc.setFontSize(12);
+      doc.text("Customer Detail:", 14, 45);
+      doc.setFontSize(10);
+      doc.text(`Name: ${user.name || user.username}`, 14, 52);
+      doc.text(`User ID: ${user.id}`, 14, 57);
+      doc.text(`Method: ${lastOrderDetails.method.toUpperCase()}`, 14, 62);
+      doc.text(`Reference: ${lastOrderDetails.txnRef}`, 14, 67);
+
+      // Table
+      const headers = [['Product', 'Qty', 'Unit Price', 'Total']];
+      const rows = lastOrderDetails.cart.map(item => {
+        return [
+          item.name,
+          `${parseFloat(item.qty).toFixed(2)} units`,
+          item.price,
+          `Rs ${ (parseFloat(item.price.match(/[\d.]+/)) * parseFloat(item.qty)).toFixed(2) }` // Simplified for invoice
+        ];
+      });
+
+      doc.autoTable({
+        startY: 75,
+        head: headers,
+        body: rows,
+        theme: 'striped',
+        headStyles: { fillColor: [22, 163, 74] },
+      });
+
+      const finalY = doc.lastAutoTable.finalY + 10;
+      doc.setFontSize(11);
+      
+      let currentY = finalY;
+      const baseSubtotal = lastOrderDetails.amount + lastOrderDetails.coinSavingsApplied - deliveryCharge;
+      
+      doc.text(`Subtotal: Rs ${baseSubtotal.toFixed(2)}`, 150, currentY);
+      currentY += 6;
+      
+      if (lastOrderDetails.coinSavingsApplied > 0) {
+          doc.setTextColor(251, 191, 36);
+          doc.text(`Coin savings: -Rs ${lastOrderDetails.coinSavingsApplied.toFixed(2)}`, 150, currentY);
+          currentY += 6;
+      }
+      
+      if (deliveryCharge > 0) {
+          doc.setTextColor(100);
+          doc.text(`Delivery Charge: Rs ${deliveryCharge.toFixed(2)}`, 150, currentY);
+          currentY += 6;
+      }
+      
+      doc.setTextColor(0);
+      doc.setFontSize(13);
+      doc.setFont("helvetica", "bold");
+      currentY += 4;
+      doc.text(`Grand Total: Rs ${lastOrderDetails.amount.toFixed(2)}`, 150, currentY);
+
+      doc.save(`leef_invoice_${lastOrderDetails.txnRef}.pdf`);
+    }
+
+    function showSuccess(txnRef, coinsEarned) {
+      document.getElementById('paymentScreen').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+
+      const isCard = method === 'visa';
+      document.getElementById('successSub').textContent = isCard
+        ? `Rs ${amount.toFixed(2)} charged to your card successfully.`
+        : `Order placed! Pay Rs ${amount.toFixed(2)} upon delivery.`;
+
+      document.getElementById('txnBox').innerHTML = `
+        <div style="font-size:0.72rem;color:#888;margin-bottom:4px;">Transaction Reference</div>
+        ${txnRef}
+      `;
+
+      if (coinsEarned > 0) {
+        const coinBox = document.getElementById('coinsEarnedBox');
+        coinBox.style.display = 'inline-flex';
+        coinBox.innerHTML = `🪙 +${coinsEarned.toFixed(2)} loyalty coins earned!`;
+      }
+
+      // Add Invoice button
+      const actionBox = document.querySelector('.action-btns');
+      const invoiceBtn = document.createElement('button');
+      invoiceBtn.className = 'action-btn';
+      invoiceBtn.style.background = '#059669';
+      invoiceBtn.style.color = '#fff';
+      invoiceBtn.innerHTML = '📄 Download Invoice';
+      invoiceBtn.onclick = generateInvoice;
+      actionBox.prepend(invoiceBtn);
+
+      // Update step bar
+      document.querySelectorAll('.step').forEach(s => s.classList.add('done'));
+      document.querySelector('.step.active')?.classList.remove('active');
+    }
+  </script>
+</body>
+
+</html>

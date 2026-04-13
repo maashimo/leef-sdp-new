@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - leef 🍃</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* Top Navbar Styles */
+        .top-navbar {
+            background-color: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid #333;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .navbar-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-logo {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            color: #4ade80;
+        }
+
+        .navbar-location {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-left: 2rem;
+        }
+
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+
+        .navbar-link {
+            text-decoration: none;
+            color: #eee;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+        }
+
+        .navbar-link.active {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .navbar-link:hover {
+            background-color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .top-navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .navbar-nav {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+        /* Order Table Modernization */
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .table th {
+            color: #64748b;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            padding: 1rem;
+            border-bottom: 1px solid #333;
+        }
+
+        .table td {
+            background: #1a1a1a;
+            padding: 1.2rem 1rem;
+            vertical-align: middle;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .table tr:hover td {
+            background: #222;
+            transform: scale(1.002);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .table tr td:first-child { border-top-left-radius: 0.8rem; border-bottom-left-radius: 0.8rem; }
+        .table tr td:last-child { border-top-right-radius: 0.8rem; border-bottom-right-radius: 0.8rem; }
+
+        /* Status Pills */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            gap: 0.3rem;
+        }
+        .status-pill.completed { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.2); }
+        .status-pill.pending   { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .status-pill.rejected  { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .status-pill.approved  { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2); }
+
+        /* Compact Action Group */
+        .action-group {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        
+        .action-btn {
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .action-btn:hover { background: #444; }
+        .action-btn.primary { background: #16a34a; }
+        .action-btn.primary:hover { background: #15803d; }
+        .action-btn.secondary { background: #fbbf24; color: #000; }
+        .action-btn.secondary:hover { background: #f59e0b; }
+
+        /* Filter Bar Styles */
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            min-width: 280px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 0.8rem 1rem 0.8rem 2.8rem;
+            border-radius: 0.8rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4ade80;
+            background: #222;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .sort-select {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #eee;
+            padding: 0.8rem 1rem;
+            border-radius: 0.8rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 200px;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: #4ade80;
+        }
+        /* Notification Panel Styles */
+        .notification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .notification-panel {
+            position: fixed;
+            top: 5rem;
+            right: 2rem;
+            width: 350px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 1rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 1001;
+            display: none;
+            flex-direction: column;
+            max-height: 500px;
+        }
+
+        .notification-panel.show {
+            display: flex;
+        }
+
+        .notif-header {
+            padding: 1rem;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notif-title { font-weight: bold; color: #fff; }
+        .notif-close { cursor: pointer; color: #888; border: none; background: none; font-size: 1.2rem; }
+
+        .notif-list {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .notif-item {
+            padding: 1rem;
+            border-bottom: 1px solid #222;
+            transition: background 0.2s;
+            cursor: default;
+        }
+
+        .notif-item:hover { background: #222; }
+        .notif-item.unread { border-left: 3px solid #4ade80; background: rgba(74, 222, 128, 0.05); }
+
+        .notif-msg { font-size: 0.9rem; color: #eee; margin-bottom: 0.3rem; }
+        .notif-time { font-size: 0.75rem; color: #64748b; }
+
+        .notif-footer {
+            padding: 0.8rem;
+            border-top: 1px solid #333;
+            text-align: center;
+        }
+
+        .mark-all-btn {
+            background: none;
+            border: none;
+            color: #4ade80;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .mark-all-btn:hover { text-decoration: underline; }
+
+        .notification-count {
+            display: none; /* Hidden by default, shown if > 0 */
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+            border: 2px solid #000;
+        }
+    </style>
+</head>
+
+<body class="">
+
+    <!-- Top Navbar -->
+    <nav class="top-navbar">
+        <div class="navbar-header">
+            <a href="index.html" class="navbar-logo">
+                leef 🍃
+            </a>
+            <div class="navbar-location">Colombo, Sri Lanka</div>
+        </div>
+        <ul class="navbar-nav">
+            <li><a href="customer-dashboard.html" class="navbar-link active">Dashboard</a></li>
+            <li><a href="products.html" class="navbar-link">Products</a></li>
+            <li><a href="cart.html" class="navbar-link ">Cart</a></li>
+
+            <li><a href="feedback.html" class="navbar-link">Feedback</a></li>
+            <li><a href="returns.html" class="navbar-link">Refund</a></li>
+            <li><a href="profile.html" class="navbar-link ">Profile</a></li>
+            <li><a href="#" class="navbar-link"
+                    onclick="sessionStorage.removeItem('user'); window.location.href='index.html'; return false;">Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="dashboard-header">
+            <div>
+                <h1 class="page-title">Welcome back!</h1>
+                <p class="page-subtitle">Here's what's happening with your account</p>
+            </div>
+            <div class="header-actions">
+                <!-- Notifications -->
+                <div class="notifications" style="position: relative;">
+                    <button class="btn btn-icon" id="notifBtn">🔔</button>
+                    <span class="notification-count" id="notifBadge">0</span>
+                </div>
+
+                <!-- Notification Panel -->
+                <div class="notification-overlay" id="notifOverlay"></div>
+                <div class="notification-panel" id="notifPanel">
+                    <div class="notif-header">
+                        <span class="notif-title">Notifications</span>
+                        <button class="notif-close" id="notifClose">&times;</button>
+                    </div>
+                    <div class="notif-list" id="notifList">
+                        <!-- Notifications here -->
+                    </div>
+                    <div class="notif-footer">
+                        <button class="mark-all-btn" id="markAllRead">Mark all as read</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Featured Products -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">You may like</h2>
+                <a href="products.html" class="link">View All →</a>
+            </div>
+            <div class="products-grid" id="adsGrid"
+                style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:2em; margin-top:2em;">
+                <div style="grid-column: 1/-1; text-align: center; color: #888;">Loading recommendations...</div>
+            </div>
+        </div>
+
+        <script>
+            // Role-based access control
+            (function checkAuth() {
+                const userStr = sessionStorage.getItem('user');
+                if (!userStr) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const user = JSON.parse(userStr);
+                if (user.role === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                } else if (user.role === 'seller') {
+                    window.location.href = 'seller-dashboard.html';
+                }
+            })();
+
+            document.addEventListener("DOMContentLoaded", async () => {
+                // User Name Logic
+                try {
+                    const user = JSON.parse(sessionStorage.getItem("user"));
+                    // Permissive auth check - just try to get a name, don"t redirect
+                    let displayName = "Customer";
+                    if (user && (user.name || user.username || user.email)) {
+                        displayName = user.name || user.username || user.email.split('@')[0];
+                        document.querySelector(".page-title").innerText = `Welcome back, ${displayName}!`;
+                    }
+                } catch (e) {
+                    console.log("Auth check error (ignored):", e);
+                }
+
+                // Logout logic
+                const logoutLinks = document.querySelectorAll(".navbar-link[href='index.html']");
+                logoutLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        sessionStorage.removeItem("user");
+                        sessionStorage.removeItem("token");
+                    });
+                });
+
+                // 1. Get products for recommendations
+                try {
+                    const res = await fetch("http://localhost:5000/api/products/marketplace");
+                    const allProducts = await res.json();
+
+                    const grid = document.getElementById("adsGrid");
+                    grid.innerHTML = "";
+
+                    // Filter only Ads FIRST (Promoted/Featured)
+                    let displayProducts = allProducts.filter(p => p.is_ads == 1).slice(0, 6);
+
+                    if (displayProducts.length === 0) {
+                        grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: #888;'>No promoted products available right now.</div>";
+                        return;
+                    }
+
+                    displayProducts.forEach(p => {
+                        const imageUrl = p.image_url ? `http://localhost:5000/${p.image_url}` : 'images/default.png';
+
+                        // Sale Badge Logic
+                        const saleBadge = p.sale_details ?
+                            `<div style="position:absolute; top:10px; left:10px; background:#ef4444; color:white; padding:0.2em 0.6em; border-radius:1em; font-size:0.75rem; font-weight:bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">SALE: ${p.sale_details}</div>`
+                            : '';
+
+                        const card = document.createElement("div");
+                        card.className = "product-card";
+                        card.style.textAlign = "center";
+                        // Simple price display — no coin discount on cards
+                        let priceHtml = "";
+                        if (p.sale_details) {
+                            priceHtml = `<div style="margin:0.5rem 0;">
+                                           <span style="text-decoration: line-through; color: #999; font-size: 0.8rem;">Rs. ${p.price}</span>
+                                           <div style="color:#ef4444; font-weight:bold; font-size:1rem;">Rs. ${p.sale_details}</div>
+                                           ${p.coins_percent ? `<span style="color:#f59e0b; font-size:0.8rem;">🪙 Save ${p.coins_percent}% from Coins</span>` : ''}
+                                         </div>`;
+                        } else {
+                            priceHtml = `<div style="display:flex;justify-content:space-between;align-items:center;margin:0.5rem 0">
+                                           <span style="color:#4ade80;font-weight:bold">Rs. ${p.price}</span>
+                                           ${p.coins_percent ? `<span style="color:#f59e0b; font-size:0.8rem;">🪙 Save ${p.coins_percent}% from Coins</span>` : ''}
+                                         </div>`;
+                        }
+
+                        card.innerHTML = `
+                        <div style="position:relative;">
+                            <img src="${imageUrl}" class="product-image"
+                                style="width:100%; height:120px; object-fit:cover; border-radius:1em; margin-bottom:1em;">
+                            ${saleBadge}
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title" style="font-size:1.1em; margin-bottom:0.4em;">${p.name}</h3>
+                            <p class="text-muted" style="font-size:0.9rem">Seller: ${p.shop_name}</p>
+                            ${priceHtml}
+                            <button class="btn btn-primary btn-block" style="width:100%" onclick="window.location.href='product-details.html?id=${p.id}'">View Details</button>
+                        </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+
+                } catch (err) {
+                    console.error(err);
+                }
+
+                // Load Customer's Custom Requests (Notifications)
+                try {
+                    // SESSION FIX: Consistently use sessionStorage
+                    const userStr = sessionStorage.getItem("user");
+                    if (!userStr) {
+                        console.warn("Session missing, redirecting to login.");
+                        window.location.href = "login.html";
+                        return;
+                    }
+                    const user = JSON.parse(userStr);
+
+                    const tbody = document.getElementById("recent-orders-tbody");
+                    const res = await fetch(`http://localhost:5000/api/orders/customer/${user.id}`);
+                    if (!res.ok) throw new Error("Failed to fetch customer orders");
+                    let allOrders = await res.json();
+
+                    // Global helper for rendering
+                    const renderFilteredOrders = () => {
+                        const searchQuery = document.getElementById("orderSearchInput").value.toLowerCase();
+                        const sortType = document.getElementById("orderSortSelect").value;
+
+                        // 1. Filter by Search Query & Date (30 days)
+                        let filtered = allOrders.filter(order => {
+                            const hoursDiff = (new Date() - new Date(order.created_at)) / (1000 * 60 * 60);
+                            const matchesSearch = (order.product_name || "").toLowerCase().includes(searchQuery) || 
+                                                 (order.shop_name || "").toLowerCase().includes(searchQuery);
+                            // Show all recent orders (pending, approved, completed) — not just completed
+                            return hoursDiff <= 720 && matchesSearch;
+                        });
+
+                        // 2. Sort
+                        filtered.sort((a, b) => {
+                            if (sortType === "date-desc") return new Date(b.created_at) - new Date(a.created_at);
+                            if (sortType === "date-asc")  return new Date(a.created_at) - new Date(b.created_at);
+                            if (sortType === "price-desc") return parseFloat(b.total_price) - parseFloat(a.total_price);
+                            if (sortType === "price-asc")  return parseFloat(a.total_price) - parseFloat(b.total_price);
+                            return 0;
+                        });
+
+                        // 3. Slice to 10
+                        const displayOrders = filtered.slice(0, 10);
+
+                        // 4. Render
+                        let htmlStr = "";
+                        displayOrders.forEach(order => {
+                            const orderDate = new Date(order.created_at);
+                            const actionHtml = getActionHtml(order);
+                            const qtyHtml = `<span style="color:#eee; font-weight:500;">${formatQty(order.quantity)}</span>`;
+                            const orderIdPrefix = order.source === 'request' ? 'REQ' : 'ORD';
+                            const displayId = `<span style="color:#64748b; font-weight:600;">#${orderIdPrefix}-${order.id}</span>`;
+
+                            htmlStr += `
+                                <tr>
+                                    <td>${displayId}</td>
+                                    <td>
+                                        <div style="font-weight:600; color:#fff;">${order.product_name || "Product"}</div>
+                                        <div style="font-size:0.75rem; color:#64748b;">${order.shop_name || "Unknown Seller"}</div>
+                                    </td>
+                                    <td style="color:#94a3b8; font-size:0.85rem;">${orderDate.toLocaleDateString()}</td>
+                                    <td style="color: #4ade80; font-weight:600;">Rs. ${parseFloat(order.total_price || 0).toLocaleString()}</td>
+                                    <td>${qtyHtml}</td>
+                                    <td>${actionHtml}</td>
+                                </tr>
+                            `;
+                        });
+
+                        if (displayOrders.length === 0) {
+                            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; padding: 2rem; color: #888;'>No matching orders found</td></tr>";
+                        } else {
+                            tbody.innerHTML = htmlStr;
+                        }
+                    };
+
+                    const formatQty = (qty) => {
+                        const val = parseFloat(qty) || 0;
+                        const kg = Math.floor(val);
+                        const g = Math.round((val - kg) * 1000);
+                        let parts = [];
+                        if (kg > 0) parts.push(`${kg}kg`);
+                        if (g > 0) parts.push(`${g}g`);
+                        return parts.length > 0 ? parts.join(" ") : "0g";
+                    };
+
+                    function getActionHtml(order) {
+                        if (order.status === "pending" && order.source === 'request') {
+                            return `<div class="action-group"><span class="status-pill pending">⏳ Wait for Approval</span></div>`;
+                        } else if (order.status === "approved" || (order.status === "pending" && order.source === 'item')) {
+                            return `<div class="action-group"><span class="status-pill approved">✅ Accepted</span><a href="payment.html?id=${order.id}" class="action-btn primary">Pay Now</a></div>`;
+                        } else if (order.status === "completed") {
+                            return `<div class="action-group"><span class="status-pill completed">✔ Completed</span><button class="action-btn" onclick='generateInvoice(${JSON.stringify(order).replace(/'/g, "&apos;")})'>📄 Invoice</button><button class="action-btn secondary" onclick="window.location.href='product-details.html?id=${order.product_id || ''}'">🔁 Reorder</button></div>`;
+                        } else if (order.status === "rejected") {
+                            return `<div class="action-group" title="${order.rejection_reason || ''}"><span class="status-pill rejected">✖ Rejected</span></div>`;
+                        }
+                        return "";
+                    }
+
+                    // Initial Render
+                    renderFilteredOrders();
+
+                    // Listeners
+                    document.getElementById("orderSearchInput").addEventListener("input", renderFilteredOrders);
+                    document.getElementById("orderSortSelect").addEventListener("change", renderFilteredOrders);
+
+                    // --- Notification Panel Implementation ---
+                    const notifBtn = document.getElementById('notifBtn');
+                    const notifPanel = document.getElementById('notifPanel');
+                    const notifOverlay = document.getElementById('notifOverlay');
+                    const notifClose = document.getElementById('notifClose');
+                    const notifList = document.getElementById('notifList');
+                    const notifBadge = document.getElementById('notifBadge');
+                    const markAllRead = document.getElementById('markAllRead');
+
+                    const toggleNotif = () => {
+                        const isShowing = notifPanel.classList.toggle('show');
+                        notifOverlay.style.display = isShowing ? 'block' : 'none';
+                        if (isShowing) loadNotifications();
+                    };
+
+                    notifBtn.onclick = toggleNotif;
+                    notifClose.onclick = toggleNotif;
+                    notifOverlay.onclick = toggleNotif;
+
+                    async function loadNotifications() {
+                        try {
+                            const user = JSON.parse(sessionStorage.getItem("user"));
+                            const res = await fetch(`${window.API_BASE_URL}/api/notifications/${user.id}`);
+                            const data = await res.json();
+                            
+                            const unreadCount = data.filter(n => !n.is_read).length;
+                            notifBadge.innerText = unreadCount;
+                            notifBadge.style.display = unreadCount > 0 ? 'block' : 'none';
+
+                            if (data.length === 0) {
+                                notifList.innerHTML = '<div style="padding:2rem; text-align:center; color:#666;">No notifications</div>';
+                                return;
+                            }
+
+                            notifList.innerHTML = data.map(n => `
+                                <div class="notif-item ${!n.is_read ? 'unread' : ''}" onclick="markAsRead(${n.id})">
+                                    <div class="notif-msg">${n.message}</div>
+                                    <div class="notif-time">${new Date(n.created_at).toLocaleString()}</div>
+                                </div>
+                            `).join('');
+                        } catch (err) {
+                            console.error("Notif Error:", err);
+                        }
+                    }
+
+                    window.markAsRead = async (id) => {
+                        await fetch(`${window.API_BASE_URL}/api/notifications/${id}/read`, { method: 'PATCH' });
+                        loadNotifications();
+                    };
+
+                    markAllRead.onclick = async () => {
+                        const user = JSON.parse(sessionStorage.getItem("user"));
+                        await fetch(`${window.API_BASE_URL}/api/notifications/read-all/${user.id}`, { method: 'PATCH' });
+                        loadNotifications();
+                    };
+
+                    // Initial load for badge
+                    loadNotifications();
+
+                } catch (err) {
+                    console.error("Error loading order notifications:", err);
+                    document.getElementById("recent-orders-tbody").innerHTML = `<tr><td colspan='5' style='text-align:center;color:red;padding:2em;'>Failed to load orders:<br><small>${err.message}</small><br><small>${err.stack}</small></td></tr>`;
+                }
+            });
+
+            function generateInvoice(order) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+
+                // Header
+                doc.setFontSize(22);
+                doc.setTextColor(22, 163, 74);
+                doc.text("leef - Order Invoice", 105, 20, { align: 'center' });
+                
+                doc.setFontSize(10);
+                doc.setTextColor(100);
+                doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 28, { align: 'center' });
+
+                // Detail
+                doc.setTextColor(0);
+                doc.setFontSize(12);
+                doc.text("Order Detail:", 14, 45);
+                doc.setFontSize(10);
+                doc.text(`Order ID: #${order.source==='request'?'REQ':'ORD'}-${order.id}`, 14, 52);
+                doc.text(`Date: ${new Date(order.created_at).toLocaleDateString()}`, 14, 57);
+                doc.text(`Customer: ${user.name || user.username}`, 14, 62);
+                doc.text(`Seller Shop: ${order.shop_name || 'N/A'}`, 14, 67);
+
+                const headers = [['Item', 'Qty', 'Unit Price', 'Subtotal']];
+                const rows = [[
+                    order.product_name || 'Product',
+                    `${parseFloat(order.quantity).toFixed(2)} units`,
+                    `Rs ${parseFloat(order.unit_price).toFixed(2)}`,
+                    `Rs ${parseFloat(order.total_price).toFixed(2)}`
+                ]];
+
+                doc.autoTable({
+                    startY: 75,
+                    head: headers,
+                    body: rows,
+                    theme: 'striped',
+                    headStyles: { fillColor: [22, 163, 74] },
+                });
+
+                const finalY = doc.lastAutoTable.finalY + 15;
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "bold");
+                doc.text(`Total Amount: Rs ${parseFloat(order.total_price).toFixed(2)}`, 140, finalY);
+
+                doc.save(`leef_invoice_${order.id}.pdf`);
+            }
+        </script>
+
+        <!-- Recent Orders -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Orders (Last 30 days)</h2>
+                <a href="orders.html" class="link">View All →</a>
+            </div>
+
+            <!-- New Filter Bar -->
+            <div class="filter-bar">
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="orderSearchInput" class="search-input" placeholder="Search product or shop name...">
+                </div>
+                <select id="orderSortSelect" class="sort-select">
+                    <option value="date-desc">Newest First</option>
+                    <option value="date-asc">Oldest First</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="price-asc">Price: Low to High</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Product</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Qty</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-orders-tbody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #888;">Loading recent orders...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    </div>
+</body>
+
+</html>
