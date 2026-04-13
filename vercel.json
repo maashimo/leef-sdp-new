@@ -1,7 +1,6 @@
 {
   "version": 2,
   "name": "leef-sdp-new",
-  "rootDirectory": "leef test/leef-userinterfce/frontend",
   "builds": [
     {
       "src": "**",
