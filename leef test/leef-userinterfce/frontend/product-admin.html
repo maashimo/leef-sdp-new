@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Admin - 🍃 Leef</title>
@@ -428,7 +429,7 @@
         btn.textContent = "Adding...";
 
         try {
-          const res = await fetch('http://localhost:5000/api/products/add', {
+          const res = await fetch(window.API_BASE_URL + '/api/products/add', {
             method: 'POST',
             body: formData
           });
@@ -489,7 +490,7 @@
 
       async function loadApprovedProducts() {
         try {
-          const res = await fetch("http://localhost:5000/api/products/marketplace");
+          const res = await fetch(window.API_BASE_URL + "/api/products/marketplace");
           const products = await res.json();
           const tbody = document.getElementById("approvedProductsBody");
           tbody.innerHTML = "";
@@ -578,7 +579,7 @@
         if (!confirm("Are you sure you want to remove this product? This will delete it permanently.")) return;
 
         try {
-          const res = await fetch("http://localhost:5000/api/products/admin/reject", {
+          const res = await fetch(window.API_BASE_URL + "/api/products/admin/reject", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: id, type: 'New' }) // Treating as direct delete
@@ -624,7 +625,7 @@
         btn.disabled = true;
 
         try {
-          const res = await fetch("http://localhost:5000/api/products/admin/approve", {
+          const res = await fetch(window.API_BASE_URL + "/api/products/admin/approve", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -666,7 +667,7 @@
         // Fetch latest details to ensure we have all images and latest description
         let product;
         try {
-          const res = await fetch(`http://localhost:5000/api/products/${p.id}`);
+          const res = await fetch(`${window.API_BASE_URL}/api/products/${p.id}`);
           product = await res.json();
         } catch (e) {
           product = p; // fallback
@@ -701,14 +702,14 @@
                   </div>
 
                   <div style="width:100%; aspect-ratio:1; background:#f0f0f0; border-radius:1rem; overflow:hidden; border:2px solid #eee; margin-bottom:1rem;">
-                     <img id="modalImg" src="${product.image_url ? 'http://localhost:5000/' + product.image_url : 'https://via.placeholder.com/400'}" style="width:100%; height:100%; object-fit:cover;">
+                     <img id="modalImg" src="${product.image_url ? window.API_BASE_URL + '/' + product.image_url : 'https://via.placeholder.com/400'}" style="width:100%; height:100%; object-fit:cover;">
                   </div>
 
                   <label style="font-size:0.85rem; color:#666; font-weight:600; margin-bottom:0.5rem;">Manage Image Order & Thumbnail</label>
                   <div id="imageOrderList" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:0.5rem; margin-bottom:1rem;">
                      ${(product.images || []).map((img, idx) => `
                         <div class="img-manage-card" data-url="${img}" style="position:relative; border:2px solid ${img === product.image_url ? '#16a34a' : '#ddd'}; padding:2px; border-radius:8px; background:#fff;">
-                           <img src="http://localhost:5000/${img}" style="width:100%; height:70px; object-fit:cover; border-radius:6px;">
+                           <img src="${window.API_BASE_URL}/${img}" style="width:100%; height:70px; object-fit:cover; border-radius:6px;">
                            <div style="display:flex; justify-content:space-between; margin-top:4px;">
                              <button onclick="moveImg(${idx}, -1, ${product.id})" style="padding:2px 4px; font-size:0.7rem; cursor:pointer;">◀</button>
                              <button onclick="setAsThumbnail('${img}', ${product.id})" title="Set as Thumbnail" style="padding:2px 4px; font-size:0.7rem; cursor:pointer; background:${img === product.image_url ? '#16a34a' : '#eee'}; color:${img === product.image_url ? '#fff' : '#000'}">★</button>
@@ -800,7 +801,7 @@
         const list = document.getElementById('imageOrderList');
         list.innerHTML = currentGalleryOrder.map((img, idx) => `
           <div class="img-manage-card" data-url="${img}" style="position:relative; border:2px solid ${img === currentThumbnail ? '#16a34a' : '#ddd'}; padding:2px; border-radius:8px; background:#fff;">
-             <img src="http://localhost:5000/${img}" style="width:100%; height:70px; object-fit:cover; border-radius:6px;">
+             <img src="${window.API_BASE_URL}/${img}" style="width:100%; height:70px; object-fit:cover; border-radius:6px;">
              <div style="display:flex; justify-content:space-between; margin-top:4px;">
                <button onclick="moveImg(${idx}, -1, ${productId})" style="padding:2px 4px; font-size:0.7rem; cursor:pointer;">◀</button>
                <button onclick="setAsThumbnail('${img}', ${productId})" title="Set as Thumbnail" style="padding:2px 4px; font-size:0.7rem; cursor:pointer; background:${img === currentThumbnail ? '#16a34a' : '#eee'}; color:${img === currentThumbnail ? '#fff' : '#000'}">★</button>
@@ -813,7 +814,7 @@
         // Update main preview
         const preview = document.getElementById('modalImg');
         if (preview && currentThumbnail) {
-           preview.src = "http://localhost:5000/" + currentThumbnail;
+           preview.src = window.API_BASE_URL + "/" + currentThumbnail;
         }
       }
 
@@ -834,7 +835,7 @@
 
         try {
           // 1. Save Features & Description
-          const featRes = await fetch("http://localhost:5000/api/products/admin/approve", {
+          const featRes = await fetch(window.API_BASE_URL + "/api/products/admin/approve", {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
               id, 
@@ -847,7 +848,7 @@
           });
 
           // 2. Save Image Order & Thumbnail
-          const imgRes = await fetch("http://localhost:5000/api/products/admin/update-images", {
+          const imgRes = await fetch(window.API_BASE_URL + "/api/products/admin/update-images", {
             method: "PUT", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               productId: id,
@@ -879,11 +880,11 @@
         formData.append('id', id);
         formData.append('type', 'New');
         try {
-          const res = await fetch("http://localhost:5000/api/products/admin/approve", { method: "POST", body: formData });
+          const res = await fetch(window.API_BASE_URL + "/api/products/admin/approve", { method: "POST", body: formData });
           if (res.ok) { 
             alert("Photos uploaded!"); 
             // Re-fetch product to get new image URLs
-            const pRes = await fetch(`http://localhost:5000/api/products/${id}`);
+            const pRes = await fetch(`${window.API_BASE_URL}/api/products/${id}`);
             const updatedProduct = await pRes.json();
             currentGalleryOrder = updatedProduct.images || [];
             if (!currentThumbnail && currentGalleryOrder.length > 0) currentThumbnail = currentGalleryOrder[0];
@@ -946,7 +947,7 @@
       async function fetchPendingProducts() {
         console.log("Fetching pending products...");
         try {
-          const res = await fetch("http://localhost:5000/api/products/admin/pending");
+          const res = await fetch(window.API_BASE_URL + "/api/products/admin/pending");
           const products = await res.json();
           console.log("Products:", products);
           const tbody = document.getElementById("pendingProductsBody");
@@ -965,7 +966,7 @@
             tr.innerHTML = `
             <td style="display:flex;align-items:center;gap:0.7em;">
               <div style="width:40px;height:40px;background:#eee;border-radius:0.5em;display:flex;justify-content:center;align-items:center;overflow:hidden;">
-                 ${p.image_url ? `<img src="http://localhost:5000/${p.image_url}" style="width:100%;height:100%;object-fit:cover;">` : '<span style="font-size:1.2rem;">🍃</span>'}
+                 ${p.image_url ? `<img src="${window.API_BASE_URL}/${p.image_url}" style="width:100%;height:100%;object-fit:cover;">` : '<span style="font-size:1.2rem;">🍃</span>'}
               </div>
               ${p.name}
             </td>
@@ -1000,7 +1001,7 @@
         if (!confirm("Approve this product?")) return;
 
         try {
-          const res = await fetch("http://localhost:5000/api/products/admin/approve", {
+          const res = await fetch(window.API_BASE_URL + "/api/products/admin/approve", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ productId: id })
@@ -1039,7 +1040,7 @@
           return;
         }
 
-        const endpoint = "http://localhost:5000/api/products/admin/reject";
+        const endpoint = window.API_BASE_URL + "/api/products/admin/reject";
 
         try {
           const res = await fetch(endpoint, {

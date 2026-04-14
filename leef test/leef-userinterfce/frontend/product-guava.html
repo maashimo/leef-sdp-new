@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="api-config.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Guava (1 kg) - 🍃 Leef</title>
@@ -304,7 +305,7 @@ function handleSingle() {
     if(userStr) {
       const user = JSON.parse(userStr);
       try {
-        const res = await fetch(`http://localhost:5000/api/auth/locations/${user.role}/${user.id}`);
+        const res = await fetch(`${window.API_BASE_URL}/api/auth/locations/${user.role}/${user.id}`);
         if(res.ok) {
           const locs = await res.json();
           const approved = locs.filter(l => l.status === 'approved');

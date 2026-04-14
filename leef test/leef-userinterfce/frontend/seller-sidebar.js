@@ -51,7 +51,7 @@
   const page = window.location.pathname.split('/').pop();
 
   function updateBadge() {
-    fetch(`http://localhost:5000/api/seller/sidebar-counts/${user.id}`)
+    fetch(`${window.API_BASE_URL}/api/seller/sidebar-counts/${user.id}`)
       .then(r => r.json())
       .then(data => {
         const count = data.refunds || 0;

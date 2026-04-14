@@ -362,7 +362,8 @@
                         <button id="addToCartBtn" class="btn btn-primary" onclick="handleAddToCart()" style="padding: 0.8em 2em;">Add to
                             Cart</button>
                     </div>
-                </div>                <!-- Multi Location Mode -->
+                </div>
+                <!-- Multi Location Mode -->
                 <div id="multiLocationMode"
                     style="display: none; border: 1px solid #eee; padding: 1em; border-radius: 0.5em; background: #f9f9f9;">
                     <p id="multiLocInstruction" style="color: #555; font-size: 0.9rem; margin-bottom: 1em;">
@@ -485,7 +486,7 @@
             try {
                 // Fetch product details (including seller info)
                 console.log("Fetching product:", productId);
-                const res = await fetch(`http://localhost:5000/api/products/${productId}`);
+                const res = await fetch(`${window.API_BASE_URL}/api/products/${productId}`);
                 if (!res.ok) {
                     const txt = await res.text();
                     throw new Error(`Server Error (${res.status}): ${txt || res.statusText}`);
@@ -512,7 +513,7 @@
                 document.getElementById('productPrice').innerHTML = priceHtml;
 
                 document.getElementById('productDesc').textContent = currentProduct.description || "No description available.";
-                document.getElementById('productImg').src = currentProduct.image_url ? `http://localhost:5000/${currentProduct.image_url}` : 'images/default.png';
+                document.getElementById('productImg').src = currentProduct.image_url ? `${window.API_BASE_URL}/${currentProduct.image_url}` : 'images/default.png';
 
                 // Seller Info
                 document.getElementById('shopDisplayName').textContent = currentProduct.shop_name || "Shop Name";
@@ -551,7 +552,7 @@
 
                 // Profile Pic
                 if (currentProduct.profile_pic) {
-                    document.getElementById('shopAvatar').src = `http://localhost:5000/${currentProduct.profile_pic}`;
+                    document.getElementById('shopAvatar').src = `${window.API_BASE_URL}/${currentProduct.profile_pic}`;
                 }
 
                 // Town Logic: Prefer shop_town, fallback to parsing shop_details
@@ -602,7 +603,7 @@
                 if (currentProduct.certificates && currentProduct.certificates.length > 0) {
                     currentProduct.certificates.forEach(c => {
                         const a = document.createElement('a');
-                        a.href = `http://localhost:5000/${c.certificate}`;
+                        a.href = `${window.API_BASE_URL}/${c.certificate}`;
                         a.target = "_blank";
                         a.style.cssText = "color: #4ade80; font-size: 0.85rem; text-decoration: none; border: 1px solid #4ade80; padding: 2px 8px; border-radius: 4px; display: inline-block;";
                         a.innerHTML = `<i class="fas fa-certificate"></i> View Certificate`;
@@ -628,7 +629,7 @@
 
         async function loadMoreFromShop(sellerId, currentId) {
             try {
-                const res = await fetch(`http://localhost:5000/api/products/seller/${sellerId}/public?exclude=${currentId}`);
+                const res = await fetch(`${window.API_BASE_URL}/api/products/seller/${sellerId}/public?exclude=${currentId}`);
                 if (!res.ok) return;
                 const products = await res.json();
                 
@@ -642,7 +643,7 @@
                         card.href = `product-details.html?id=${p.id}`;
                         card.className = 'mini-product-card';
                         card.innerHTML = `
-                            <img src="http://localhost:5000/${p.image_url}" class="mini-product-img" onerror="this.src='images/placeholder.jpg'">
+                            <img src="${window.API_BASE_URL}/${p.image_url}" class="mini-product-img" onerror="this.src='images/placeholder.jpg'">
                             <div class="mini-product-name">${p.name}</div>
                             <div class="mini-product-price">Rs. ${p.price}</div>
                         `;
@@ -677,7 +678,7 @@
             try {
                 const role = currentUser.role || 'customer';
                 const userId = currentUser.id || currentUser.customer_id;
-                const res = await fetch(`http://localhost:5000/api/auth/locations/${role}/${userId}`);
+                const res = await fetch(`${window.API_BASE_URL}/api/auth/locations/${role}/${userId}`);
                 if (res.ok) {
                     const all = await res.json();
                     userApprovedLocations = all.filter(l => l.status === 'approved');
@@ -804,7 +805,7 @@
 
         async function addToCart(product, qty, productStock) {
             try {
-                const res = await fetch(`http://localhost:5000/api/products/${product.id}/reserve-stock`, {
+                const res = await fetch(`${window.API_BASE_URL}/api/products/${product.id}/reserve-stock`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ qty })
@@ -894,7 +895,7 @@
             if (itemsToAddToCart.length > 0) {
                 const totalDirectQty = itemsToAddToCart.reduce((sum, item) => sum + item.qty, 0);
                 try {
-                    const reserveRes = await fetch(`http://localhost:5000/api/products/${currentProduct.id}/reserve-stock`, {
+                    const reserveRes = await fetch(`${window.API_BASE_URL}/api/products/${currentProduct.id}/reserve-stock`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ qty: totalDirectQty })
@@ -923,7 +924,7 @@
             const qaSection = document.getElementById('qaSection');
             if (!qaSection) return;
             try {
-                const res = await fetch(`http://localhost:5000/api/products/${productId}/questions`);
+                const res = await fetch(`${window.API_BASE_URL}/api/products/${productId}/questions`);
                 const questions = await res.json();
                 
                 if (questions.length === 0) {
@@ -956,7 +957,7 @@
             if (!question) return showToast("Please enter a question.", "error");
 
             try {
-                const res = await fetch(`http://localhost:5000/api/products/${productId}/questions`, {
+                const res = await fetch(`${window.API_BASE_URL}/api/products/${productId}/questions`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -982,7 +983,7 @@
             const fbSection = document.getElementById('feedbackSection');
             if (!fbSection) return;
             try {
-                const res = await fetch(`http://localhost:5000/api/feedback/product/${productId}`);
+                const res = await fetch(`${window.API_BASE_URL}/api/feedback/product/${productId}`);
                 const feedback = await res.json();
                 
                 if (feedback.length === 0) {
@@ -1010,7 +1011,7 @@
                             </div>
                         </div>
                         <p style="color:#bbb; margin: 0.5em 0;">${f.comment || 'No comment provided.'}</p>
-                        ${f.image_url ? `<img src="http://localhost:5000${f.image_url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 0.5rem; margin-top: 0.5rem;" onerror="this.style.display='none'">` : ''}
+                        ${f.image_url ? `<img src="${window.API_BASE_URL}${f.image_url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 0.5rem; margin-top: 0.5rem;" onerror="this.style.display='none'">` : ''}
                         <div style="font-size: 0.75rem; color: #666; text-align: right;">
                             Posted on ${new Date(f.created_at).toLocaleDateString()}
                         </div>

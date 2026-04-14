@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Customer Questions - 🍃 Leef</title>
@@ -223,7 +224,7 @@
 
     async function fetchQuestions() {
       try {
-        const res = await fetch('http://localhost:5000/api/products/admin/questions/all');
+        const res = await fetch(window.API_BASE_URL + '/api/products/admin/questions/all');
         questions = await res.json();
         renderQuestions();
       } catch (err) {
@@ -279,7 +280,7 @@
       if (!answer) return alert("Please type an answer.");
 
       try {
-        const res = await fetch(`http://localhost:5000/api/products/admin/questions/${id}/reply`, {
+        const res = await fetch(`${window.API_BASE_URL}/api/products/admin/questions/${id}/reply`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ answer })

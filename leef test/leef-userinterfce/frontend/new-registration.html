@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registration Requests - 🍃 Leef</title>
@@ -370,7 +371,7 @@
   </main>
 
   <script>
-    const API = 'http://localhost:5000';
+    const API = window.API_BASE_URL;
 
     // Tabs functionality
     const tabs = document.querySelectorAll('.tab');

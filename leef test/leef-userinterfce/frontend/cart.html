@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cart - leef 🍃</title>
@@ -526,7 +527,7 @@
       if (diff > 0) {
         // Reserving more stock
         try {
-          const res = await fetch(`http://localhost:5000/api/products/${items[index].id}/reserve-stock`, {
+          const res = await fetch(`${window.API_BASE_URL}/api/products/${items[index].id}/reserve-stock`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ qty: diff })
@@ -544,7 +545,7 @@
       } else {
         // Releasing stock
         try {
-          await fetch(`http://localhost:5000/api/products/${items[index].id}/release-stock`, {
+          await fetch(`${window.API_BASE_URL}/api/products/${items[index].id}/release-stock`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ qty: Math.abs(diff) })
@@ -568,7 +569,7 @@
 
       if (!alreadyReleased && item.qty > 0) {
         try {
-          await fetch(`http://localhost:5000/api/products/${item.id}/release-stock`, {
+          await fetch(`${window.API_BASE_URL}/api/products/${item.id}/release-stock`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ qty: item.qty })
@@ -597,7 +598,7 @@
       for (const item of items) {
         if (item.qty > 0) {
           try {
-            await fetch(`http://localhost:5000/api/products/${item.id}/release-stock`, {
+            await fetch(`${window.API_BASE_URL}/api/products/${item.id}/release-stock`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ qty: item.qty })
@@ -674,7 +675,7 @@
 
       try {
         const user = JSON.parse(userStr);
-        const res = await fetch(`http://localhost:5000/api/orders/customer/${user.id}`);
+        const res = await fetch(`${window.API_BASE_URL}/api/orders/customer/${user.id}`);
         if (!res.ok) return;
 
         const allOrders = await res.json();
@@ -714,7 +715,7 @@
               qty: parseFloat(loc.qty) || 0,
               district: loc.district || null,
               location_name: loc.location || null,
-              img: o.image_url ? `http://localhost:5000/${o.image_url}` : "images/default.png",
+              img: o.image_url ? `${window.API_BASE_URL}/${o.image_url}` : "images/default.png",
               seller_id: o.seller_id
             });
             cartChanged = true;
@@ -750,7 +751,7 @@
           price: basePrice,
           qty: parseFloat(loc.qty) || 0,
           district: loc.district || null, // Store district info
-          img: order.image_url ? `http://localhost:5000/${order.image_url}` : "images/default.png"
+          img: order.image_url ? `${window.API_BASE_URL}/${order.image_url}` : "images/default.png"
         });
       });
       sessionStorage.setItem('cart', JSON.stringify(items));

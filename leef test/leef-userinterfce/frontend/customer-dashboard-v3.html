@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile - leef 🍃</title>
@@ -161,7 +162,7 @@
 
                 // Load Ads
                 try {
-                    const res = await fetch("http://localhost:5000/api/products/marketplace");
+                    const res = await fetch(window.API_BASE_URL + "/api/products/marketplace");
                     const products = await res.json();
 
                     const grid = document.getElementById("adsGrid");
@@ -240,7 +241,7 @@
                     const user = JSON.parse(userStr);
 
                     const tbody = document.getElementById("recent-orders-tbody");
-                    const res = await fetch(`http://localhost:5000/api/orders/customer/${user.id}`);
+                    const res = await fetch(`${window.API_BASE_URL}/api/orders/customer/${user.id}`);
                     if (!res.ok) throw new Error("Failed to fetch customer orders");
                     const orders = await res.json();
 

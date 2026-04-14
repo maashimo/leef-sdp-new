@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Products - leef 🍃</title>
@@ -191,7 +192,7 @@
 
     async function loadProducts() {
       try {
-        const res = await fetch("http://localhost:5000/api/products/marketplace");
+        const res = await fetch(window.API_BASE_URL + "/api/products/marketplace");
         allProducts = await res.json();
         renderProducts(allProducts);
       } catch (err) {
@@ -222,7 +223,7 @@
           card.style.filter = "grayscale(0.3)";
         }
 
-        const imageUrl = p.image_url ? `http://localhost:5000/${p.image_url}` : 'images/default.png';
+        const imageUrl = p.image_url ? `${window.API_BASE_URL}/${p.image_url}` : 'images/default.png';
         const saleBadge = p.sale_details ? `<div style="position:absolute; top:10px; right:10px; background:#ef4444; color:white; padding:0.2em 0.6em; border-radius:1em; font-size:0.75rem; font-weight:bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index:2;">SALE: ${p.sale_details}</div>` : '';
         const coinsBadge = p.coins_percent ? `<div style="color: #f59e0b; font-size: 0.8rem; margin-bottom: 0.5em; display:flex; align-items:center; gap:0.3em;"><span style="font-size:1rem;">🪙</span> Save ${p.coins_percent}% from Coins</div>` : '';
 
@@ -329,7 +330,7 @@
       }
 
       try {
-        const res = await fetch(`http://localhost:5000/api/products/${productId}/reserve-stock`, {
+        const res = await fetch(`${window.API_BASE_URL}/api/products/${productId}/reserve-stock`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ qty })
