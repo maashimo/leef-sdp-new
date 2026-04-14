@@ -16,7 +16,7 @@
         // 3. Configure Vercel to proxy /api requests (recommended)
         
         // apiBase = 'https://leef-api.up.railway.app'; // <--- UPDATE THIS AFTER DEPLOYING YOUR BACKEND
-        let apiBase = 'http://142.93.208.192:5000';
+        let apiBase = 'http://142.93.208.192';
     }
     
     window.API_BASE_URL = apiBase;
