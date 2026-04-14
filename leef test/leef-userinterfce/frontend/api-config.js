@@ -15,7 +15,8 @@
         // 2. Use a relative path if your backend is on the same domain
         // 3. Configure Vercel to proxy /api requests (recommended)
         
-        apiBase = 'https://leef-api.up.railway.app'; // <--- UPDATE THIS AFTER DEPLOYING YOUR BACKEND
+        // apiBase = 'https://leef-api.up.railway.app'; // <--- UPDATE THIS AFTER DEPLOYING YOUR BACKEND
+        let apiBase = 'http://142.93.208.192:5000';
     }
     
     window.API_BASE_URL = apiBase;
