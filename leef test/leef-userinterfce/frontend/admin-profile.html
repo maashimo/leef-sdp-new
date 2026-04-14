@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Profile - AgriConnect</title>
@@ -285,7 +286,7 @@
     async function resetPassword() {
       const email = "leef@gmail.com";
       try {
-        const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+        const response = await fetch(window.API_BASE_URL + '/api/auth/forgot-password', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

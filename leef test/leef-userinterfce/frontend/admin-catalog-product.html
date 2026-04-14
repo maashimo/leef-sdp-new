@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catalog Product - 🍃 Leef</title>
@@ -273,7 +274,7 @@
             if (!productId) return alert("No product ID specified");
 
             try {
-                const res = await fetch("http://localhost:5000/api/products/admin/pending");
+                const res = await fetch(window.API_BASE_URL + "/api/products/admin/pending");
                 const products = await res.json();
 
                 let p;
@@ -349,7 +350,7 @@
             }
 
             try {
-                const res = await fetch("http://localhost:5000/api/products/admin/approve", {
+                const res = await fetch(window.API_BASE_URL + "/api/products/admin/approve", {
                     method: "POST",
                     body: formData
                 });

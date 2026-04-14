@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Order Management - 🍃 Leef</title>
@@ -497,7 +498,7 @@
 
     async function fetchAllOrders() {
       try {
-        const res = await fetch("http://localhost:5000/api/orders/admin/all");
+        const res = await fetch(window.API_BASE_URL + "/api/orders/admin/all");
         if (!res.ok) throw new Error("Failed to fetch orders");
         const orders = await res.json();
         renderOrders(orders);
@@ -537,7 +538,7 @@
       const tbody = document.querySelector("#todays-orders-table tbody");
       tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;color:#888;'>Loading transactions...</td></tr>";
 
-      let url = `http://localhost:5000/api/orders/admin/ledger`;
+      let url = `${window.API_BASE_URL}/api/orders/admin/ledger`;
       let targetDate = new Date();
 
       if (day === 'yesterday') {
@@ -770,7 +771,7 @@
       if (!confirm("Are you sure you want to remove this location? This will notify the customer and update the total price.")) return;
 
       try {
-        const res = await fetch(`http://localhost:5000/api/orders/admin/${orderId}/locations`, {
+        const res = await fetch(`${window.API_BASE_URL}/api/orders/admin/${orderId}/locations`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ locationIndex: index })
@@ -791,7 +792,7 @@
       const adminNote = prompt("Enter an optional note for the customer (e.g. managing from another seller):");
 
       try {
-        const res = await fetch(`http://localhost:5000/api/orders/admin/${id}/accept`, {
+        const res = await fetch(`${window.API_BASE_URL}/api/orders/admin/${id}/accept`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ adminNote: adminNote || '' })
@@ -812,7 +813,7 @@
       const reason = prompt("Enter a reason for rejection (optional):");
       if (reason === null) return; // User cancelled prompt
       try {
-        const res = await fetch(`http://localhost:5000/api/orders/admin/${id}/reject`, {
+        const res = await fetch(`${window.API_BASE_URL}/api/orders/admin/${id}/reject`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ reason: reason })

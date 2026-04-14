@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="api-config.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>leef 🍃 - Little England Elite Fresh</title>
@@ -839,7 +840,7 @@
                     return;
                 }
                 sales.forEach(p => {
-                    const imageUrl = p.image_url ? `http://localhost:5000/${p.image_url}` : 'images/default.png';
+                    const imageUrl = p.image_url ? `${window.API_BASE_URL}/${p.image_url}` : 'images/default.png';
                     const card = document.createElement('div');
                     card.className = "premium-card";
                     card.onclick = () => {

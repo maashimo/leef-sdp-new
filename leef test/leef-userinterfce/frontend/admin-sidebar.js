@@ -50,14 +50,14 @@
   // Auto-mark as read when admin is on that page
   const page = window.location.pathname.split('/').pop();
   if (page === 'feedback-admin.html') {
-    fetch('http://localhost:5000/api/admin/mark-read/feedback', { method: 'POST' }).catch(() => { });
+    fetch(window.API_BASE_URL + '/api/admin/mark-read/feedback', { method: 'POST' }).catch(() => { });
   }
   if (page === 'questions-admin.html') {
-    fetch('http://localhost:5000/api/admin/mark-read/questions', { method: 'POST' }).catch(() => { });
+    fetch(window.API_BASE_URL + '/api/admin/mark-read/questions', { method: 'POST' }).catch(() => { });
   }
 
   function updateBadges() {
-    fetch('http://localhost:5000/api/admin/sidebar-counts')
+    fetch(window.API_BASE_URL + '/api/admin/sidebar-counts')
       .then(r => r.json())
       .then(data => {
         Object.keys(badges).forEach(key => {

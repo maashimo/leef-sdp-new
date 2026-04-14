@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chatbot | leef 🍃</title>
@@ -393,7 +394,7 @@
     let productCatalog = [];
     async function loadCatalog() {
       try {
-        const res = await fetch('http://localhost:5000/api/products/marketplace');
+        const res = await fetch(window.API_BASE_URL + '/api/products/marketplace');
         productCatalog = await res.json();
       } catch (err) {
         console.error("Catalog load error:", err);
@@ -417,7 +418,7 @@
       if (matches.length > 0) {
         autocompleteBox.innerHTML = matches.map(p => `
           <div class="suggestion-item" onclick="selectSuggestion('${p.name.replace(/'/g, "\\'")}')">
-            <img src="http://localhost:5000/${p.image_url ? p.image_url.split(',')[0] : 'images/default.png'}" alt="">
+            <img src="${window.API_BASE_URL}/${p.image_url ? p.image_url.split(',')[0] : 'images/default.png'}" alt="">
             <span class="name">${p.name} <small style="color:#94a3b8; display:block; font-size:0.75rem;">🏪 ${p.shop_name} | 📦 ${p.stock}</small></span>
           </div>
         `).join('');
@@ -506,7 +507,7 @@
         cardsContainer.className = 'product-cards';
 
         products.forEach(p => {
-          const imgUrl = p.image_url ? `http://localhost:5000/${p.image_url}` : 'https://via.placeholder.com/80?text=No+Img';
+          const imgUrl = p.image_url ? `${window.API_BASE_URL}/${p.image_url}` : 'https://via.placeholder.com/80?text=No+Img';
 
           // Added product id data attribute and onclick directly to html
           const cardHtml = `
@@ -636,7 +637,7 @@
               return;
             }
 
-            const res = await fetch(`http://localhost:5000/api/orders/seller-report?sellerId=${userObj.id}&date=${date}`);
+            const res = await fetch(`${window.API_BASE_URL}/api/orders/seller-report?sellerId=${userObj.id}&date=${date}`);
             if (!res.ok) throw new Error("Report fetch failed");
             const data = await res.json();
 
@@ -655,7 +656,7 @@
           }
 
           // Otherwise, normal product search for guests/customers
-          const res = await fetch(`http://localhost:5000/api/products/chatbot-search?q=${encodeURIComponent(text)}`);
+          const res = await fetch(`${window.API_BASE_URL}/api/products/chatbot-search?q=${encodeURIComponent(text)}`);
           if (!res.ok) throw new Error("Search failed");
           const data = await res.json();
 

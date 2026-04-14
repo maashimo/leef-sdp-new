@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Location Requests - 🍃 Leef</title>
@@ -444,7 +445,7 @@
       container.innerHTML = '<div class="empty-state"><div class="icon">⏳</div>Fetching...</div>';
 
       try {
-        const res = await fetch('http://localhost:5000/api/auth/admin/locations');
+        const res = await fetch(window.API_BASE_URL + '/api/auth/admin/locations');
         if (!res.ok) throw new Error('Fetch failed');
         allLocations = await res.json();
 
@@ -536,7 +537,7 @@
       if (!confirm(`Are you sure you want to ${newStatus === 'approved' ? 'approve' : 'reject'} this location?`)) return;
 
       try {
-        const res = await fetch(`http://localhost:5000/api/auth/admin/locations/${id}/status`, {
+        const res = await fetch(`${window.API_BASE_URL}/api/auth/admin/locations/${id}/status`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: newStatus })
@@ -557,7 +558,7 @@
       if (!confirm("Are you sure you want to permanently remove this location?")) return;
 
       try {
-        const res = await fetch(`http://localhost:5000/api/auth/locations/${id}`, { method: 'DELETE' });
+        const res = await fetch(`${window.API_BASE_URL}/api/auth/locations/${id}`, { method: 'DELETE' });
         if (res.ok) {
           showToast("Location removed.");
           loadLocationRequests();

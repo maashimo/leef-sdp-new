@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile - leef 🍃</title>
@@ -545,8 +546,8 @@
             // Fetch Profile Data
             try {
                 const endpoint = user.role === 'seller'
-                    ? `http://localhost:5000/api/auth/profile/seller/${user.id}`
-                    : `http://localhost:5000/api/auth/profile/customer/${user.id}`;
+                    ? `${window.API_BASE_URL}/api/auth/profile/seller/${user.id}`
+                    : `${window.API_BASE_URL}/api/auth/profile/customer/${user.id}`;
 
                 const res = await fetch(endpoint);
                 if (res.ok) {
@@ -620,7 +621,7 @@
 
                 // Fetch Account Summary stats
                 try {
-                    const orderRes = await fetch(`http://localhost:5000/api/orders/customer/${user.id}`);
+                    const orderRes = await fetch(`${window.API_BASE_URL}/api/orders/customer/${user.id}`);
                     if (orderRes.ok) {
                         const orders = await orderRes.json();
                         document.getElementById('statTotalOrders').textContent = orders.length || 0;
@@ -628,7 +629,7 @@
                 } catch (err) { console.error("Failed to load order stats", err); }
 
                 try {
-                    const fbRes = await fetch(`http://localhost:5000/api/feedback/user/${user.id}`);
+                    const fbRes = await fetch(`${window.API_BASE_URL}/api/feedback/user/${user.id}`);
                     if (fbRes.ok) {
                         const feedbacks = await fbRes.json();
                         document.getElementById('statReviews').textContent = feedbacks.length || 0;
@@ -636,7 +637,7 @@
                 } catch (err) { console.error("Failed to load feedback stats", err); }
 
                 try {
-                    const refRes = await fetch(`http://localhost:5000/api/refunds/user/${user.id}`);
+                    const refRes = await fetch(`${window.API_BASE_URL}/api/refunds/user/${user.id}`);
                     if (refRes.ok) {
                         const refunds = await refRes.json();
                         document.getElementById('statRefunds').textContent = refunds.length || 0;
@@ -692,7 +693,7 @@
                 }
 
                 try {
-                    const res = await fetch("http://localhost:5000/api/auth/profile/update", {
+                    const res = await fetch(window.API_BASE_URL + "/api/auth/profile/update", {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(body)
@@ -755,7 +756,7 @@
                 submitBtn.textContent = 'Updating...';
 
                 try {
-                    const res = await fetch("http://localhost:5000/api/auth/change-password", {
+                    const res = await fetch(window.API_BASE_URL + "/api/auth/change-password", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -821,7 +822,7 @@
         // --- Custom Locations Functions ---
         async function loadLocations(userId, role) {
             try {
-                const res = await fetch(`http://localhost:5000/api/auth/locations/${role}/${userId}`);
+                const res = await fetch(`${window.API_BASE_URL}/api/auth/locations/${role}/${userId}`);
                 if (!res.ok) return;
                 const locations = await res.json();
                 const list = document.getElementById('location-list');
@@ -867,7 +868,7 @@
             if (!fullAddress) return alert("Please enter the full location / address.");
 
             try {
-                const res = await fetch('http://localhost:5000/api/auth/locations', {
+                const res = await fetch(window.API_BASE_URL + '/api/auth/locations', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: user.id, user_role: user.role, short_name: shortName, district: district, location_details: fullAddress })
@@ -891,7 +892,7 @@
             if (!userStr) return;
             const user = JSON.parse(userStr);
             try {
-                const res = await fetch(`http://localhost:5000/api/auth/locations/${id}`, { method: 'DELETE' });
+                const res = await fetch(`${window.API_BASE_URL}/api/auth/locations/${id}`, { method: 'DELETE' });
                 if (res.ok) await loadLocations(user.id, user.role);
             } catch (err) {
                 console.error(err);

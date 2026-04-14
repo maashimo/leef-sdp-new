@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory - leef 🍃</title>
@@ -139,7 +140,7 @@
             }
 
             try {
-                const res = await fetch(`http://localhost:5000/api/products/seller/${user.id}`);
+                const res = await fetch(`${window.API_BASE_URL}/api/products/seller/${user.id}`);
                 const products = await res.json();
                 const tbody = document.getElementById("inventoryBody");
                 tbody.innerHTML = "";
@@ -223,7 +224,7 @@
             inputElem.style.borderColor = "#fbbf24"; // Yellow
 
             try {
-                const res = await fetch(`http://localhost:5000/api/products/direct-stock-update`, {
+                const res = await fetch(`${window.API_BASE_URL}/api/products/direct-stock-update`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -286,7 +287,7 @@
             if (!user) return alert("Session expired. Please login again.");
 
             try {
-                const res = await fetch(`http://localhost:5000/api/products/direct-stock-update`, {
+                const res = await fetch(`${window.API_BASE_URL}/api/products/direct-stock-update`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -320,7 +321,7 @@
             if (!user) return;
 
             try {
-                const res = await fetch(`http://localhost:5000/api/products/seller/delete/${id}`, {
+                const res = await fetch(`${window.API_BASE_URL}/api/products/seller/delete/${id}`, {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ sellerId: user.id })

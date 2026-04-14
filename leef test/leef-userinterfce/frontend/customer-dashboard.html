@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <script src="api-config.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Dashboard - leef 🍃</title>
@@ -422,7 +423,7 @@
 
                 // 1. Get products for recommendations
                 try {
-                    const res = await fetch("http://localhost:5000/api/products/marketplace");
+                    const res = await fetch(window.API_BASE_URL + "/api/products/marketplace");
                     const allProducts = await res.json();
 
                     const grid = document.getElementById("adsGrid");
@@ -437,7 +438,7 @@
                     }
 
                     displayProducts.forEach(p => {
-                        const imageUrl = p.image_url ? `http://localhost:5000/${p.image_url}` : 'images/default.png';
+                        const imageUrl = p.image_url ? `${window.API_BASE_URL}/${p.image_url}` : 'images/default.png';
 
                         // Sale Badge Logic
                         const saleBadge = p.sale_details ?
@@ -494,7 +495,7 @@
                     const user = JSON.parse(userStr);
 
                     const tbody = document.getElementById("recent-orders-tbody");
-                    const res = await fetch(`http://localhost:5000/api/orders/customer/${user.id}`);
+                    const res = await fetch(`${window.API_BASE_URL}/api/orders/customer/${user.id}`);
                     if (!res.ok) throw new Error("Failed to fetch customer orders");
                     let allOrders = await res.json();
 
