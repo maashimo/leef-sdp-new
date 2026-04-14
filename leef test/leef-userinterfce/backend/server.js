@@ -4,6 +4,7 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 require("dotenv").config({ quiet: true });
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // Config & Routes
 const { dbConfig } = require("./config/db");
@@ -894,6 +895,165 @@ app.delete("/api/payments/:id", async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   } finally {
     if (conn) await conn.end();
+  }
+});
+
+// =====================
+// STRIPE CHECKOUT API
+// =====================
+
+// Helper: parse VARCHAR price like "40 per 500 g" or "150" into a numeric price-per-unit (per kg)
+function parseProductPrice(priceStr) {
+  if (typeof priceStr === 'number') return priceStr;
+  const str = String(priceStr || '0');
+  const match = str.match(/(\d+(?:\.\d+)?)\s*(?:per|\/|Rs\.?)\s*(\d+)?\s*([a-zA-Z]+)/i);
+  if (match) {
+    let price = parseFloat(match[1]);
+    let amount = parseFloat(match[2]) || 1;
+    let unit = match[3].toLowerCase();
+    let unitInKg = 1;
+    if (unit.startsWith('g')) unitInKg = amount / 1000;
+    else if (unit.startsWith('kg')) unitInKg = amount;
+    else unitInKg = amount;
+    return price / unitInKg;
+  }
+  const fallback = str.match(/[\d.]+/);
+  return fallback ? parseFloat(fallback[0]) : 0;
+}
+
+// POST /api/create-checkout-session
+app.post("/api/create-checkout-session", async (req, res) => {
+  let conn;
+  try {
+    const { items, customerId, deliveryFee, surcharge, coinDiscount } = req.body;
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: "items array is required" });
+    }
+    if (!customerId) {
+      return res.status(400).json({ error: "customerId is required" });
+    }
+
+    conn = await mysql.createConnection(dbConfig);
+    const line_items = [];
+
+    for (const item of items) {
+      const { productId, quantity } = item;
+      if (!productId || !quantity || quantity <= 0) {
+        return res.status(400).json({ error: `Invalid item: productId=${productId}, quantity=${quantity}` });
+      }
+
+      // Look up product from DB
+      const [rows] = await conn.execute("SELECT id, name, price, sale_details FROM products WHERE id = ?", [productId]);
+      if (rows.length === 0) {
+        return res.status(400).json({ error: `Product not found: id=${productId}` });
+      }
+
+      const product = rows[0];
+      // Use sale price if available, otherwise regular price
+      const pricePerUnit = product.sale_details
+        ? parseProductPrice(product.sale_details)
+        : parseProductPrice(product.price);
+
+      // Stripe expects unit_amount in the smallest currency unit (cents for LKR)
+      // quantity here is in kg (e.g., 1.5), and pricePerUnit is price per 1 kg
+      // We treat each item as a single line with total = pricePerUnit * quantity
+      const totalAmountCents = Math.round(pricePerUnit * quantity * 100);
+
+      line_items.push({
+        price_data: {
+          currency: 'lkr',
+          product_data: {
+            name: product.name,
+          },
+          unit_amount: totalAmountCents,
+        },
+        quantity: 1, // We pre-calculate total, so quantity is 1
+      });
+    }
+
+    // Add delivery fee as a line item if present
+    if (deliveryFee && parseFloat(deliveryFee) > 0) {
+      line_items.push({
+        price_data: {
+          currency: 'lkr',
+          product_data: { name: 'Delivery Fee' },
+          unit_amount: Math.round(parseFloat(deliveryFee) * 100),
+        },
+        quantity: 1,
+      });
+    }
+
+    // Add surcharge as a line item if present
+    if (surcharge && parseFloat(surcharge) > 0) {
+      line_items.push({
+        price_data: {
+          currency: 'lkr',
+          product_data: { name: 'Small Order Fee' },
+          unit_amount: Math.round(parseFloat(surcharge) * 100),
+        },
+        quantity: 1,
+      });
+    }
+
+    // Add coin discount as a negative line item (coupon/discount)
+    // Stripe doesn't support negative line items, so we use discounts via coupons
+    // For simplicity, we subtract from the metadata and handle it server-side
+    const frontendUrl = process.env.FRONTEND_URL || 'https://leef-sdp-new-one.vercel.app';
+
+    const sessionConfig = {
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items,
+      success_url: `${frontendUrl}/payment-success.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${frontendUrl}/order-confirm.html`,
+      metadata: {
+        customerId: String(customerId),
+        coinDiscount: String(coinDiscount || 0),
+      },
+    };
+
+    // If coin discount exists, create a coupon and apply it
+    if (coinDiscount && parseFloat(coinDiscount) > 0) {
+      const coupon = await stripe.coupons.create({
+        amount_off: Math.round(parseFloat(coinDiscount) * 100),
+        currency: 'lkr',
+        duration: 'once',
+        name: 'Loyalty Coin Discount',
+      });
+      sessionConfig.discounts = [{ coupon: coupon.id }];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
+
+    console.log(`✅ Stripe session created: ${session.id} for customer ${customerId}`);
+    return res.json({ url: session.url, sessionId: session.id });
+  } catch (err) {
+    console.error("❌ Stripe session error:", err);
+    return res.status(500).json({ error: "Failed to create checkout session: " + err.message });
+  } finally {
+    if (conn) await conn.end();
+  }
+});
+
+// GET /api/checkout-session/:sessionId — Verify a completed session
+app.get("/api/checkout-session/:sessionId", async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    return res.json({
+      id: session.id,
+      payment_status: session.payment_status,
+      status: session.status,
+      amount_total: session.amount_total,
+      currency: session.currency,
+      customer_email: session.customer_details?.email || null,
+      metadata: session.metadata,
+    });
+  } catch (err) {
+    console.error("❌ Stripe session retrieve error:", err);
+    return res.status(500).json({ error: "Failed to retrieve session: " + err.message });
   }
 });
 
