@@ -530,7 +530,8 @@
           const checkoutItems = JSON.parse(sessionStorage.getItem('checkoutItems') || '[]');
           const itemsToSend = (checkoutItems.length > 0 ? checkoutItems : cart).map(item => ({
             productId: item.id,
-            quantity: parseFloat(item.qty) || 1
+            quantity: parseFloat(item.qty) || 1,
+            orderId: item.orderId || null
           }));
 
           const res = await fetch(`${API}/api/create-checkout-session`, {

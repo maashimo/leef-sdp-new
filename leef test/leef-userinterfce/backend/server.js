@@ -938,37 +938,55 @@ app.post("/api/create-checkout-session", async (req, res) => {
     const line_items = [];
 
     for (const item of items) {
-      const { productId, quantity } = item;
+      const { productId, quantity, orderId } = item;
       if (!productId || !quantity || quantity <= 0) {
         return res.status(400).json({ error: `Invalid item: productId=${productId}, quantity=${quantity}` });
       }
 
-      // Look up product from DB
-      const [rows] = await conn.execute("SELECT id, name, price, sale_details FROM products WHERE id = ?", [productId]);
-      if (rows.length === 0) {
-        return res.status(400).json({ error: `Product not found: id=${productId}` });
+      let pricePerUnit = 0;
+      let productName = "Product";
+
+      // If it's a distributor request order, fetch the custom unit price
+      if (orderId && typeof orderId === 'string' && orderId.startsWith('#REQ-')) {
+        const reqMatch = orderId.match(/\d+/);
+        if (reqMatch) {
+          const reqId = parseInt(reqMatch[0]);
+          const [reqRows] = await conn.execute(
+            "SELECT orq.unit_price, p.name FROM order_requests orq JOIN products p ON orq.product_id = p.id WHERE orq.id = ?",
+            [reqId]
+          );
+          if (reqRows.length > 0) {
+            pricePerUnit = parseFloat(reqRows[0].unit_price) || 0;
+            productName = reqRows[0].name;
+          }
+        }
       }
 
-      const product = rows[0];
-      // Use sale price if available, otherwise regular price
-      const pricePerUnit = product.sale_details
-        ? parseProductPrice(product.sale_details)
-        : parseProductPrice(product.price);
+      // Standard product lookup if price isn't set yet
+      if (!pricePerUnit) {
+        const [rows] = await conn.execute("SELECT id, name, price, sale_details FROM products WHERE id = ?", [productId]);
+        if (rows.length === 0) {
+          return res.status(400).json({ error: `Product not found: id=${productId}` });
+        }
+        const product = rows[0];
+        productName = product.name;
+        
+        pricePerUnit = product.sale_details
+          ? parseProductPrice(product.sale_details)
+          : parseProductPrice(product.price);
+      }
 
       // Stripe expects unit_amount in the smallest currency unit (cents for LKR)
-      // quantity here is in kg (e.g., 1.5), and pricePerUnit is price per 1 kg
-      // We treat each item as a single line with total = pricePerUnit * quantity
+      // We calculate the exact subtotal for this item to avoid compounding rounding errors
       const totalAmountCents = Math.round(pricePerUnit * quantity * 100);
 
       line_items.push({
         price_data: {
           currency: 'lkr',
-          product_data: {
-            name: product.name,
-          },
+          product_data: { name: productName },
           unit_amount: totalAmountCents,
         },
-        quantity: 1, // We pre-calculate total, so quantity is 1
+        quantity: 1, // We pre-calculated totalAmountCents = price * qty, so Stripe quantity is 1
       });
     }
 
