@@ -621,7 +621,7 @@
       showToast("Cart cleared and reset.", "success");
     }
 
-    const BASE_URL = `http://${window.location.hostname}:5000`;
+
 
     document.addEventListener('DOMContentLoaded', async function () {
       const userStr = sessionStorage.getItem('user');
@@ -631,7 +631,7 @@
         try {
           const user = JSON.parse(userStr);
           if (user.role === 'customer') {
-            const coinRes = await fetch(`${BASE_URL}/api/coins/${user.id}`);
+            const coinRes = await fetch(`${window.API_BASE_URL}/api/coins/${user.id}`);
             if (coinRes.ok) {
               const coinData = await coinRes.json();
               customerCoinBalance = parseFloat(coinData.coins) || 0;
@@ -642,7 +642,7 @@
 
       // Sync cart items with latest product data (coins_percent etc.)
       try {
-        const prodRes = await fetch(`${BASE_URL}/api/products/marketplace`);
+        const prodRes = await fetch(`${window.API_BASE_URL}/api/products/marketplace`);
         if (prodRes.ok) {
           const allProducts = await prodRes.json();
           let cartUpdated = false;
@@ -830,7 +830,7 @@
 
       try {
         if (totalSpend > 0) {
-          const spendRes = await fetch(`${BASE_URL}/api/coins/spend`, {
+          const spendRes = await fetch(`${window.API_BASE_URL}/api/coins/spend`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ customerId: user.id, coinsToSpend: totalSpend.toFixed(2) })

@@ -443,45 +443,14 @@
           <div class="cod-sub">Your order will be placed and payment collected upon delivery. You will earn 10 loyalty coins upon placing this order.</div>
         </div>
 
-        <!-- Card Panel -->
+        <!-- Card Panel (Stripe Redirect) -->
         <div id="cardPanel" style="display:none;">
-          <!-- Visual card preview -->
-          <div class="card-visual">
-            <div class="card-chip"></div>
-            <div class="card-number-display" id="cardNumDisplay">•••• •••• •••• ••••</div>
-            <div class="card-footer">
-              <div>
-                <div class="card-footer-label">Card Holder</div>
-                <div class="card-footer-value" id="cardHolderDisplay">YOUR NAME</div>
-              </div>
-              <div style="text-align:right;">
-                <div class="card-footer-label">Expires</div>
-                <div class="card-footer-value" id="cardExpiryDisplay">MM/YY</div>
-              </div>
-              <div style="text-align:right;">
-                <div class="card-footer-label" style="color:#fff; opacity:0.6;">VISA</div>
-                <div style="font-size: 1.4rem; font-style: italic; color: #fff; font-weight: 800;">VISA</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card inputs -->
-          <div class="field-group">
-            <label class="field-label">Card Number</label>
-            <input id="cardNumber" class="field-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Card Holder Name</label>
-            <input id="cardHolder" class="field-input" type="text" placeholder="John Silva">
-          </div>
-          <div class="field-row">
-            <div class="field-group">
-              <label class="field-label">Expiry Date</label>
-              <input id="cardExpiry" class="field-input" type="text" placeholder="MM/YY" maxlength="5">
-            </div>
-            <div class="field-group">
-              <label class="field-label">CVC / CVV</label>
-              <input id="cardCvc" class="field-input" type="text" placeholder="•••" maxlength="4">
+          <div style="text-align: center; padding: 1.5rem 0;">
+            <div style="font-size: 3rem; margin-bottom: 0.75rem;">💳</div>
+            <div style="font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem;">Secure Card Payment via Stripe</div>
+            <div style="color: #888; font-size: 0.88rem;">You will be redirected to Stripe's secure checkout page to complete your payment.</div>
+            <div style="margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.75rem; color: #888; font-size: 0.8rem;">
+              <span>Visa</span> <span>Mastercard</span> <span>Amex</span>
             </div>
           </div>
         </div>
@@ -530,29 +499,12 @@
     if (method === 'visa') {
       document.getElementById('codPanel').style.display = 'none';
       document.getElementById('cardPanel').style.display = 'block';
-      document.getElementById('payBtnText').textContent = `Pay Rs ${amount.toFixed(2)}`;
+      document.getElementById('payBtnText').textContent = `Pay Rs ${amount.toFixed(2)} with Stripe`;
     } else {
       document.getElementById('payBtnText').textContent = 'Place Order (COD)';
     }
 
-    // Live card preview
-    document.getElementById('cardNumber').addEventListener('input', function () {
-      let v = this.value.replace(/\D/g, '').slice(0, 16);
-      this.value = v.replace(/(.{4})/g, '$1 ').trim();
-      document.getElementById('cardNumDisplay').textContent = (v.padEnd(16, '•')).replace(/(.{4})/g, '$1 ').trim();
-    });
-    document.getElementById('cardHolder')?.addEventListener('input', function () {
-      document.getElementById('cardHolderDisplay').textContent = this.value.toUpperCase() || 'YOUR NAME';
-    });
-    document.getElementById('cardExpiry')?.addEventListener('input', function () {
-      let v = this.value.replace(/\D/g, '').slice(0, 4);
-      if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
-      this.value = v;
-      document.getElementById('cardExpiryDisplay').textContent = v || 'MM/YY';
-    });
-    document.getElementById('cardCvc')?.addEventListener('input', function () {
-      this.value = this.value.replace(/\D/g, '').slice(0, 4);
-    });
+
 
     function setLoading(on) {
       const btn = document.getElementById('payBtn');
@@ -569,22 +521,51 @@
     async function processPayment() {
       if (amount <= 0) { alert('Invalid amount. Please go back to cart.'); return; }
 
-      // Card validation
-      if (method === 'visa') {
-        const num = document.getElementById('cardNumber').value.replace(/\s/g, '');
-        const name = document.getElementById('cardHolder').value.trim();
-        const exp = document.getElementById('cardExpiry').value.trim();
-        const cvc = document.getElementById('cardCvc').value.trim();
-        if (num.length < 16) { alert('Enter a valid 16-digit card number.'); return; }
-        if (!name) { alert('Enter the card holder name.'); return; }
-        if (exp.length < 5) { alert('Enter a valid expiry date (MM/YY).'); return; }
-        if (cvc.length < 3) { alert('Enter a valid CVC/CVV.'); return; }
-      }
-
       setLoading(true);
 
-      // Simulate processing delay
-      await new Promise(r => setTimeout(r, method === 'visa' ? 2000 : 800));
+      // ── STRIPE FLOW (Visa / Card) ──
+      if (method === 'visa') {
+        try {
+          const cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+          const checkoutItems = JSON.parse(sessionStorage.getItem('checkoutItems') || '[]');
+          const itemsToSend = (checkoutItems.length > 0 ? checkoutItems : cart).map(item => ({
+            productId: item.id,
+            quantity: parseFloat(item.qty) || 1
+          }));
+
+          const res = await fetch(`${API}/api/create-checkout-session`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items: itemsToSend,
+              customerId: user.id,
+              deliveryFee: deliveryCharge,
+              surcharge: parseFloat(sessionStorage.getItem('cartSurcharge') || '0'),
+              coinDiscount: coinSavingsApplied
+            })
+          });
+
+          if (!res.ok) {
+            const err = await res.json();
+            alert('Checkout error: ' + (err.error || 'Unknown error'));
+            setLoading(false);
+            return;
+          }
+
+          const data = await res.json();
+          // Redirect to Stripe Checkout
+          window.location.href = data.url;
+          return; // Page is navigating away
+        } catch (err) {
+          console.error('Stripe checkout error:', err);
+          alert('Failed to initiate payment. Please try again.');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // ── COD FLOW (unchanged) ──
+      await new Promise(r => setTimeout(r, 800));
 
       const txnRef = method === 'visa' ? `TXN-${Date.now()}` : `COD-${Date.now()}`;
       const payStatus = method === 'visa' ? 'paid' : 'pending'; 
