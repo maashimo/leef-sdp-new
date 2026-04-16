@@ -354,7 +354,7 @@ const decrementStock = async (productId, qty) => {
 // Create a direct order (Marketplace)
 exports.createDirectOrder = async (req, res) => {
     try {
-        const { userId, productId, sellerId: rawSellerId, quantity, unitPrice, totalPrice, paymentMethod, status, paymentStatus, district, address, locations } = req.body;
+        const { userId, productId, sellerId: rawSellerId, quantity, unitPrice, totalPrice, paymentMethod, status, paymentStatus, district, address, locations, deliveryFee, discountAmount } = req.body;
 
         // Resolve seller_id from the product if not provided or zero
         let sellerId = parseInt(rawSellerId) || 0;
@@ -364,8 +364,8 @@ exports.createDirectOrder = async (req, res) => {
         }
 
         const [result] = await pool.execute(
-            `INSERT INTO orders (user_id, product_id, seller_id, quantity, unit_price, total_price, status, payment_status, payment_method, district, delivery_address, locations)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO orders (user_id, product_id, seller_id, quantity, unit_price, total_price, status, payment_status, payment_method, district, delivery_address, locations, delivery_fee, discount_amount)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 userId, productId, sellerId, quantity,
                 parsePrice(unitPrice),
@@ -375,7 +375,9 @@ exports.createDirectOrder = async (req, res) => {
                 paymentMethod || 'cod',
                 district || null,
                 address || null,
-                locations ? (typeof locations === 'string' ? locations : JSON.stringify(locations)) : null
+                locations ? (typeof locations === 'string' ? locations : JSON.stringify(locations)) : null,
+                deliveryFee || 0,
+                discountAmount || 0
             ]
         );
 
@@ -399,15 +401,15 @@ exports.createDirectOrder = async (req, res) => {
 exports.updatePaymentStatus = async (req, res) => {
     try {
         const { id } = req.params; // This is the request_id
-        const { paymentStatus, status, userId } = req.body;
+        const { paymentStatus, status, userId, deliveryFee, discountAmount } = req.body;
 
         if (!id || !userId) {
             return res.status(400).json({ error: "request_id (params) and userId (body) are required" });
         }
 
         const [result] = await pool.execute(
-            `UPDATE orders SET payment_status = ?, status = ? WHERE request_id = ? AND user_id = ?`,
-            [paymentStatus || 'pending', status || 'pending', id, userId]
+            `UPDATE orders SET payment_status = ?, status = ?, delivery_fee = ?, discount_amount = ? WHERE request_id = ? AND user_id = ?`,
+            [paymentStatus || 'pending', status || 'pending', deliveryFee || 0, discountAmount || 0, id, userId]
         );
 
         if (result.affectedRows === 0) {
@@ -438,7 +440,7 @@ exports.getAdminAllOrders = async (req, res) => {
                    p.price as seller_price, p.name as product_name, p.image_url, 
                    c.name as customer_name, c.email as customer_email, c.address as customer_address, c.town as customer_town, c.phone as customer_phone, c.phone2 as customer_phone2,
                    COALESCE(s.shop_name, 'Unknown Shop') as shop_name, COALESCE(s.name, 'Unknown') as seller_name, s.shop_town, s.shop_address, s.phone as seller_phone, s.phone2 as seller_phone2,
-                   COALESCE(i.locations, r.locations) as locations, i.district, i.delivery_address
+                   COALESCE(i.locations, r.locations) as locations, i.district, i.delivery_address, i.delivery_fee, i.discount_amount
             FROM orders i
             JOIN products p ON i.product_id = p.id
             JOIN customers c ON i.user_id = c.customer_id
@@ -453,7 +455,7 @@ exports.getAdminAllOrders = async (req, res) => {
                    p.price as seller_price, p.name as product_name, p.image_url, 
                    c.name as customer_name, c.email as customer_email, c.address as customer_address, c.town as customer_town, c.phone as customer_phone, c.phone2 as customer_phone2,
                    COALESCE(s.shop_name, 'Unknown Shop') as shop_name, COALESCE(s.name, 'Unknown') as seller_name, s.shop_town, s.shop_address, s.phone as seller_phone, s.phone2 as seller_phone2,
-                   i.locations, NULL as district, NULL as delivery_address
+                   i.locations, NULL as district, NULL as delivery_address, 0 as delivery_fee, 0 as discount_amount
             FROM order_requests i
             JOIN products p ON i.product_id = p.id
             JOIN customers c ON i.user_id = c.customer_id
@@ -479,10 +481,37 @@ exports.getAdminAllOrders = async (req, res) => {
             return match ? parseFloat(match[0]) : 0;
         }
 
+        const deliveryPrices = {
+            'Nuwara Eliya town': 250,
+            'Nearby Nuwara Eliya areas': 350,
+            'Kandy': 600,
+            'Matale': 700,
+            'Kurunegala': 850,
+            'Colombo': 1000,
+            'Gampaha': 1000,
+            'Negombo': 1100,
+            'Kalutara': 1150,
+            'Galle': 1250,
+            'Matara': 1350,
+            'Anuradhapura': 1100,
+            'Trincomalee': 1350,
+            'Batticaloa': 1450,
+            'Jaffna': 1650
+        };
+
         const results = rows.map(o => {
             const sellerBase = parsePrice(o.seller_price);
             const totalSellerCost = sellerBase * (parseFloat(o.quantity) || 0);
-            const profit = (parseFloat(o.total_price) || 0) - totalSellerCost;
+            
+            // Calculate delivery fee from mapping if it's 0 in the database but we have a district
+            let dFee = parseFloat(o.delivery_fee) || 0;
+            if (dFee === 0 && o.district && deliveryPrices[o.district]) {
+                dFee = deliveryPrices[o.district];
+            }
+
+            const subtotal = parseFloat(o.total_price) || 0;
+            const finalCharged = subtotal + dFee - (parseFloat(o.discount_amount) || 0);
+            const profit = finalCharged - totalSellerCost;
 
             // Enrich multi-locations with details from user_locations
             let enrichedLocations = o.locations;
@@ -511,8 +540,10 @@ exports.getAdminAllOrders = async (req, res) => {
             return {
                 ...o,
                 locations: enrichedLocations,
+                delivery_fee: dFee,
+                total_price: finalCharged.toFixed(2),
                 admin_profit: profit.toFixed(2),
-                image_url: o.image_url ? (o.image_url.startsWith('http') ? o.image_url : `http://localhost:5000/${o.image_url}`) : 'images/default.png'
+                image_url: o.image_url ? (o.image_url.startsWith('http') ? o.image_url : `${process.env.BACKEND_URL || 'http://localhost:5000'}/${o.image_url}`) : 'images/default.png'
             };
         });
 

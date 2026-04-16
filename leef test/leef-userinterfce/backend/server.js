@@ -4,7 +4,20 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 require("dotenv").config({ quiet: true });
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+// Initialize Stripe safely
+let stripe;
+if (process.env.STRIPE_SECRET_KEY) {
+  stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+} else {
+  console.warn("⚠️  STRIPE_SECRET_KEY is missing. Stripe features will be disabled.");
+  // Provide a dummy object to prevent 'undefined' errors if called before a crash, 
+  // though it will still fail if a method is called.
+  stripe = {
+    checkout: { sessions: { create: () => { throw new Error("Stripe not configured"); }, retrieve: () => { throw new Error("Stripe not configured"); } } },
+    coupons: { create: () => { throw new Error("Stripe not configured"); } }
+  };
+}
+
 
 // Config & Routes
 const { dbConfig } = require("./config/db");
@@ -462,6 +475,8 @@ async function initializeDatabase() {
       { table: 'user_locations', sql: 'ALTER TABLE user_locations ADD COLUMN district VARCHAR(100) DEFAULT NULL AFTER short_name' },
       { table: 'customers', sql: 'ALTER TABLE customers ADD COLUMN phone2 VARCHAR(20) AFTER phone' },
       { table: 'sellers', sql: 'ALTER TABLE sellers ADD COLUMN phone2 VARCHAR(20) AFTER phone' },
+      { table: 'orders', sql: 'ALTER TABLE orders ADD COLUMN delivery_fee DECIMAL(10,2) DEFAULT 0' },
+      { table: 'orders', sql: 'ALTER TABLE orders ADD COLUMN discount_amount DECIMAL(10,2) DEFAULT 0' },
     ];
     for (const stmt of alterStatements) {
       try {
