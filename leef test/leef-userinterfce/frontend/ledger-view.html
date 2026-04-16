@@ -339,6 +339,7 @@
             <th>Product Details</th>
             <th>Seller</th>
             <th>Quantity</th>
+            <th>Payment</th>
             <th>Seller (Rs)</th>
             <th>Final (Rs)</th>
             <th style="color:#166534;">Profit (Rs)</th>
@@ -355,6 +356,24 @@
   <script>
     const API = window.API_BASE_URL;
     let allLedgerData = [];
+
+    const deliveryPrices = {
+        'Nuwara Eliya town': 250,
+        'Nearby Nuwara Eliya areas': 350,
+        'Kandy': 600,
+        'Matale': 700,
+        'Kurunegala': 850,
+        'Colombo': 1000,
+        'Gampaha': 1000,
+        'Negombo': 1100,
+        'Kalutara': 1150,
+        'Galle': 1250,
+        'Matara': 1350,
+        'Anuradhapura': 1100,
+        'Trincomalee': 1350,
+        'Batticaloa': 1450,
+        'Jaffna': 1650
+    };
 
     document.addEventListener('DOMContentLoaded', () => {
       init();
@@ -447,7 +466,10 @@
           <tr>
             <td style="font-weight:700; color:#64748b;">#C-${o.id}</td>
             <td>${dateTimeStr}</td>
-            <td style="font-weight:600;">${o.customer_name}</td>
+            <td>
+              <div style="font-weight:600;">${o.customer_name}</div>
+              <div style="font-size:0.75rem; color:#64748b;">📍 ${o.district || '-'}</div>
+            </td>
             <td>
               <div class="product-cell">
                 <img src="${o.image_url}" onerror="this.src='/images/default.png'">
@@ -459,8 +481,9 @@
             </td>
             <td>${o.seller_name}</td>
             <td style="font-weight:600;">${formatQty(o.quantity)}</td>
+            <td style="text-transform:uppercase; font-size:0.8rem; font-weight:600; color:#666;">${o.payment_method || '-'}</td>
             <td class="currency">Rs ${sellerPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-            <td class="currency" style="font-weight:700;">Rs ${finalPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+            <td class="currency" style="font-weight:700; color:#16a34a;">Rs ${finalPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
             <td class="currency profit">Rs ${profit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
           </tr>
         `;
@@ -492,7 +515,7 @@
       // ... existing exportToCSV logic ...
       if (allLedgerData.length === 0) return alert("No data to export");
 
-      const headers = ["Cart ID", "Date", "Time", "Customer", "Product", "Seller", "Qty", "Seller Price", "Final Price", "Profit", "Status"];
+      const headers = ["Cart ID", "Date", "Time", "Customer", "District", "Product", "Seller", "Qty", "Payment", "Seller Price", "Final Price", "Profit", "Status"];
       const rows = allLedgerData.map(o => {
         const profit = parseFloat(o.admin_profit) || 0;
         const final = parseFloat(o.total_price) || 0;
@@ -502,9 +525,11 @@
           d.toLocaleDateString(),
           d.toLocaleTimeString(),
           o.customer_name,
+          o.district || '-',
           o.product_name,
           o.seller_name,
           formatQty(o.quantity),
+          (o.payment_method || '-').toUpperCase(),
           (final - profit).toFixed(2),
           final.toFixed(2),
           profit.toFixed(2),
@@ -540,7 +565,7 @@
       doc.text(`Period: ${dateStr}`, 14, 28);
       doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 34);
 
-      const headers = [["ID", "Customer", "Contact", "District", "Address", "Product", "Qty", "Price (Rs)", "Shop"]];
+      const headers = [["ID", "Customer", "Contact", "District", "Address", "Product", "Qty", "Pay", "Total (Rs)", "Shop"]];
       const data = [];
 
       allLedgerData.forEach(o => {
@@ -570,12 +595,23 @@
               l.location || o.delivery_address || o.customer_address || '-',
               o.product_name,
               formatQty(locQty),
+              (o.payment_method || '-').toUpperCase(),
               locPrice.toFixed(2),
               o.shop_name || o.seller_name
             ]);
           });
         } else {
           // Single row for standard orders
+          let dFee = parseFloat(o.delivery_fee) || 0;
+          let totalPrice = parseFloat(o.total_price) || 0;
+
+          // Fallback: If dFee is 0 but we have a district, calculate it locally
+          const dist = (o.district || "").trim();
+          if (dFee === 0 && dist && deliveryPrices[dist]) {
+            dFee = deliveryPrices[dist];
+            totalPrice += dFee;
+          }
+
           data.push([
             `#${o.id}`,
             o.customer_name,
@@ -584,7 +620,8 @@
             o.delivery_address || o.customer_address || '-',
             o.product_name,
             formatQty(o.quantity),
-            parseFloat(o.total_price).toFixed(2),
+            (o.payment_method || '-').toUpperCase(),
+            totalPrice.toFixed(2),
             o.shop_name || o.seller_name
           ]);
         }
@@ -597,6 +634,41 @@
         styles: { fontSize: 8, cellPadding: 2 },
         headStyles: { fillColor: [22, 163, 74] },
         alternateRowStyles: { fillColor: [240, 250, 240] }
+      });
+
+      // Add Delivery Rates Legend at the end
+      doc.addPage();
+      
+      doc.setFontSize(14);
+      doc.setTextColor(22, 163, 74);
+      doc.text("Reference: Delivery Rates by District", 14, 20);
+      
+      const rateHeaders = [["District", "Delivery Rate (Rs)"]];
+      const rateRows = [
+        ["Nuwara Eliya town", "250"],
+        ["Kandy", "600"],
+        ["Matale", "700"],
+        ["Kurunegala", "850"],
+        ["Colombo", "1000"],
+        ["Gampaha", "1000"],
+        ["Negombo", "1100"],
+        ["Kalutara", "1150"],
+        ["Galle", "1250"],
+        ["Matara", "1350"],
+        ["Anuradhapura", "1100"],
+        ["Trincomalee", "1350"],
+        ["Batticaloa", "1450"],
+        ["Jaffna", "1650"]
+      ];
+
+      doc.autoTable({
+        head: rateHeaders,
+        body: rateRows,
+        startY: 30,
+        margin: { left: 14 },
+        tableWidth: 100,
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [100, 100, 100] }
       });
 
       doc.save(`Leef_Detailed_Report_${dateStr.replace(/ /g, '_')}.pdf`);

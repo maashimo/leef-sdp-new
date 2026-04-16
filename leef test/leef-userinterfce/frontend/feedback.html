@@ -292,7 +292,9 @@
         list.innerHTML = '';
         approved.forEach((order, idx) => {
           const alreadySubmitted = feedbackChecks[idx]?.submitted;
-          const imgUrl = order.image_url ? `${API}${order.image_url}` : 'https://via.placeholder.com/48x48?text=🍃';
+          const imgUrl = order.image_url 
+            ? (order.image_url.startsWith('http') ? order.image_url : (order.image_url.startsWith('/') ? `${API}${order.image_url}` : `${API}/${order.image_url}`)) 
+            : 'https://via.placeholder.com/48x48?text=🍃';
           const div = document.createElement('div');
           div.className = `order-item${!alreadySubmitted ? ' highlight' : ''}`;
           div.innerHTML = `

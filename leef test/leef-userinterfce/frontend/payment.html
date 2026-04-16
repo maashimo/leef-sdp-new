@@ -483,6 +483,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <script>
+    function formatQty(val) {
+      const num = parseFloat(val) || 0;
+      const kg = Math.floor(num);
+      const g = Math.round((num - kg) * 1000);
+      let parts = [];
+      if (kg > 0) parts.push(`${kg}kg`);
+      if (g > 0) parts.push(`${g}g`);
+      return parts.length ? parts.join(' ') : '0kg';
+    }
+
     const API = window.API_BASE_URL;
     const user = JSON.parse(sessionStorage.getItem('user') || 'null');
     if (!user) window.location.href = 'login.html';
@@ -608,6 +618,7 @@
             coinsEarned: 0
           })
         });
+        if (!payRes.ok) throw new Error("Payment record failed: " + await payRes.text());
         const payData = await payRes.json();
 
         // 2. Sync with order_items (Consolidated Orders)
@@ -630,6 +641,10 @@
           return fallback ? parseFloat(fallback[0]) : 0;
         };
 
+        const itemCount = cart.length || 1;
+        const perItemDelivery = deliveryCharge / itemCount;
+        const perItemDiscount = coinSavingsApplied / itemCount;
+
         for (const item of cart) {
           const itemPrice = parsePricePerKg(item.price);
           const itemTotal = itemPrice * (item.qty || 1);
@@ -640,19 +655,22 @@
             if (reqIdMatch) {
               const reqId = reqIdMatch[0];
               // Update payment status for all order_items linked to this request
-              await fetch(`${API}/api/orders/item/${reqId}/payment`, {
+              const reqRes = await fetch(`${API}/api/orders/item/${reqId}/payment`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   userId: user.id,          // Added for strict scoping
                   paymentStatus: payStatus, // 'paid' for visa, 'pending' for cod
-                  status: orderStatus       // 'completed'
+                  status: orderStatus,       // 'completed'
+                  deliveryFee: perItemDelivery,
+                  discountAmount: perItemDiscount
                 })
               });
+              if (!reqRes.ok) throw new Error("Requested order update failed: " + await reqRes.text());
             }
           } else {
             // This is a direct marketplace order
-            await fetch(`${API}/api/orders/direct`, {
+            const dirRes = await fetch(`${API}/api/orders/direct`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -666,9 +684,12 @@
                 paymentStatus: payStatus, // 'paid' for visa, 'pending' for cod
                 status: orderStatus,       // 'completed'
                 district: item.district,
-                address: item.address || item.location_name
+                address: item.address || item.location_name,
+                deliveryFee: perItemDelivery,
+                discountAmount: perItemDiscount
               })
             });
+            if (!dirRes.ok) throw new Error("Direct order failed: " + await dirRes.text());
           }
         }
 
@@ -685,7 +706,10 @@
           }
         } catch (e) { console.warn('Coins error:', e); }
       } catch (e) {
-        console.warn('Order/Payment sync error:', e);
+        console.error('Order/Payment sync error:', e);
+        alert('Internal Error: ' + e.message);
+        setLoading(false);
+        return;
       }
 
       // 3. Clear cart and show success
@@ -723,13 +747,15 @@
       doc.text(`Reference: ${lastOrderDetails.txnRef}`, 14, 67);
 
       // Table
-      const headers = [['Product', 'Qty', 'Unit Price', 'Total']];
+      const headers = [['Product', 'Qty', 'Unit Price']];
       const rows = lastOrderDetails.cart.map(item => {
+        const priceMatch = String(item.price).match(/[\d.]+/);
+        const unitPriceNum = priceMatch ? parseFloat(priceMatch[0]) : 0;
+
         return [
           item.name,
-          `${parseFloat(item.qty).toFixed(2)} units`,
-          item.price,
-          `Rs ${ (parseFloat(item.price.match(/[\d.]+/)) * parseFloat(item.qty)).toFixed(2) }` // Simplified for invoice
+          formatQty(item.qty),
+          item.price
         ];
       });
 
@@ -747,7 +773,7 @@
       let currentY = finalY;
       const baseSubtotal = lastOrderDetails.amount + lastOrderDetails.coinSavingsApplied - deliveryCharge;
       
-      doc.text(`Subtotal: Rs ${baseSubtotal.toFixed(2)}`, 150, currentY);
+      doc.text(`Items Total: Rs ${baseSubtotal.toFixed(2)}`, 150, currentY);
       currentY += 6;
       
       if (lastOrderDetails.coinSavingsApplied > 0) {

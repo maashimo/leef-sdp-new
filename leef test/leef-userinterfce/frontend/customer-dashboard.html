@@ -679,8 +679,8 @@
                 const rows = [[
                     order.product_name || 'Product',
                     `${parseFloat(order.quantity).toFixed(2)} units`,
-                    `Rs ${parseFloat(order.unit_price).toFixed(2)}`,
-                    `Rs ${parseFloat(order.total_price).toFixed(2)}`
+                    `Rs ${parseFloat(order.price || 0).toFixed(2)}`,
+                    `Rs ${parseFloat(order.total_price || 0).toFixed(2)}`
                 ]];
 
                 doc.autoTable({

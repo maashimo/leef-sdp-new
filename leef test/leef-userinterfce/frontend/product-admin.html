@@ -280,9 +280,6 @@
         <label>Description</label>
         <textarea id="productDesc" required></textarea>
 
-        <label>Product Image</label>
-        <input type="file" id="productImg" accept="image/*">
-
         <label>Price</label>
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
           <input type="number" id="priceValue" placeholder="Price (LKR)" step="0.01" required
@@ -309,10 +306,6 @@
         <div>
           <label>Product Features:</label>
           <div style="margin-top:0.5em;">
-            <label><input type="checkbox" id="featureMultiLoc"> Multiple Locations</label>
-            <label><input type="checkbox" id="featureQnA"> Open Q&amp;A</label>
-            <label><input type="checkbox" id="featureFeedback"> Open Feedback</label>
-            <label><input type="checkbox" id="seasonal">Seasonal category</label>
             <label>
               <input type="checkbox" id="featureCoins" onchange="toggleCoins()"> Use Coins
               <input type="number" id="coinsPercentage" placeholder="Enter % of coins"

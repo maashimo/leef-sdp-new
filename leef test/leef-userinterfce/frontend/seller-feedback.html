@@ -223,7 +223,7 @@
                                 <div class="comment-text">"${f.comment || 'No comment provided.'}"</div>
                                 ${f.image_url ? `
                                     <div class="feedback-images">
-                                        <img src="${API}${f.image_url}" class="feedback-img" onclick="openImageModal('${API}${f.image_url}')">
+                                        <img src="${f.image_url.startsWith('/') ? API + f.image_url : API + '/' + f.image_url}" class="feedback-img" onclick="openImageModal('${f.image_url.startsWith('/') ? API + f.image_url : API + '/' + f.image_url}')">
                                     </div>
                                 ` : ''}
                                 <div class="timestamp">${date}</div>

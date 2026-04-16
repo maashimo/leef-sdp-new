@@ -294,7 +294,7 @@
     <!-- VIEW CUSTOMERS -->
     <div id="customers-list" class="tab-content" style="display:none;">
       <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
           <h2>Detailed Customer Directory</h2>
           <input type="text" placeholder="Search customers..." id="searchCustomers"
             style="padding:0.5rem 1rem; border-radius:8px; border:1px solid #ddd; font-size:0.9rem;">
@@ -506,7 +506,10 @@
           <td style="font-weight:600;">${u.phone2 || '-'}</td>
           <td title="${u.address || ''}">${u.town || '-'}</td>
           <td>${new Date(u.created_at).toLocaleDateString()}</td>
-          <td><button class="view-btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick='viewFullDetails(${JSON.stringify(u)})'>Details</button></td>
+          <td>
+            <button class="view-btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick='viewFullDetails(${JSON.stringify(u)})'>Details</button>
+            <button class="reject-btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick='removeUser(${u.id}, "${u.role}")'>Remove</button>
+          </td>
         </tr>
       `).join('') || '<tr><td colspan="6" style="text-align:center;">No customers found.</td></tr>';
 
@@ -520,9 +523,33 @@
           <td>${u.town || '-'}</td>
           <td title="${u.shop_address || ''}">${u.shop_address || '-'}</td>
           <td>${new Date(u.created_at).toLocaleDateString()}</td>
-          <td><button class="view-btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick='viewFullDetails(${JSON.stringify(u)})'>Details</button></td>
+          <td>
+            <button class="view-btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick='viewFullDetails(${JSON.stringify(u)})'>Details</button>
+            <button class="reject-btn" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick='removeUser(${u.id}, "${u.role}")'>Remove</button>
+          </td>
         </tr>
       `).join('') || '<tr><td colspan="7" style="text-align:center;">No sellers found.</td></tr>';
+    }
+
+    async function removeUser(id, role) {
+      if (!confirm(`Are you sure you want to permanently remove this ${role}? This action cannot be undone.`)) return;
+
+      try {
+        const res = await fetch(`${API}/api/admin/user/${role}/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (res.ok) {
+          alert(`${role} removed successfully.`);
+          fetchAllUsers(); // Refresh the list
+        } else {
+          const txt = await res.text();
+          alert("Failed to remove user: " + txt);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error while removing user.");
+      }
     }
 
     // Modal view full details

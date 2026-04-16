@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <script src="api-config.js"></script>
     <meta charset="UTF-8">
@@ -7,21 +8,28 @@
     <title>leef 🍃 - Little England Elite Fresh</title>
     <!-- Use local style.css for base utilities, but we will override for the landing page -->
     <link rel="stylesheet" href="style.css">
-    
+
     <!-- Google Fonts for Modern Elegant Design -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <style>
         /* Landing Page Specific Overrides & Structure - DARK THEME */
         :root {
-            --landing-bg-dark: #070e0a; /* Almost black with green tint */
-            --landing-card-bg: #111827; /* Dark grayish blue */
+            --landing-bg-dark: #070e0a;
+            /* Almost black with green tint */
+            --landing-card-bg: #111827;
+            /* Dark grayish blue */
             --landing-card-border: #1f2937;
-            --landing-accent: #16a34a; /* Dashboard emerald */
+            --landing-accent: #16a34a;
+            /* Dashboard emerald */
             --landing-accent-hover: #15803d;
-            --landing-text: #f9fafb; /* Off white */
-            --landing-text-light: #9ca3af; /* Cool grey */
+            --landing-text: #f9fafb;
+            /* Off white */
+            --landing-text-light: #9ca3af;
+            /* Cool grey */
         }
 
         body {
@@ -32,25 +40,41 @@
             min-height: 100vh;
         }
 
-        h1, h2, h3, h4, h5, h6 {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
             font-family: 'Playfair Display', serif;
-            color: var(--landing-text); /* White headings in dark mode */
+            color: var(--landing-text);
+            /* White headings in dark mode */
         }
 
         /* Override global dark theme header */
         .header {
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             height: 80px;
             position: fixed;
             width: 100%;
             z-index: 1000;
         }
-        .header .logo { color: var(--landing-accent) !important; text-shadow: 0 0 10px rgba(22, 163, 74, 0.4); }
-        .nav-links a { color: var(--landing-text-light) !important; }
-        .nav-links a:hover { color: var(--landing-accent) !important; }
-        
+
+        .header .logo {
+            color: var(--landing-accent) !important;
+            text-shadow: 0 0 10px rgba(22, 163, 74, 0.4);
+        }
+
+        .nav-links a {
+            color: var(--landing-text-light) !important;
+        }
+
+        .nav-links a:hover {
+            color: var(--landing-accent) !important;
+        }
+
         .btn-primary {
             background: linear-gradient(to right, #16a34a, #15803d) !important;
             color: white !important;
@@ -60,8 +84,12 @@
             padding: 12px 28px;
             border: none !important;
         }
-        .btn-primary:hover { background: linear-gradient(to right, #15803d, #166534) !important; transform: translateY(-1px); }
-        
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #15803d, #166534) !important;
+            transform: translateY(-1px);
+        }
+
         .btn-outline {
             border: 1px solid var(--landing-text-light) !important;
             color: var(--landing-text) !important;
@@ -70,11 +98,23 @@
             background: transparent !important;
             padding: 12px 28px;
         }
-        .btn-outline:hover { background: rgba(255,255,255,0.1) !important; color: white !important; }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+        }
 
         /* Section Spacing */
-        section { padding: 80px 0; }
-        .container { max-width: 1200px; margin: 0 auto; width: 100%; padding: 0 20px; }
+        section {
+            padding: 80px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 0 20px;
+        }
 
         /* 1. Hero Section */
         .hero-banner {
@@ -89,19 +129,25 @@
             margin-top: 0;
             padding-top: 80px;
         }
+
         .hero-banner::before {
             content: '';
             position: absolute;
-            top:0; left:0; right:0; bottom:0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: linear-gradient(to right, rgba(14, 52, 38, 0.95), rgba(0, 0, 0, 0.6));
             backdrop-filter: blur(6px);
         }
+
         .hero-content {
             position: relative;
             z-index: 1;
             max-width: 600px;
             color: white;
         }
+
         .hero-content h1 {
             color: white !important;
             font-size: 4.5rem;
@@ -109,31 +155,54 @@
             margin-bottom: 24px;
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
         }
-        .hero-content .subtext { 
-            color: white; 
-            font-size: 1.15rem; 
-            margin-bottom: 30px; 
-            font-weight: 400; 
+
+        .hero-content .subtext {
+            color: white;
+            font-size: 1.15rem;
+            margin-bottom: 30px;
+            font-weight: 400;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
             line-height: 1.6;
         }
-        .hero-content .closing { 
-            font-style: italic; 
-            color: white; 
-            margin-bottom: 40px; 
+
+        .hero-content .closing {
+            font-style: italic;
+            color: white;
+            margin-bottom: 40px;
             font-weight: 500;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
         }
-        
+
         /* 2. Features Section */
-        .features-wrap { background: transparent; text-align: center; }
-        .section-header h2 { font-size: 2.5rem; margin-bottom: 16px; color: var(--landing-text) !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .section-header p { color: var(--landing-text-light); max-width: 600px; margin: 0 auto 50px; font-size: 1.1rem; }
-        
-        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; align-items: stretch; }
-        .feature-item { 
-            padding: 30px; 
-            background: transparent; 
+        .features-wrap {
+            background: transparent;
+            text-align: center;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            color: var(--landing-text) !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-header p {
+            color: var(--landing-text-light);
+            max-width: 600px;
+            margin: 0 auto 50px;
+            font-size: 1.1rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            align-items: stretch;
+        }
+
+        .feature-item {
+            padding: 30px;
+            background: transparent;
             border: none;
             transition: transform 0.3s ease;
             display: flex;
@@ -141,68 +210,151 @@
             align-items: center;
             height: 100%;
         }
-        .feature-item:hover { transform: translateY(-5px); }
-        .feature-item i { font-size: 3rem; color: var(--landing-accent); margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(22,163,74,0.4)); }
-        .feature-item h3 { font-size: 1.5rem; margin-bottom: 15px; color: #a7f3d0 !important; font-weight: 600; text-align: center; }
-        .feature-item p { color: rgba(255,255,255,0.8); font-size: 1rem; line-height: 1.7; text-align: center; }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-item i {
+            font-size: 3rem;
+            color: var(--landing-accent);
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px rgba(22, 163, 74, 0.4));
+        }
+
+        .feature-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #a7f3d0 !important;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .feature-item p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            line-height: 1.7;
+            text-align: center;
+        }
 
         /* 3. Product Categories */
-        .categories-wrap { background: transparent; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
-        .cat-card { position: relative; border-radius: 12px; overflow: hidden; height: 400px; cursor: pointer; border: none; }
-        .cat-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .cat-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.1)); filter: blur(0px); }
-        .cat-card:hover img { transform: scale(1.05); }
-        .cat-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 30px; z-index: 2; color: white; }
-        .cat-content h3 { color: #a7f3d0 !important; font-size: 1.8rem; margin-bottom: 10px; }
-        .cat-content p { font-size: 1rem; color: rgba(255,255,255,0.8); }
+        .categories-wrap {
+            background: transparent;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .cat-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 400px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .cat-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .cat-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.1));
+            filter: blur(0px);
+        }
+
+        .cat-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .cat-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px;
+            z-index: 2;
+            color: white;
+        }
+
+        .cat-content h3 {
+            color: #a7f3d0 !important;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .cat-content p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
 
         /* 4. Process Timeline */
-        .process-wrap { background: transparent; padding: 100px 20px; }
-        .timeline { 
-            display: flex; 
-            justify-content: space-between; 
-            position: relative; 
-            margin-top: 60px; 
-            height: 450px; /* Fixed height for alternating layout */
+        .process-wrap {
+            background: transparent;
+            padding: 100px 20px;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 60px;
+            height: 450px;
+            /* Fixed height for alternating layout */
             align-items: center;
         }
+
         .timeline::before {
-            content: ''; 
-            position: absolute; 
-            top: 50%; 
-            left: 0; 
-            right: 0; 
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
             height: 1px;
-            background: rgba(255,255,255,0.1); 
+            background: rgba(255, 255, 255, 0.1);
             z-index: 0;
         }
-        .step { 
-            flex: 1; 
-            position: relative; 
-            z-index: 1; 
-            display: flex; 
-            flex-direction: column; 
+
+        .step {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100%;
         }
-        .step-num { 
-            width: 45px; 
-            height: 45px; 
-            background: rgba(22, 163, 74, 0.1); 
+
+        .step-num {
+            width: 45px;
+            height: 45px;
+            background: rgba(22, 163, 74, 0.1);
             border: 2px solid var(--landing-accent);
-            color: #a7f3d0; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1.2rem; 
-            font-family: 'Inter', sans-serif !important; 
+            color: #a7f3d0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-family: 'Inter', sans-serif !important;
             font-weight: 700;
-            box-shadow: 0 0 15px rgba(22,163,74,0.4);
+            box-shadow: 0 0 15px rgba(22, 163, 74, 0.4);
             z-index: 2;
         }
+
         .step-content {
             position: absolute;
             width: 280px;
@@ -212,13 +364,26 @@
             align-items: center;
             z-index: 2;
         }
-        .step-content h4 { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: #a7f3d0 !important; }
-        .step-content p { font-size: 1rem; color: rgba(255,255,255,0.8); line-height: 1.6; max-width: 240px; }
-        
+
+        .step-content h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #a7f3d0 !important;
+        }
+
+        .step-content p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            max-width: 240px;
+        }
+
         /* Alternating layout logic relative to center line */
         .step:nth-child(odd) .step-content {
             bottom: calc(50% + 40px);
         }
+
         .step:nth-child(even) .step-content {
             top: calc(50% + 40px);
         }
@@ -230,141 +395,398 @@
             left: 50%;
             width: 1px;
             height: 40px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
-        .step:nth-child(odd) .step-content::after { bottom: -40px; }
-        .step:nth-child(even) .step-content::after { top: -40px; }
+
+        .step:nth-child(odd) .step-content::after {
+            bottom: -40px;
+        }
+
+        .step:nth-child(even) .step-content::after {
+            top: -40px;
+        }
 
         @media (max-width: 992px) {
-            .timeline { flex-direction: column; height: auto; gap: 40px; align-items: flex-start; padding-left: 50px; margin-top: 40px; }
-            .timeline::before { left: 72px; top: 0; bottom: 0; width: 1px; height: 100%; transform: none; }
-            .step { flex-direction: row; align-items: center; height: auto; width: 100%; min-height: 100px; }
-            .step-content { position: static; text-align: left; align-items: flex-start; padding-left: 40px; width: auto; }
-            .step-content::after { display: none; }
-            .split-flex { flex-direction: column; text-align: center; gap: 30px; }
-            .split-text-box, .impact-content { min-width: 100%; align-items: center; }
-            .impact-list li { text-align: left; justify-content: center; }
-            .split-image-box, .impact-img { min-width: 100%; height: 350px; }
+            .timeline {
+                flex-direction: column;
+                height: auto;
+                gap: 40px;
+                align-items: flex-start;
+                padding-left: 50px;
+                margin-top: 40px;
+            }
+
+            .timeline::before {
+                left: 72px;
+                top: 0;
+                bottom: 0;
+                width: 1px;
+                height: 100%;
+                transform: none;
+            }
+
+            .step {
+                flex-direction: row;
+                align-items: center;
+                height: auto;
+                width: 100%;
+                min-height: 100px;
+            }
+
+            .step-content {
+                position: static;
+                text-align: left;
+                align-items: flex-start;
+                padding-left: 40px;
+                width: auto;
+            }
+
+            .step-content::after {
+                display: none;
+            }
+
+            .split-flex {
+                flex-direction: column;
+                text-align: center;
+                gap: 30px;
+            }
+
+            .split-text-box,
+            .impact-content {
+                min-width: 100%;
+                align-items: center;
+            }
+
+            .impact-list li {
+                text-align: left;
+                justify-content: center;
+            }
+
+            .split-image-box,
+            .impact-img {
+                min-width: 100%;
+                height: 350px;
+            }
         }
 
         @media (max-width: 768px) {
-            .hero-content h1 { font-size: 3rem; }
-            .sparkly-text { font-size: 2.8rem !important; }
-            .news-box h2 { font-size: 2.5rem; }
-            .split-text-box h1, .impact-content h2, .final-cta h2 { font-size: 2.5rem; }
-            .header .nav-links { display: none; /* Consider hamburger next */ }
-            .auth-buttons a { padding: 8px 16px; font-size: 0.9rem; }
-            .impact-list li { font-size: 1rem; }
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+
+            .sparkly-text {
+                font-size: 2.8rem !important;
+            }
+
+            .news-box h2 {
+                font-size: 2.5rem;
+            }
+
+            .split-text-box h1,
+            .impact-content h2,
+            .final-cta h2 {
+                font-size: 2.5rem;
+            }
+
+            .header .nav-links {
+                display: none;
+                /* Consider hamburger next */
+            }
+
+            .auth-buttons a {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+
+            .impact-list li {
+                font-size: 1rem;
+            }
         }
 
         /* 5. Sales & Offers */
-        .sales-wrap { background: transparent; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .dynamic-sales-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin: 40px auto; text-align: left; align-items: stretch; }
-        
+        .sales-wrap {
+            background: transparent;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .dynamic-sales-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin: 40px auto;
+            text-align: left;
+            align-items: stretch;
+        }
+
         /* Premium Glass Card styling for the Javascript to use */
-        .premium-card { display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.3); height: 100%; }
-        .premium-card:hover { transform: translateY(-5px); border-color: rgba(22, 163, 74, 0.5); background: rgba(255, 255, 255, 0.05); }
-        .premium-img-wrap { height: 240px; overflow: hidden; position: relative; background: transparent; flex-shrink: 0; }
-        .premium-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; }
-        .sale-badge { position: absolute; top: 15px; right: 15px; background: #dc2626; color: white; padding: 4px 12px; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; border-radius: 4px; }
-        .premium-card-body { padding: 25px; display: flex; flex-direction: column; flex: 1; }
-        .premium-card-body .btn { margin-top: auto; }
-        .premium-card-body h3 { font-size: 1.4rem; color: #f9fafb !important; margin-bottom: 8px; }
-        .premium-price { color: #a7f3d0; font-weight: 600; font-size: 1.2rem; margin-bottom: 8px; }
-        .premium-stats { display: flex; justify-content: space-between; font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
-        .premium-stock-alert { color: #fcd34d; font-weight: 500; font-style: italic; }
+        .premium-card {
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            height: 100%;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(22, 163, 74, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .premium-img-wrap {
+            height: 240px;
+            overflow: hidden;
+            position: relative;
+            background: transparent;
+            flex-shrink: 0;
+        }
+
+        .premium-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.95;
+        }
+
+        .sale-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #dc2626;
+            color: white;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border-radius: 4px;
+        }
+
+        .premium-card-body {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .premium-card-body .btn {
+            margin-top: auto;
+        }
+
+        .premium-card-body h3 {
+            font-size: 1.4rem;
+            color: #f9fafb !important;
+            margin-bottom: 8px;
+        }
+
+        .premium-price {
+            color: #a7f3d0;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .premium-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+        }
+
+        .premium-stock-alert {
+            color: #fcd34d;
+            font-weight: 500;
+            font-style: italic;
+        }
 
         /* 6. Core Values */
-        .promise-wrap { background: transparent; }
-        .promise-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 40px; }
-        .promise-item { border-left: 3px solid var(--landing-accent); padding-left: 20px; }
-        .promise-item h3 { font-size: 1.3rem; margin-bottom: 10px; color: var(--landing-text) !important; }
-        .promise-item p { color: var(--landing-text-light); font-size: 0.95rem; }
+        .promise-wrap {
+            background: transparent;
+        }
+
+        .promise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .promise-item {
+            border-left: 3px solid var(--landing-accent);
+            padding-left: 20px;
+        }
+
+        .promise-item h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--landing-text) !important;
+        }
+
+        .promise-item p {
+            color: var(--landing-text-light);
+            font-size: 0.95rem;
+        }
 
         /* 7. Community Impact (Standardized 1200px Split) */
-        .impact-wrap { padding: 80px 0; background: transparent; border-top: 1px solid rgba(255,255,255,0.05); }
-        .split-flex { display: flex; flex-wrap: wrap; gap: 60px; align-items: center; }
-        .impact-img { 
-            flex: 1; 
-            min-width: 400px; 
-            height: 450px; 
-            background-image: url('images/farm.jpg'); 
-            background-size: cover; 
-            background-position: center; 
+        .impact-wrap {
+            padding: 80px 0;
+            background: transparent;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .split-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .impact-img {
+            flex: 1;
+            min-width: 400px;
+            height: 450px;
+            background-image: url('images/farm.jpg');
+            background-size: cover;
+            background-position: center;
             border-radius: 12px;
             opacity: 0.9;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
-        .impact-content { 
-            flex: 1; 
-            min-width: 400px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
+
+        .impact-content {
+            flex: 1;
+            min-width: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        .impact-content h2 { font-size: 2.8rem; margin-bottom: 12px; font-weight: 700; color: #a7f3d0 !important; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .impact-content h3 { font-size: 1.6rem; font-weight: 400; margin-bottom: 24px; color: rgba(255,255,255,0.9) !important; }
-        .impact-content p { margin-bottom: 30px; font-weight: 300; line-height: 1.7; color: rgba(255,255,255,0.8); font-size: 1.15rem; }
-        .impact-list { list-style: none; padding: 0; }
-        .impact-list li { margin-bottom: 18px; display: flex; align-items: flex-start; gap: 12px; font-weight: 400; color: rgba(255,255,255,0.8); font-size: 1.1rem; }
-        .impact-list i { color: #16a34a; margin-top: 4px; font-size: 1.2rem; }
+
+        .impact-content h2 {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: #a7f3d0 !important;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .impact-content h3 {
+            font-size: 1.6rem;
+            font-weight: 400;
+            margin-bottom: 24px;
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .impact-content p {
+            margin-bottom: 30px;
+            font-weight: 300;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.15rem;
+        }
+
+        .impact-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .impact-list li {
+            margin-bottom: 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .impact-list i {
+            color: #16a34a;
+            margin-top: 4px;
+            font-size: 1.2rem;
+        }
 
         /* 8. Newsletter */
-        .newsletter-wrap { background: transparent; padding: 120px 20px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .news-box { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            background: transparent; 
+        .newsletter-wrap {
+            background: transparent;
+            padding: 120px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .news-box {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: transparent;
             border: none;
-            padding: 40px 0; 
+            padding: 40px 0;
             text-align: center;
             box-shadow: none;
         }
-        .news-box h2 { 
-            font-size: 3.5rem; 
-            margin-bottom: 30px; 
-            color: #f9fafb !important; 
-            font-weight: 800; 
+
+        .news-box h2 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            color: #f9fafb !important;
+            font-weight: 800;
             font-family: 'Inter', sans-serif !important;
             letter-spacing: -0.025em;
         }
-        .news-box > p { 
-            color: rgba(255,255,255,0.8); 
-            margin: 0 auto 50px; 
-            font-size: 1.25rem; 
-            line-height: 1.6; 
-            max-width: 800px; 
+
+        .news-box>p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0 auto 50px;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            max-width: 800px;
             font-family: 'Inter', sans-serif !important;
         }
-        .benefits-list { display: flex; gap: 40px; margin-bottom: 60px; flex-wrap: wrap; justify-content: center; }
-        .benefit { 
-            flex: 1; 
-            min-width: 250px; 
-            background: transparent; 
-            border: none; 
-            padding: 20px 0; 
+
+        .benefits-list {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .benefit {
+            flex: 1;
+            min-width: 250px;
+            background: transparent;
+            border: none;
+            padding: 20px 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 12px;
             text-align: center;
         }
-        .benefit h4 { 
-            font-family: 'Inter', sans-serif !important; 
-            font-size: 1.4rem; 
-            color: #a7f3d0 !important; 
-            font-weight: 700; 
-            margin: 0; 
+
+        .benefit h4 {
+            font-family: 'Inter', sans-serif !important;
+            font-size: 1.4rem;
+            color: #a7f3d0 !important;
+            font-weight: 700;
+            margin: 0;
         }
-        .benefit p { 
-            font-size: 1rem; 
-            color: rgba(255,255,255,0.7); 
-            line-height: 1.6; 
-            margin: 0; 
+
+        .benefit p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin: 0;
             font-family: 'Inter', sans-serif !important;
         }
-        
-        .news-box .btn-cta { 
+
+        .news-box .btn-cta {
             display: inline-block;
             background: linear-gradient(to right, #16a34a, #15803d) !important;
             color: white !important;
@@ -377,17 +799,24 @@
             font-family: 'Inter', sans-serif !important;
             box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);
         }
-        .news-box .btn-cta:hover { 
-            background: linear-gradient(to right, #15803d, #166534) !important; 
+
+        .news-box .btn-cta:hover {
+            background: linear-gradient(to right, #15803d, #166534) !important;
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(22, 163, 74, 0.5);
         }
 
         /* Sparkle Header Effect */
         @keyframes header-sparkle {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
+            0% {
+                background-position: -200% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
         }
+
         .sparkly-text {
             background: linear-gradient(90deg, #fff, #a7f3d0, #fff, #a7f3d0, #fff);
             background-size: 200% auto;
@@ -402,8 +831,9 @@
         .split-info-wrap {
             padding: 80px 0;
             background: transparent;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+
         .split-text-box {
             flex: 1;
             min-width: 400px;
@@ -411,21 +841,24 @@
             flex-direction: column;
             justify-content: center;
         }
+
         .split-text-box h1 {
             font-size: 3rem;
             margin-bottom: 24px;
             color: #a7f3d0 !important;
             font-weight: 700;
             font-family: 'Inter', sans-serif !important;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             line-height: 1.2;
         }
+
         .split-text-box p {
             font-size: 1.2rem;
             line-height: 1.7;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             max-width: 600px;
         }
+
         .split-image-box {
             flex: 1;
             min-width: 400px;
@@ -434,24 +867,87 @@
             background-position: center;
             border-radius: 12px;
             opacity: 0.9;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
 
         /* 9. Final CTA & Footer */
-        .final-cta { text-align: center; padding: 100px 20px; background: transparent; }
-        .final-cta h2 { font-size: 3rem; margin-bottom: 20px; color: var(--landing-text) !important; }
-        .final-cta p { color: var(--landing-text-light); max-width: 600px; margin: 0 auto 40px; font-size: 1.1rem; }
-        
-        .footer-wrap { background: #000; color: #d1d5db; padding: 80px 20px 40px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1.5fr; gap: 40px; max-width: 1200px; margin: 0 auto 60px; }
-        @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr; } }
-        .footer-col h3 { color: white !important; margin-bottom: 20px; font-size: 1.3rem; }
-        .footer-col p { margin-bottom: 15px; font-size: 0.95rem; }
-        .footer-col ul { list-style: none; padding: 0; }
-        .footer-col ul li { margin-bottom: 10px; }
-        .footer-col ul a { color: #d1d5db; text-decoration: none; transition: color 0.2s; }
-        .footer-col ul a:hover { color: var(--landing-light-green); }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px; text-align: center; font-size: 0.85rem; color: #9ca3af; }
+        .final-cta {
+            text-align: center;
+            padding: 100px 20px;
+            background: transparent;
+        }
+
+        .final-cta h2 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--landing-text) !important;
+        }
+
+        .final-cta p {
+            color: var(--landing-text-light);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            font-size: 1.1rem;
+        }
+
+        .footer-wrap {
+            background: #000;
+            color: #d1d5db;
+            padding: 80px 20px 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1.5fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto 60px;
+        }
+
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer-col h3 {
+            color: white !important;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .footer-col p {
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul a {
+            color: #d1d5db;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-col ul a:hover {
+            color: var(--landing-light-green);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
 
         /* Sparkle Effect */
         .sparkle {
@@ -467,19 +963,29 @@
         }
 
         @keyframes sparkle-fade {
-            0% { transform: scale(1) translateY(0); opacity: 1; }
-            100% { transform: scale(0) translateY(-20px); opacity: 0; }
+            0% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0) translateY(-20px);
+                opacity: 0;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Header Navigation -->
     <header class="header">
-        <div class="container" style="display: flex; justify-content: space-between; align-items: center; height: 100%;">
+        <div class="container"
+            style="display: flex; justify-content: space-between; align-items: center; height: 100%;">
             <a href="#" class="logo" style="display: flex; flex-direction: column; text-decoration: none;">
                 <span style="font-size: 1.8rem; font-weight: 700;">leef 🍃</span>
-                <span style="font-size: 0.7rem; font-weight: 400; opacity: 0.8; letter-spacing: 0.5px;">Little England Elite Fresh</span>
+                <span style="font-size: 0.7rem; font-weight: 400; opacity: 0.8; letter-spacing: 0.5px;">Little England
+                    Elite Fresh</span>
             </a>
             <nav class="nav-links" style="display: flex; gap: 30px;">
                 <a href="#home" style="text-decoration: none; font-weight: 500;">Home</a>
@@ -500,12 +1006,15 @@
             <div class="hero-content">
                 <h1>Freshness<br>from Little<br>England</h1>
                 <p class="subtext">
-                    From our fields at Little England to your table, every leaf tells a story of freshness. We deliver premium organic produce grown in the heart of Nuwara Eliya, where pristine mountain air and rich soil create nature's finest harvest.
+                    From our fields at Little England to your table, every leaf tells a story of freshness. We deliver
+                    premium organic produce grown in the heart of Nuwara Eliya, where pristine mountain air and rich
+                    soil create nature's finest harvest.
                 </p>
                 <p class="closing">Thank you for letting us be a part of your plate.</p>
                 <div style="display: flex; gap: 1rem;">
                     <a href="#sales" class="btn btn-primary" style="padding: 14px 32px;">Shop Now</a>
-                    <a href="#about" class="btn btn-outline" style="border-color: white !important; color: white !important;">Learn More</a>
+                    <a href="#about" class="btn btn-outline"
+                        style="border-color: white !important; color: white !important;">Learn More</a>
                 </div>
             </div>
         </div>
@@ -516,7 +1025,9 @@
         <div class="container split-flex">
             <div class="split-text-box">
                 <h1>Freshness from Little England</h1>
-                <p>From our fields at Little England to your table, every leaf tells a story of freshness. We deliver premium organic produce grown in the heart of Nuwara Eliya, where pristine mountain air and rich soil create nature's finest harvest. Thank you for letting us be a part of your plate.</p>
+                <p>From our fields at Little England to your table, every leaf tells a story of freshness. We deliver
+                    premium organic produce grown in the heart of Nuwara Eliya, where pristine mountain air and rich
+                    soil create nature's finest harvest. Thank you for letting us be a part of your plate.</p>
             </div>
             <div class="split-image-box" style="background-image: url('images/leef.jpg');"></div>
         </div>
@@ -527,7 +1038,8 @@
         <div class="container">
             <div class="section-header">
                 <h2>Why Choose leef?</h2>
-                <p>We are dedicated to delivering the freshest organic produce from the heart of Nuwara Eliya, Sri Lanka's premier agricultural region.</p>
+                <p>We are dedicated to delivering the freshest organic produce from the heart of Nuwara Eliya, Sri
+                    Lanka's premier agricultural region.</p>
             </div>
             <div class="feature-grid">
                 <div class="feature-item">
@@ -554,49 +1066,56 @@
         <div class="container">
             <div class="section-header" style="text-align: center;">
                 <h2 style="font-size: 3rem; margin-bottom: 20px;">Our Premium Harvest</h2>
-                <p>Explore our extensive range of high-altitude Nuwara Eliya produce, from mountain-fresh roots to exotic salad varieties.</p>
+                <p>Explore our extensive range of high-altitude Nuwara Eliya produce, from mountain-fresh roots to
+                    exotic salad varieties.</p>
             </div>
             <div class="cat-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
                 <!-- Row 1 -->
                 <div class="cat-card" style="height: 300px;">
-                    <img src="https://images.unsplash.com/photo-1590868309235-ea34bed7bd7f?q=80&w=2727" alt="Root Vegetables">
+                    <img src="https://images.unsplash.com/photo-1590868309235-ea34bed7bd7f?q=80&w=2727"
+                        alt="Root Vegetables">
                     <div class="cat-content">
                         <h3>Root Vegetables</h3>
                         <p>Carrots, Beetroot, Radish, Turnips & more.</p>
                     </div>
                 </div>
                 <div class="cat-card" style="height: 300px;">
-                    <img src="https://images.unsplash.com/photo-1518977676601-b53f02ac6d31?q=80&w=2670" alt="Tubers & Bulbs">
+                    <img src="https://images.unsplash.com/photo-1518977676601-b53f02ac6d31?q=80&w=2670"
+                        alt="Tubers & Bulbs">
                     <div class="cat-content">
                         <h3>Tubers & Bulbs</h3>
                         <p>Nuwara Eliya Potato, Ginger, Garlic, Onions.</p>
                     </div>
                 </div>
                 <div class="cat-card" style="height: 300px;">
-                    <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=2568" alt="Salad & Lettuce">
+                    <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=2568"
+                        alt="Salad & Lettuce">
                     <div class="cat-content">
                         <h3>Salad & Lettuce</h3>
                         <p>Iceberg, Romaine, Rocket, Baby Spinach, Kale.</p>
                     </div>
                 </div>
-                
+
                 <!-- Row 2 -->
                 <div class="cat-card" style="height: 300px;">
-                    <img src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?q=80&w=2622" alt="Fruit Vegetables">
+                    <img src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?q=80&w=2622"
+                        alt="Fruit Vegetables">
                     <div class="cat-content">
                         <h3>Fruit Vegetables</h3>
                         <p>Tomato, Capsicum, Pepper, Chilli, Brinjal.</p>
                     </div>
                 </div>
                 <div class="cat-card" style="height: 300px;">
-                    <img src="https://images.unsplash.com/photo-1576045057995-568f588f82fb?q=80&w=2000" alt="Local Leafy Greens">
+                    <img src="https://images.unsplash.com/photo-1576045057995-568f588f82fb?q=80&w=2000"
+                        alt="Local Leafy Greens">
                     <div class="cat-content">
                         <h3>Local Leafy Greens</h3>
                         <p>Mukunuwenna, Gotukola, Spinach, Curry Leaves.</p>
                     </div>
                 </div>
                 <div class="cat-card" style="height: 300px;">
-                    <img src="https://images.unsplash.com/photo-1515471204579-f30b050ae47b?q=80&w=2670" alt="Herbs & Aromatics">
+                    <img src="https://images.unsplash.com/photo-1515471204579-f30b050ae47b?q=80&w=2670"
+                        alt="Herbs & Aromatics">
                     <div class="cat-content">
                         <h3>Herbs & Aromatics</h3>
                         <p>Mint, Parsley, Rosemary, Basil, Celery, Chives.</p>
@@ -612,21 +1131,23 @@
                     </div>
                 </div>
                 <div class="cat-card" style="height: 300px;">
-                    <img src="https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?q=80&w=2000" alt="Specialty Vegetables">
+                    <img src="https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?q=80&w=2000"
+                        alt="Specialty Vegetables">
                     <div class="cat-content">
                         <h3>Specialty Vegetables</h3>
                         <p>Green Peas, Sweet Corn, Asparagus, Rhubarb.</p>
                     </div>
                 </div>
                 <div class="cat-card" style="height: 300px;">
-                    <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2000" alt="Gourds & Pods">
+                    <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2000"
+                        alt="Gourds & Pods">
                     <div class="cat-content">
                         <h3>Gourds & Pods</h3>
                         <p>Snake Gourd, Bitter Gourd, Pumpkin, Cucumber.</p>
                     </div>
                 </div>
             </div>
-            
+
             <div style="text-align: center; margin-top: 40px; color: rgba(255,255,255,0.6); font-style: italic;">
                 Also providing Cruciferous Vegetables, Local Produce and more.
             </div>
@@ -637,7 +1158,8 @@
     <section class="process-wrap">
         <div class="container">
             <div class="section-header" style="text-align: left; margin-bottom: 20px;">
-                <h2 class="sparkly-text" style="font-size: 4rem; font-weight: 800; margin-bottom: 30px;">From Farm to Your Table</h2>
+                <h2 class="sparkly-text" style="font-size: 4rem; font-weight: 800; margin-bottom: 30px;">From Farm to
+                    Your Table</h2>
             </div>
             <div class="timeline">
                 <div class="step">
@@ -677,9 +1199,10 @@
         <div class="container">
             <div class="section-header">
                 <h2>Today's Harvest: Special Offers</h2>
-                <p>Exclusive deals on our freshest organic produce. Limited quantities available-order now while supplies last.</p>
+                <p>Exclusive deals on our freshest organic produce. Limited quantities available-order now while
+                    supplies last.</p>
             </div>
-            
+
             <div class="dynamic-sales-grid" id="salesGrid">
                 <!-- Javascript will populate this based on live database data, mapping perfectly to the required aesthetic -->
                 <p style="text-align:center; width:100%; color:#888;">Checking fields for today's harvest...</p>
@@ -701,15 +1224,18 @@
             <div class="promise-grid">
                 <div class="promise-item">
                     <h3>Quality First</h3>
-                    <p>Every item is hand-inspected before shipping. We reject anything that doesn't meet our premium standards.</p>
+                    <p>Every item is hand-inspected before shipping. We reject anything that doesn't meet our premium
+                        standards.</p>
                 </div>
                 <div class="promise-item">
                     <h3>Sustainable Practices</h3>
-                    <p>Our farmers use traditional organic methods passed down through generations, protecting both soil and ecosystem.</p>
+                    <p>Our farmers use traditional organic methods passed down through generations, protecting both soil
+                        and ecosystem.</p>
                 </div>
                 <div class="promise-item">
                     <h3>Freshness Guaranteed</h3>
-                    <p>If your produce isn't absolutely fresh, we'll replace it. Your satisfaction is our commitment.</p>
+                    <p>If your produce isn't absolutely fresh, we'll replace it. Your satisfaction is our commitment.
+                    </p>
                 </div>
             </div>
         </div>
@@ -721,7 +1247,8 @@
             <div class="impact-content">
                 <h2>Supporting Our Community</h2>
                 <h3>Empowering Local Farmers</h3>
-                <p>We work directly with family-owned farms in Nuwara Eliya, providing fair wages and sustainable livelihoods. Every purchase supports the agricultural community that makes our produce possible.</p>
+                <p>We work directly with family-owned farms in Nuwara Eliya, providing fair wages and sustainable
+                    livelihoods. Every purchase supports the agricultural community that makes our produce possible.</p>
                 <ul class="impact-list">
                     <li><i class="fa-solid fa-check"></i> Direct partnerships with 45+ local farms</li>
                     <li><i class="fa-solid fa-check"></i> Fair trade pricing for all growers</li>
@@ -737,8 +1264,9 @@
         <div class="container">
             <div class="news-box">
                 <h2>Join the Green Revolution</h2>
-                <p>Get the freshest updates and exclusive offers delivered to your inbox. Be the first to know about new harvests, seasonal specials, and member-only deals.</p>
-                
+                <p>Get the freshest updates and exclusive offers delivered to your inbox. Be the first to know about new
+                    harvests, seasonal specials, and member-only deals.</p>
+
                 <div class="benefits-list">
                     <div class="benefit">
                         <h4>Weekly Harvest Updates</h4>
@@ -763,7 +1291,8 @@
     <section class="final-cta" id="contact">
         <div class="container">
             <h2>Ready to Experience Freshness?</h2>
-            <p>Start your journey with leef today. From our fields at Little England to your table, we deliver premium organic produce with integrity, quality, and care.</p>
+            <p>Start your journey with leef today. From our fields at Little England to your table, we deliver premium
+                organic produce with integrity, quality, and care.</p>
             <div style="display: flex; gap: 1rem; justify-content: center;">
                 <a href="products.html" class="btn btn-primary">Shop Now</a>
                 <a href="#contact" class="btn btn-outline">Contact Us</a>
@@ -776,14 +1305,15 @@
             <div class="footer-col">
                 <h3 style="font-size: 1.8rem; font-family: 'Playfair Display', serif !important;">leef 🍃</h3>
                 <p style="font-weight: 600; color: #a7f3d0;">Little England Elite Fresh</p>
-                <p style="color: #9ca3af; line-height: 1.6; max-width: 300px;">Dealers in wholesale and retail Vegetables. Delivering premium organic produce from Nuwara Eliya to your table.</p>
+                <p style="color: #9ca3af; line-height: 1.6; max-width: 300px;">Dealers in wholesale and retail
+                    Vegetables. Delivering premium organic produce from Nuwara Eliya to your table.</p>
                 <div style="display: flex; gap: 15px; margin-top: 20px;">
                     <a href="#" style="color: white;"><i class="fa-brands fa-facebook"></i></a>
                     <a href="#" style="color: white;"><i class="fa-brands fa-instagram"></i></a>
                     <a href="#" style="color: white;"><i class="fa-brands fa-whatsapp"></i></a>
                 </div>
             </div>
-            
+
             <div class="footer-col">
                 <h3>Quick Links</h3>
                 <ul>
@@ -794,13 +1324,16 @@
                     <li><a href="chatbot.html">Support</a></li>
                 </ul>
             </div>
-            
+
             <div class="footer-col">
                 <h3>Contact Info</h3>
                 <ul>
-                    <li><i class="fa-solid fa-envelope" style="margin-right: 10px; color: #16a34a;"></i> info@leef.lk</li>
-                    <li><i class="fa-solid fa-phone" style="margin-right: 10px; color: #16a34a;"></i> +94 74 185 0582</li>
-                    <li><i class="fa-solid fa-location-dot" style="margin-right: 10px; color: #16a34a;"></i> C18 Dedicated Economic Center, Nuwara Eliya Town, 22200</li>
+                    <li><i class="fa-solid fa-envelope" style="margin-right: 10px; color: #16a34a;"></i> info@leef.lk
+                    </li>
+                    <li><i class="fa-solid fa-phone" style="margin-right: 10px; color: #16a34a;"></i> +94 74 185 0582
+                    </li>
+                    <li><i class="fa-solid fa-location-dot" style="margin-right: 10px; color: #16a34a;"></i> C18
+                        Dedicated Economic Center, Nuwara Eliya Town, 22200</li>
                 </ul>
             </div>
         </div>
@@ -909,6 +1442,7 @@
             align-items: flex-end;
             gap: 15px;
         }
+
         #chatbot-window {
             width: 400px;
             height: 600px;
@@ -924,16 +1458,19 @@
             opacity: 0;
             transform: scale(0.8) translateY(20px);
         }
+
         #chatbot-window.show {
             display: flex;
             opacity: 1;
             transform: scale(1) translateY(0);
         }
+
         #chatbot-iframe {
             width: 100%;
             height: 100%;
             border: none;
         }
+
         #chatbot-bubble {
             width: 65px;
             height: 65px;
@@ -947,21 +1484,43 @@
             transition: all 0.3s ease;
             animation: chatbot-bounce 3s infinite;
         }
+
         #chatbot-bubble i {
             color: white;
             font-size: 1.8rem;
         }
+
         #chatbot-bubble:hover {
             transform: scale(1.1);
             background: linear-gradient(135deg, #15803d, #166534);
         }
+
         @keyframes chatbot-bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-15px);}
-            60% {transform: translateY(-7px);}
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-15px);
+            }
+
+            60% {
+                transform: translateY(-7px);
+            }
         }
+
         @media (max-width: 480px) {
-            #chatbot-window { width: 90vw; height: 70vh; right: 5vw; bottom: 100px; }
+            #chatbot-window {
+                width: 90vw;
+                height: 70vh;
+                right: 5vw;
+                bottom: 100px;
+            }
         }
     </style>
     <div id="chatbot-container">
@@ -973,4 +1532,5 @@
         </div>
     </div>
 </body>
+
 </html>
