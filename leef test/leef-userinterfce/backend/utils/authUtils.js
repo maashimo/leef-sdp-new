@@ -6,8 +6,8 @@ const { generateRegistrationOTPEmail, generatePasswordResetOTPEmail } = require(
 
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
+    port: 587,  // Use port 587 instead of 465
+    secure: false, // TLS requires secure: false for port 587
     auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_APP_PASSWORD,
@@ -46,7 +46,8 @@ async function sendOTPEmail(email, otpCode, purpose, userName = "User") {
         console.log(`✅ OTP email sent to ${email} for ${purpose}`);
         return true;
     } catch (err) {
-        console.error("❌ Failed to send OTP email:", err.message);
+        console.error("❌ Failed to send OTP email:");
+        console.log("Error details:", err);
         return false;
     }
 }

@@ -4,6 +4,10 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 require("dotenv").config({ quiet: true });
+console.log("----- ENV DIAGNOSTICS -----");
+console.log("MAIL_USER:", process.env.MAIL_USER);
+console.log("MAIL_PASS SET:", !!process.env.MAIL_APP_PASSWORD);
+console.log("---------------------------");
 // Initialize Stripe safely
 let stripe;
 if (process.env.STRIPE_SECRET_KEY) {
@@ -667,6 +671,37 @@ app.get("/api/admin/users", async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).send("Server error");
+  } finally {
+    if (conn) await conn.end();
+  }
+});
+
+// ADMIN: DELETE USER
+app.delete("/api/admin/user/:role/:id", async (req, res) => {
+  let conn;
+  try {
+    const { role, id } = req.params;
+    if (!role || !id) return res.status(400).send("Missing role or id");
+
+    conn = await mysql.createConnection(dbConfig);
+    let query = "";
+    if (role === 'Customer') {
+      query = "DELETE FROM customers WHERE customer_id = ?";
+    } else if (role === 'Seller') {
+      // Note: Might need to handle seller certificates table if no CASCADE
+      await conn.execute("DELETE FROM seller_certificates WHERE seller_id = ?", [id]);
+      query = "DELETE FROM sellers WHERE seller_id = ?";
+    } else {
+      return res.status(400).send("Invalid role");
+    }
+
+    const [result] = await conn.execute(query, [id]);
+    if (result.affectedRows === 0) return res.status(404).send("User not found");
+
+    return res.json({ message: `${role} removed successfully` });
+  } catch (err) {
+    console.error("Delete user error:", err);
+    return res.status(500).send("Server error: " + err.message);
   } finally {
     if (conn) await conn.end();
   }

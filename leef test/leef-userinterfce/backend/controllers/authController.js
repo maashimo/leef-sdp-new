@@ -249,7 +249,14 @@ exports.forgotPassword = async (req, res) => {
         const emailSent = await sendOTPEmail(email, otpCode, "password_reset", userName);
 
         if (!emailSent) {
-            return res.status(500).json({ message: "Failed to send reset code email.", success: false });
+            // Check if it failed because of missing config
+            if (!process.env.MAIL_USER || !process.env.MAIL_APP_PASSWORD) {
+                return res.status(500).json({ 
+                    message: "Email configuration is missing on the server. Please contact admin.", 
+                    success: false 
+                });
+            }
+            return res.status(500).json({ message: "Failed to send reset code email. Please try again later.", success: false });
         }
 
         return res.json(generic);
