@@ -1,0 +1,79 @@
+/* Feedback page styles */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 600px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  color: #eee;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.6rem;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  margin-top: 0.3rem;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #4ade80;
+  outline: none;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 0.7em;
+  padding: 1em 1.2em;
+  margin-bottom: 1em;
+  gap: 1em;
+  flex-wrap: wrap;
+}
+
+.order-item.highlight {
+  background: rgba(22, 163, 74, 0.1);
+  border-color: rgba(22, 163, 74, 0.3);
+}
+
+.star-rating {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 4px;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  font-size: 1.5rem;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.1s;
+}
+
+.star-rating input:checked~label,
+.star-rating label:hover,
+.star-rating label:hover~label {
+  color: #fbbf24;
+}

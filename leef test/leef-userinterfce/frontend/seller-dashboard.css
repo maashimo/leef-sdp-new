@@ -1,0 +1,169 @@
+/* Seller dashboard page styles */
+
+.dashboard-card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.muted-text {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.order-line {
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.status-select {
+  background: #111;
+  color: #fff;
+  border: 1px solid #333;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  outline: none;
+}
+
+.status-select:focus {
+  border-color: #4ade80;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+}
+
+/* Notification bell */
+.notif-bell-container {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+.notif-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 5px;
+  border-radius: 10px;
+  min-width: 15px;
+  text-align: center;
+  border: 2px solid #000;
+}
+
+.notif-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 350px;
+  max-height: 500px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+
+.notif-header {
+  padding: 1rem;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notif-list {
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.notif-item {
+  padding: 1rem;
+  border-bottom: 1px solid #222;
+  transition: background 0.2s;
+  cursor: default;
+  display: flex;
+  gap: 0.8rem;
+}
+
+.notif-item:hover { background: #252525; }
+.notif-item.unread {
+  background: rgba(16, 185, 129, 0.05);
+  border-left: 3px solid #10b981;
+}
+
+.notif-icon { font-size: 1.2rem; padding-top: 0.2rem; }
+.notif-content { flex-grow: 1; }
+.notif-title { font-weight: 600; color: #fff; font-size: 0.9rem; margin-bottom: 2px; }
+.notif-message { font-size: 0.85rem; color: #888; line-height: 1.4; }
+.notif-time { font-size: 0.7rem; color: #555; margin-top: 5px; }
+
+.notif-footer {
+  padding: 0.8rem;
+  text-align: center;
+  border-top: 1px solid #333;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #10b981;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.btn-link:hover { color: #34d399; }
+
+.btn-premium {
+  background: #ffffff;
+  color: #000;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.8px;
+}
+
+.btn-premium:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.25);
+  background: #f8fafc;
+}
+
+.btn-premium:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-premium span {
+  font-size: 1.1rem;
+}

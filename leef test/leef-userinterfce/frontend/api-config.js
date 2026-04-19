@@ -1,20 +1,23 @@
 /**
- * Leef Platform - Global API Configuration
- * ==========================================
- * Change the BACKEND_URL below to point to your hosted backend.
- * All frontend pages will use this URL automatically.
+ * API Configuration for Leef Platform
+ * -----------------------------------
+ * This file defines the backend endpoint used by all frontend components.
+ * To point to a different server, simply update the 'API_BASE_URL' below.
  */
-(function() {
-    // ┌─────────────────────────────────────────────────────┐
-    // │  SET YOUR BACKEND URL HERE                          │
-    // │  Change this to your hosted backend URL             │
-    // │  e.g. 'https://leef-api.example.com'               │
-    // │       'http://142.93.208.192'                       │
-    // │       'http://142.93.208.192:5000'                  │
-    // └─────────────────────────────────────────────────────┘
-    // const BACKEND_URL = "https://142.93.208.192.sslip.io";
-    const BACKEND_URL = "http://192.168.1.9:5000";
 
-    window.API_BASE_URL = BACKEND_URL;
-    console.log(`%c[Leef Config] Using API: ${BACKEND_URL}`, "color: #4ade80; font-weight: bold;");
-})();
+const BACKEND_ENVIRONMENTS = {
+    local: "http://localhost:5000",
+    network: "http://192.168.1.9:5000",
+    production: "https://142.93.208.192.sslip.io"
+};
+
+// Change this line to switch between environments
+const ACTIVE_URL = BACKEND_ENVIRONMENTS.network;
+
+// Set as global for use in all scripts
+window.API_BASE_URL = ACTIVE_URL;
+
+// Optional: environment check log 
+if (window.location.hostname === 'localhost') {
+    console.log(`[Config] Using ${ACTIVE_URL === BACKEND_ENVIRONMENTS.local ? 'Local' : 'Remote'} API: ${ACTIVE_URL}`);
+}

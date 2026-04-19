@@ -307,9 +307,7 @@ input+span,
   }
 }
 
-/* =====================
-   TOP NAVBAR STYLES (Updated to match image: white bg, green accents)
-===================== */
+/* Top navbar */
 .top-navbar {
   background: rgba(17, 17, 17, 0.95);
   color: #fff;
@@ -417,9 +415,7 @@ input+span,
   }
 }
 
-/* =====================
-   CART-SPECIFIC STYLES (Adapted to match profile page aesthetic: cards, green buttons, clean layout)
-===================== */
+/* Cart layout */
 .cart-container {
   display: flex;
   justify-content: space-between;

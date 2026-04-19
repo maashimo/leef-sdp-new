@@ -8,57 +8,19 @@
   <title>Register | leef 🍃</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <style>
-    /* Password Strength Styles */
-    .password-strength-container {
-      margin-top: 5px;
-    }
 
-    .strength-meter-bg {
-      height: 4px;
-      background: #333;
-      /* Dark background for the track */
-      border-radius: 2px;
-      overflow: hidden;
-      margin-bottom: 5px;
-    }
-
-    .strength-meter-fill {
-      height: 100%;
-      width: 0;
-      transition: width 0.3s ease, background-color 0.3s ease;
-      border-radius: 2px;
-    }
-
-    .password-feedback {
-      font-size: 0.8rem;
-      color: var(--text-light);
-    }
-
-    .strength-weak {
-      background-color: #ef4444;
-    }
-
-    .strength-medium {
-      background-color: #eab308;
-    }
-
-    .strength-strong {
-      background-color: #22c55e;
-    }
-  </style>
 </head>
 
 <body>
 
   <div class="auth-container">
-    <div class="auth-card animate-scale" style="max-width: 600px;">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <a href="index.html" class="logo" style="justify-content: center; margin-bottom: 10px;">
+    <div class="auth-card animate-scale text-center" style="max-width: 600px;">
+      <div class="mb-4">
+        <a href="index.html" class="logo flex-center mb-2">
           leef 🍃
         </a>
-        <h1>Create Account</h1>
-        <p style="color: var(--text-light);">Join the community and start your fresh journey</p>
+        <h1 class="text-2xl mt-2 mb-2">Create Account</h1>
+        <p class="text-light m-0">Join the community and start your fresh journey</p>
       </div>
 
       <form action="#" data-api-path="/api/auth/register" method="post" enctype="multipart/form-data"
@@ -86,24 +48,20 @@
         <div class="form-group">
           <label class="form-label">Password</label>
           <input type="password" class="form-input" name="password" id="passwordInput" placeholder="••••••••" required>
-          <div id="passwordRequirements" style="margin-top: 0.5rem; font-size: 0.8rem; color: #888;">
-            <p style="margin: 2px 0; font-weight: 500;">Password Qualifications:</p>
-            <ul style="list-style: none; padding-left: 0; margin: 5px 0;">
-              <li id="req-length" style="display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
-                <span class="dot" style="width: 6px; height: 6px; border-radius: 50%; background: #555; display: inline-block;"></span> 
-                At least 6 characters
+          <div id="passwordRequirements" class="mt-2 text-sm text-light">
+            <p class="m-0 fw-600">Password Qualifications:</p>
+            <ul class="list-none p-0 mt-2 mb-2">
+              <li id="req-length" class="flex items-center gap-2 mb-2">
+                <span class="dot"></span> At least 6 characters
               </li>
-              <li id="req-caps" style="display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
-                <span class="dot" style="width: 6px; height: 6px; border-radius: 50%; background: #555; display: inline-block;"></span> 
-                At least one uppercase letter (CAPS)
+              <li id="req-caps" class="flex items-center gap-2 mb-2">
+                <span class="dot"></span> At least one uppercase letter (CAPS)
               </li>
-              <li id="req-small" style="display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
-                <span class="dot" style="width: 6px; height: 6px; border-radius: 50%; background: #555; display: inline-block;"></span> 
-                At least one lowercase letter (small)
+              <li id="req-small" class="flex items-center gap-2 mb-2">
+                <span class="dot"></span> At least one lowercase letter (small)
               </li>
-              <li id="req-spec" style="display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
-                <span class="dot" style="width: 6px; height: 6px; border-radius: 50%; background: #555; display: inline-block;"></span> 
-                At least one special character (!@#$...)
+              <li id="req-spec" class="flex items-center gap-2 mb-2">
+                <span class="dot"></span> At least one special character (!@#$...)
               </li>
             </ul>
           </div>
@@ -118,25 +76,25 @@
         <!-- Phone Numbers -->
         <div class="form-group">
           <label class="form-label">Phone Number 1</label>
-          <div style="display:flex; gap:10px;">
-            <select class="countryCode" style="width: 100px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 8px; padding: 10px; outline:none;">
+          <div class="flex gap-2">
+            <select class="countryCode form-input" style="width: 100px;">
               <option value="+94" selected>🇱🇰 +94</option>
             </select>
-            <input type="tel" class="phoneNumber" id="phone1" class="form-input" placeholder="07********" maxlength="10" required style="flex:1; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 8px; padding: 10px; outline:none;">
+            <input type="tel" class="phoneNumber form-input flex-1" id="phone1" placeholder="07********" maxlength="10" required>
           </div>
-          <div class="phoneError" id="error1" style="color: #ef4444; font-size: 0.8rem; margin-top: 5px; display:none;">Enter a valid number</div>
+          <div class="phoneError text-sm text-red mt-2" id="error1" style="display:none;">Enter a valid number</div>
           <input type="hidden" name="phone" id="fullPhone1">
         </div>
 
         <div class="form-group">
           <label class="form-label">Phone Number 2 (Secondary / Emergency)</label>
-          <div style="display:flex; gap:10px;">
-            <select class="countryCode" style="width: 100px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 8px; padding: 10px; outline:none;">
+          <div class="flex gap-2">
+            <select class="countryCode form-input" style="width: 100px;">
               <option value="+94" selected>🇱🇰 +94</option>
             </select>
-            <input type="tel" class="phoneNumber" id="phone2" class="form-input" placeholder="07********" maxlength="10" required style="flex:1; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 8px; padding: 10px; outline:none;">
+            <input type="tel" class="phoneNumber form-input flex-1" id="phone2" placeholder="07********" maxlength="10" required>
           </div>
-          <div class="phoneError" id="error2" style="color: #ef4444; font-size: 0.8rem; margin-top: 5px; display:none;">Enter a valid number</div>
+          <div class="phoneError text-sm text-red mt-2" id="error2" style="display:none;">Enter a valid number</div>
           <input type="hidden" name="phone2" id="fullPhone2">
         </div>
 

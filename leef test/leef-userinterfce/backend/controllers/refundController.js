@@ -77,7 +77,7 @@ exports.submitRefund = async (req, res) => {
         try {
             const [oRow] = await pool.execute("SELECT seller_id FROM orders WHERE id = ?", [orderId]);
             if (oRow.length > 0) {
-              await notify(oRow[0].seller_id, "Refund Requested 💸", `A customer has requested a refund for Order #${orderId}.`, "refund");
+                await notify(oRow[0].seller_id, "Refund Requested 💸", `A customer has requested a refund for Order #${orderId}.`, "refund");
             }
         } catch (nErr) { console.error("Notification failed:", nErr.message); }
 
@@ -217,7 +217,7 @@ exports.finalAdminDecision = async (req, res) => {
 
         const [currentRefundRow] = await pool.execute("SELECT status FROM refunds WHERE id = ?", [id]);
         if (currentRefundRow.length === 0) return res.status(404).json({ message: "Refund not found" });
-        
+
         if (decision === 'rejected' && currentRefundRow[0].status === 'seller_approved') {
             return res.status(403).json({ message: "Admin cannot reject a refund that the seller has already approved." });
         }
@@ -306,7 +306,7 @@ exports.sellerApproveRefund = async (req, res) => {
         // Notify Admin (using systematic notification if available, else just log)
         try {
             await pool.execute("INSERT INTO notifications (message, type) VALUES (?, 'info')", [`Seller has ${decision.replace('_', ' ')} refund #${id}`, 'info']);
-        } catch (nErr) {}
+        } catch (nErr) { }
 
         res.status(200).json({ message: `Refund ${decision.replace('_', ' ')} by seller`, status: decision });
     } catch (err) {
@@ -447,3 +447,4 @@ exports.customerAcceptPartial = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+

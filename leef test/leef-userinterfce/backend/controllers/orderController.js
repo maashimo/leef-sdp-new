@@ -502,7 +502,7 @@ exports.getAdminAllOrders = async (req, res) => {
         const results = rows.map(o => {
             const sellerBase = parsePrice(o.seller_price);
             const totalSellerCost = sellerBase * (parseFloat(o.quantity) || 0);
-            
+
             // Calculate delivery fee from mapping if it's 0 in the database but we have a district
             let dFee = parseFloat(o.delivery_fee) || 0;
             if (dFee === 0 && o.district && deliveryPrices[o.district]) {

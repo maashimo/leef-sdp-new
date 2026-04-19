@@ -4,9 +4,7 @@ const path = require("path");
 const { pool } = require("../config/db");
 const { generateOTP, sendOTPEmail, storeOTP, verifyOTP, makeUniqueUsername, verifyPassword } = require("../utils/authUtils");
 
-/* =========================
-   REGISTER
-========================= */
+// Register a new customer or seller
 exports.register = async (req, res) => {
     try {
         const { fullname, email, password, address, role, town, shop_name, shop_town, bio, phone, phone2 } = req.body;
@@ -21,20 +19,20 @@ exports.register = async (req, res) => {
         if (!/[a-z]/.test(password)) return res.status(400).send("Password must contain at least one lowercase letter");
         if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) return res.status(400).send("Password must contain at least one special character");
 
-        // Email & Username check
+        // check if email is already taken
         const [customerExists] = await pool.execute("SELECT customer_id FROM customers WHERE email=? LIMIT 1", [email]);
         const [sellerExists] = await pool.execute("SELECT seller_id FROM sellers WHERE email=? LIMIT 1", [email]);
         if (customerExists.length > 0) return res.status(409).send("This email is already registered as a Customer. One email can only have one role.");
         if (sellerExists.length > 0) return res.status(409).send("This email is already registered as a Seller. One email can only have one role.");
 
         if (username) {
-            // Check username uniqueness if provided
+            // make sure username isn't taken
             username = username.trim().toLowerCase();
             const [uc] = await pool.execute("SELECT customer_id FROM customers WHERE username=? LIMIT 1", [username]);
             const [us] = await pool.execute("SELECT seller_id FROM sellers WHERE username=? LIMIT 1", [username]);
             if (uc.length > 0 || us.length > 0) return res.status(409).send("Username already taken. Please choose another.");
         } else {
-            // Auto-generate if not provided
+            // auto-generate username from email
             username = await makeUniqueUsername(pool, email);
         }
 
@@ -84,9 +82,7 @@ exports.register = async (req, res) => {
     }
 };
 
-/* =========================
-   VERIFY EMAIL
-========================= */
+// Verify email with OTP code
 exports.verifyEmail = async (req, res) => {
     try {
         const { email, otpCode, role } = req.body;
@@ -109,9 +105,7 @@ exports.verifyEmail = async (req, res) => {
     }
 };
 
-/* =========================
-   RESEND OTP
-========================= */
+// Resend OTP code
 exports.resendOTP = async (req, res) => {
     try {
         const { email, purpose, role } = req.body;
@@ -145,9 +139,7 @@ exports.resendOTP = async (req, res) => {
     }
 };
 
-/* =========================
-   LOGIN
-========================= */
+// Login
 exports.login = async (req, res) => {
     try {
         const { identifier, password } = req.body;
@@ -193,9 +185,7 @@ exports.login = async (req, res) => {
     }
 };
 
-/* =========================
-   FORGOT PASSWORD
-========================= */
+// Forgot password — send reset code to email
 exports.forgotPassword = async (req, res) => {
     try {
         let { role, email } = req.body;
@@ -251,9 +241,9 @@ exports.forgotPassword = async (req, res) => {
         if (!emailSent) {
             // Check if it failed because of missing config
             if (!process.env.MAIL_USER || !process.env.MAIL_APP_PASSWORD) {
-                return res.status(500).json({ 
-                    message: "Email configuration is missing on the server. Please contact admin.", 
-                    success: false 
+                return res.status(500).json({
+                    message: "Email configuration is missing on the server. Please contact admin.",
+                    success: false
                 });
             }
             return res.status(500).json({ message: "Failed to send reset code email. Please try again later.", success: false });
@@ -266,9 +256,7 @@ exports.forgotPassword = async (req, res) => {
     }
 };
 
-/* =========================
-   RESET PASSWORD
-========================= */
+// Reset password using OTP
 exports.resetPassword = async (req, res) => {
     try {
         const { email, otpCode, newPassword, role } = req.body;
@@ -293,9 +281,7 @@ exports.resetPassword = async (req, res) => {
     }
 };
 
-/* =========================
-   GET PROFILE
-========================= */
+// Get user profile
 exports.getProfile = async (req, res) => {
     try {
         const { role, id } = req.params;
@@ -319,15 +305,13 @@ exports.getProfile = async (req, res) => {
     }
 };
 
-/* =========================
-   UPDATE PROFILE
-========================= */
+// Update user profile
 exports.updateProfile = async (req, res) => {
     try {
         const { role, id, name, email, phone, phone2, address, town, shop_name, shop_town, shop_address, shop_details, username } = req.body;
         if (!role || !id) return res.status(400).send("Role and ID required");
 
-        // Validate username uniqueness if changing
+        // check username uniqueness
         if (username) {
             const checkUserStr = username.trim().toLowerCase();
             let conflict = [];
@@ -339,7 +323,7 @@ exports.updateProfile = async (req, res) => {
             if (conflict.length > 0) return res.status(409).send("Username already taken");
         }
 
-        // Validate email uniqueness if changing
+        // check email uniqueness
         if (email) {
             const checkEmail = email.trim().toLowerCase();
             const [ec] = await pool.execute("SELECT customer_id FROM customers WHERE email=? AND customer_id != ? LIMIT 1", [checkEmail, role === 'customer' ? id : -1]);
@@ -387,9 +371,7 @@ exports.updateProfile = async (req, res) => {
     }
 };
 
-/* =========================
-   CHANGE PASSWORD (LOGGED IN)
-========================= */
+// Change password (logged-in user)
 exports.changePassword = async (req, res) => {
     try {
         const { role, id, oldPassword, newPassword } = req.body;
@@ -411,7 +393,7 @@ exports.changePassword = async (req, res) => {
         const match = await verifyPassword(oldPassword, user.password_hash);
         if (!match) return res.status(400).send("password is wrong and try again");
 
-        // Validate new password complexity
+        // validate new password
         if (newPassword.length < 6) return res.status(400).send("Password must be at least 6 characters long");
         if (!/[A-Z]/.test(newPassword)) return res.status(400).send("Password must contain at least one uppercase letter");
         if (!/[a-z]/.test(newPassword)) return res.status(400).send("Password must contain at least one lowercase letter");
@@ -427,9 +409,7 @@ exports.changePassword = async (req, res) => {
     }
 };
 
-/* =========================
-   GET CUSTOMER STATS FOR SELLER
-========================= */
+// Get customer stats (for seller or admin view)
 exports.getCustomerStats = async (req, res) => {
     try {
         const { customerId, sellerId } = req.params;
@@ -481,9 +461,7 @@ exports.getCustomerStats = async (req, res) => {
     }
 };
 
-/* =========================
-   SELLER CERTIFICATES
-========================= */
+// Seller certificates
 
 exports.getSellerCertificates = async (req, res) => {
     try {
@@ -539,7 +517,7 @@ exports.deleteCertificate = async (req, res) => {
         res.status(500).send("Server error");
     }
 };
-// Get all sellers (for Admin Analysis)
+// Get all sellers for admin analysis
 exports.adminGetAllSellers = async (req, res) => {
     try {
         const [rows] = await pool.execute(
@@ -552,9 +530,7 @@ exports.adminGetAllSellers = async (req, res) => {
     }
 };
 
-/* =========================
-   USER LOCATIONS
-========================= */
+// User locations
 
 exports.getUserLocations = async (req, res) => {
     try {
@@ -599,9 +575,7 @@ exports.deleteUserLocation = async (req, res) => {
     }
 };
 
-/* =========================
-   ADMIN: LOCATION MANAGEMENT
-========================= */
+// Admin location management
 
 exports.adminGetLocationRequests = async (req, res) => {
     try {

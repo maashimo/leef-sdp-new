@@ -27,7 +27,7 @@ exports.submitFeedback = async (req, res) => {
         if (orderRows.length === 0) {
             return res.status(404).json({ message: "Order not found" });
         }
-        
+
         const completionDate = new Date(orderRows[0].updated_at || orderRows[0].created_at);
         const now = new Date();
         const diffDays = (now - completionDate) / (1000 * 60 * 60 * 24);

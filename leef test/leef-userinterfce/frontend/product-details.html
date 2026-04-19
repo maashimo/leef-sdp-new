@@ -272,8 +272,8 @@
     </nav>
 
     <div class="container" style="margin-top: 2em; max-width: 1200px; position: relative;">
-        <div id="adminCloseBtn" onclick="window.history.back()" 
-             style="display: none !important; position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; width: 35px; height: 35px; border-radius: 50%; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; font-weight: bold; border: 2px solid white;">
+        <div id="adminCloseBtn" onclick="window.history.back()"
+            style="display: none !important; position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; width: 35px; height: 35px; border-radius: 50%; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; font-weight: bold; border: 2px solid white;">
             &times;
         </div>
         <div class="product-container">
@@ -290,30 +290,34 @@
                         <img id="shopAvatar" src="images/placeholder-user.png" alt="Shop Avatar" class="shop-avatar">
                         <div class="shop-info-main">
                             <h3 id="shopDisplayName">Shop Name</h3>
-                            <div id="shopRatingContainer" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem;">
+                            <div id="shopRatingContainer"
+                                style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem;">
                                 <div id="shopRatingStars" style="color: #f59e0b; font-size: 0.9rem;"></div>
-                                <span id="shopRatingValue" style="font-size: 0.85rem; color: #fff; font-weight: 600;">-</span>
+                                <span id="shopRatingValue"
+                                    style="font-size: 0.85rem; color: #fff; font-weight: 600;">-</span>
                                 <span id="shopReviewCount" style="font-size: 0.8rem; color: #888;">(0 reviews)</span>
                             </div>
                             <div class="shop-location" style="margin-top: 0.4rem;">
                                 <i class="fas fa-map-marker-alt"></i> <span id="shopTownDisplay">Location</span>
                             </div>
-                            <div id="shopAddressDisplay" style="font-size: 0.8rem; color: #888; margin-top: 0.2rem; padding-left: 1.1rem;">
+                            <div id="shopAddressDisplay"
+                                style="font-size: 0.8rem; color: #888; margin-top: 0.2rem; padding-left: 1.1rem;">
                                 <!-- Address here -->
                             </div>
-                            <div id="certContainer" style="display: flex; gap: 0.4rem; margin-top: 0.4rem; flex-wrap: wrap;">
+                            <div id="certContainer"
+                                style="display: flex; gap: 0.4rem; margin-top: 0.4rem; flex-wrap: wrap;">
                                 <!-- Certificates injected here -->
                             </div>
                         </div>
                     </div>
-                    
+
                     <div id="shopBio" class="shop-bio">Loading shop information...</div>
 
                     <div class="shop-stats">
                         <span><strong>Sold:</strong> <span id="soldAmount">0</span> units</span>
                         <span><strong>Stock:</strong> <span id="availableStock" style="color: #4ade80;">0</span></span>
                     </div>
-                    
+
                     <div style="font-size: 0.8rem; color: #666;">
                         Seller: <span id="sellerNameText" style="color: #888;">Name</span>
                     </div>
@@ -359,7 +363,8 @@
                                     style="padding: 0.5em; border: none; background: #eee; cursor: pointer; color: #333; font-weight: bold; width: 30px;">+</button>
                             </div>
                         </div>
-                        <button id="addToCartBtn" class="btn btn-primary" onclick="handleAddToCart()" style="padding: 0.8em 2em;">Add to
+                        <button id="addToCartBtn" class="btn btn-primary" onclick="handleAddToCart()"
+                            style="padding: 0.8em 2em;">Add to
                             Cart</button>
                     </div>
                 </div>
@@ -367,7 +372,8 @@
                 <div id="multiLocationMode"
                     style="display: none; border: 1px solid #eee; padding: 1em; border-radius: 0.5em; background: #f9f9f9;">
                     <p id="multiLocInstruction" style="color: #555; font-size: 0.9rem; margin-bottom: 1em;">
-                        Specify quantities for each approved location. Items will be added <strong>directly to cart</strong>.
+                        Specify quantities for each approved location. Items will be added <strong>directly to
+                            cart</strong>.
                     </p>
                     <div id="locationsList">
                         <!-- Will be populated dynamically -->
@@ -451,13 +457,13 @@
         if (currentUser) {
             let dName = currentUser.name || currentUser.username || (currentUser.email ? currentUser.email.split('@')[0] : 'My Account');
             document.getElementById('authLink').textContent = dName;
-            
+
             let dashboardUrl = 'customer-dashboard.html';
             if (currentUser.role === 'admin') dashboardUrl = 'admin-dashboard.html';
             else if (currentUser.role === 'seller') dashboardUrl = 'seller-dashboard.html';
-            
+
             document.getElementById('authLink').href = dashboardUrl;
-            
+
             // Role-based visibility for Q&A (Only customers can ask)
             const askBox = document.getElementById('askQuestionBox');
             if (currentUser.role !== 'customer') {
@@ -473,7 +479,7 @@
             const deliveryToggle = document.getElementById('deliveryTypeToggle');
             const singleMode = document.getElementById('singleLocationMode');
             const multiMode = document.getElementById('multiLocationMode');
-            
+
             if (deliveryToggle) deliveryToggle.style.display = 'none';
             if (singleMode) singleMode.style.display = 'none';
             if (multiMode) multiMode.style.display = 'none';
@@ -527,11 +533,11 @@
                 } else {
                     addrElem.style.display = 'none';
                 }
-                
+
                 // Overall Shop Rating
                 const ratingValue = parseFloat(currentProduct.shop_rating) || 0;
                 const reviewCount = currentProduct.shop_review_count || 0;
-                
+
                 const starsEl = document.getElementById('shopRatingStars');
                 const valueEl = document.getElementById('shopRatingValue');
                 const countEl = document.getElementById('shopReviewCount');
@@ -574,23 +580,23 @@
 
                 document.getElementById('soldAmount').textContent = currentProduct.sold_amount || 0;
                 document.getElementById('availableStock').textContent = currentProduct.stock || 0;
-                
+
                 // Out of stock handling
                 const isOutOfStock = parseFloat(currentProduct.stock) <= 0 || currentProduct.stock === '0' || currentProduct.stock === '0kg' || currentProduct.stock === '0g';
                 if (isOutOfStock) {
                     const stockEl = document.getElementById('availableStock');
                     stockEl.textContent = "Out of Stock";
                     stockEl.style.color = "#ef4444";
-                    
+
                     const buyBtn = document.getElementById('addToCartBtn');
-                    if(buyBtn) {
+                    if (buyBtn) {
                         buyBtn.disabled = true;
                         buyBtn.style.background = "#555";
                         buyBtn.textContent = "Sold Out";
                     }
-                    
+
                     const multiBtn = document.getElementById('multiRequestBtn');
-                    if(multiBtn) {
+                    if (multiBtn) {
                         multiBtn.disabled = true;
                         multiBtn.style.background = "#555";
                         multiBtn.textContent = "Unavailable";
@@ -632,12 +638,12 @@
                 const res = await fetch(`${window.API_BASE_URL}/api/products/seller/${sellerId}/public?exclude=${currentId}`);
                 if (!res.ok) return;
                 const products = await res.json();
-                
+
                 if (products.length > 0) {
                     const section = document.getElementById('moreFromShopSection');
                     const grid = document.getElementById('discoveryGrid');
                     grid.innerHTML = '';
-                    
+
                     products.forEach(p => {
                         const card = document.createElement('a');
                         card.href = `product-details.html?id=${p.id}`;
@@ -649,7 +655,7 @@
                         `;
                         grid.appendChild(card);
                     });
-                    
+
                     section.style.display = 'block';
                 }
             } catch (err) {
@@ -690,7 +696,7 @@
         function getLocationItemHtml(isInitial = false) {
             let options = '';
             if (userApprovedLocations.length > 0) {
-                options = userApprovedLocations.map(l => 
+                options = userApprovedLocations.map(l =>
                     `<option value="${l.id}" data-district="${l.district}" data-address="${l.location_details}" data-short="${l.short_name}">${l.short_name}</option>`
                 ).join('');
             } else {
@@ -752,16 +758,16 @@
             } else {
                 single.style.display = 'none';
                 multi.style.display = 'block';
-                
+
                 // Fetch locations if not already fetched
                 if (userApprovedLocations.length === 0) {
                     await loadUserLocations();
                 }
-                
+
                 const list = document.getElementById('locationsList');
                 // Only reset if empty or only has the old static version
                 if (list.innerHTML.trim() === '' || list.querySelector('.loc-district') && !list.querySelector('.loc-saved-select')) {
-                   list.innerHTML = getLocationItemHtml(true);
+                    list.innerHTML = getLocationItemHtml(true);
                 }
                 updateMultiLocButton();
             }
@@ -856,7 +862,7 @@
             locInputs.forEach((div, idx) => {
                 const select = div.querySelector('.loc-saved-select');
                 if (!select || !select.value) return;
-                
+
                 const kgInput = div.querySelector('.loc-kg');
                 const gInput = div.querySelector('.loc-g');
                 const kg = parseFloat(kgInput.value) || 0;
@@ -926,7 +932,7 @@
             try {
                 const res = await fetch(`${window.API_BASE_URL}/api/products/${productId}/questions`);
                 const questions = await res.json();
-                
+
                 if (questions.length === 0) {
                     qaSection.innerHTML = '<p style="color:#888; font-style:italic;">No answered questions yet. Have one? Ask below!</p>';
                     return;
@@ -985,7 +991,7 @@
             try {
                 const res = await fetch(`${window.API_BASE_URL}/api/feedback/product/${productId}`);
                 const feedback = await res.json();
-                
+
                 if (feedback.length === 0) {
                     fbSection.innerHTML = '<p style="color:#888; font-style:italic;">No feedback yet for this product.</p>';
                     return;
@@ -999,13 +1005,13 @@
                                 <div style="display:flex; align-items:center; gap:0.5rem;">
                                     <span style="font-size:0.75rem; color:#888;">Product Quality:</span>
                                     <div style="color: #f59e0b; font-size:0.9rem;">
-                                        ${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}
+                                        ${'★'.repeat(f.rating)}${'☆'.repeat(5 - f.rating)}
                                     </div>
                                 </div>
                                 <div style="display:flex; align-items:center; gap:0.5rem;">
                                     <span style="font-size:0.75rem; color:#888;">Delivery Service:</span>
                                     <div style="color: #4ade80; font-size:0.9rem;">
-                                        ${'★'.repeat(f.seller_rating || f.rating || 5)}${'☆'.repeat(5-(f.seller_rating || f.rating || 5))}
+                                        ${'★'.repeat(f.seller_rating || f.rating || 5)}${'☆'.repeat(5 - (f.seller_rating || f.rating || 5))}
                                     </div>
                                 </div>
                             </div>

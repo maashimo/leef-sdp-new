@@ -719,3 +719,76 @@ textarea:focus {
     background: linear-gradient(to right, #ef4444, #b91c1c);
     border-left: 4px solid #fecaca;
 }
+
+/* Password Strength Styles */
+.password-strength-container {
+  margin-top: 5px;
+}
+
+.strength-meter-bg {
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.strength-meter-fill {
+  height: 100%;
+  width: 0;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  border-radius: 2px;
+}
+
+.password-feedback {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.strength-weak {
+  background-color: #ef4444;
+}
+
+.strength-medium {
+  background-color: #eab308;
+}
+
+.strength-strong {
+  background-color: #22c55e;
+}
+
+/* Utilities */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.m-0 { margin: 0; }
+.w-full { width: 100%; }
+.flex { display: flex; }
+.flex-center { display: flex; justify-content: center; align-items: center; }
+.justify-between { justify-content: space-between; }
+.items-center { align-items: center; }
+.text-2xl { font-size: 2rem; }
+.text-sm { font-size: 0.875rem; }
+.text-light { color: var(--text-light); }
+.text-red { color: #ef4444; }
+.color-primary { color: var(--primary-color); }
+.fw-600 { font-weight: 600; }
+.no-underline { text-decoration: none; }
+.list-none { list-style: none; }
+.p-0 { padding: 0; }
+.gap-2 { gap: 0.5rem; }
+.flex-1 { flex: 1; }
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #555;
+  display: inline-block;
+}

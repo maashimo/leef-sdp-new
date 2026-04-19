@@ -226,7 +226,7 @@ exports.approveProduct = async (req, res) => {
             // Notify Seller
             const [pRow] = await pool.execute("SELECT seller_id, name FROM products WHERE id = ?", [pid]);
             if (pRow.length > 0) {
-              await notify(pRow[0].seller_id, "Product Approved! ✅", `Your new product '${pRow[0].name}' has been approved and is now live!`, "inventory");
+                await notify(pRow[0].seller_id, "Product Approved! ✅", `Your new product '${pRow[0].name}' has been approved and is now live!`, "inventory");
             }
 
         } else if (type === 'Update') {
@@ -247,15 +247,15 @@ exports.approveProduct = async (req, res) => {
                  is_ads = ? 
                  WHERE id = ?`,
                 [
-                    update.name || null, 
-                    update.category || null, 
-                    update.price || null, 
-                    update.stock || null, 
-                    update.description || null, 
-                    finalPrice || null, 
-                    coinsPercent || 0, 
-                    saleDetails || null, 
-                    isAds ? 1 : 0, 
+                    update.name || null,
+                    update.category || null,
+                    update.price || null,
+                    update.stock || null,
+                    update.description || null,
+                    finalPrice || null,
+                    coinsPercent || 0,
+                    saleDetails || null,
+                    isAds ? 1 : 0,
                     update.product_id
                 ]
             );
@@ -269,7 +269,7 @@ exports.approveProduct = async (req, res) => {
             }
 
             await pool.execute("DELETE FROM product_updates WHERE id = ?", [id || null]);
-            
+
             await notify(update.seller_id, "Update Approved! 📈", `Your update for '${update.name}' has been approved.`, "inventory");
         }
 
@@ -289,14 +289,14 @@ exports.rejectProduct = async (req, res) => {
         if (type === 'New' || !type) {
             const [pRow] = await pool.execute("SELECT seller_id, name FROM products WHERE id = ?", [pid]);
             if (pRow.length > 0) {
-              await notify(pRow[0].seller_id, "Product Rejected ❌", `Your product '${pRow[0].name}' was rejected and removed.`, "inventory");
+                await notify(pRow[0].seller_id, "Product Rejected ❌", `Your product '${pRow[0].name}' was rejected and removed.`, "inventory");
             }
             // Hard delete from products table
             await pool.execute("DELETE FROM products WHERE id = ?", [pid]);
         } else if (type === 'Update') {
             const [uRow] = await pool.execute("SELECT seller_id, name FROM product_updates WHERE id = ?", [id]);
             if (uRow.length > 0) {
-              await notify(uRow[0].seller_id, "Update Rejected ❌", `Your update for '${uRow[0].name}' was rejected.`, "inventory");
+                await notify(uRow[0].seller_id, "Update Rejected ❌", `Your update for '${uRow[0].name}' was rejected.`, "inventory");
             }
             // Delete request
             await pool.execute("DELETE FROM product_updates WHERE id = ?", [id]);
@@ -419,7 +419,7 @@ exports.getProductById = async (req, res) => {
 
         if (rows.length === 0) return res.status(404).json({ message: "Product not found" });
 
-         const product = rows[0];
+        const product = rows[0];
         // Fetch all images sorted by display_order
         try {
             const [imgs] = await pool.execute("SELECT image_url FROM product_images WHERE product_id = ? ORDER BY display_order ASC", [id]);
@@ -583,7 +583,7 @@ exports.directStockUpdate = async (req, res) => {
         // Verify product exists and belongs to seller
         const [rows] = await pool.execute("SELECT id, name, seller_id FROM products WHERE id = ?", [productId]);
         if (rows.length === 0) return res.status(404).json({ message: "Product not found" });
-        
+
         if (parseInt(rows[0].seller_id) !== parseInt(sellerId)) {
             return res.status(403).json({ message: "Unauthorized. You can only update your own products." });
         }
@@ -602,9 +602,9 @@ exports.directStockUpdate = async (req, res) => {
             console.warn("Notification failed (non-critical):", nErr.message);
         }
 
-        res.status(200).json({ 
-            message: "Stock updated instantly!", 
-            stock 
+        res.status(200).json({
+            message: "Stock updated instantly!",
+            stock
         });
     } catch (err) {
         console.error("Error in directStockUpdate:", err);
@@ -697,7 +697,7 @@ exports.replyToQuestion = async (req, res) => {
 exports.updateProductImages = async (req, res) => {
     try {
         const { productId, images, mainImage } = req.body;
-        
+
         if (!productId) return res.status(400).json({ message: "Product ID required" });
 
         // 1. Update main thumbnail in products table
